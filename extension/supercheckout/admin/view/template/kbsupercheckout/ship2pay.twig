@@ -1,0 +1,89 @@
+{{ header }}{{ column_left }}
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript">
+		velovalidation.setErrorLanguage({empty_field: '{{ error_empty_field }}'});
+	</script>
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+				<div class="float-end">
+					<button type="submit" id="save-button" form="form-ship2pay" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+						<i class="fa fa-save"></i>
+					</button>
+					<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-light">
+						<i class="fa fa-reply"></i>
+					</a>
+				</div>
+				<h1>{{ heading_title }}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				{% if (success) %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-check-circle"></i>
+						{{ success }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			{% if (error_warning) %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning }}
+					<button type="button" class="btn-close" data-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div class="card">
+
+				{{ store_switcher }}
+				<h3 class="card-header">
+					<i class="fa fa-money"></i>
+					{{ supercheckout_text_ship2pay }}
+				</h3>
+
+				<div class="card-body">
+					<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-ship2pay" class="form-horizontal">
+						{{ tabs }}
+						<div class="layout">
+							<div class="tab-content">
+
+								<div class="panel-body">
+									{% for shipping_method in shipping_methods %}
+										<div class="row mb-3">
+											<label class="col-sm-2 col-form-label">{{ shipping_method['title'] }}</label>
+											<div class="col-sm-10">
+												<select class="form-control" multiple="" name="supercheckout[step][shipping_method][available][{{ shipping_method['code'] }}][]">
+													{% set i = 0 %}
+													{% for payment_method in payment_methods %}
+														{% if (supercheckout['step']['shipping_method']['available'][shipping_method['code']] is defined and (payment_method['code'] in supercheckout['step']['shipping_method']['available'][shipping_method['code']])) %}
+															<option value="{{ payment_method['code'] }}" selected="selected">{{ payment_method['title'] }}</option>
+														{% else %}
+															<option value="{{ payment_method['code'] }}">{{ payment_method['title'] }}</option>
+														{% endif %}
+														{% set i = i + 1 %}
+													{% endfor %}
+												</select>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{ footer }}
+

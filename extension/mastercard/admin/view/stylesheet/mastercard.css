@@ -1,0 +1,86 @@
+.partial_refund_form label {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.refund_button_container,
+.partial_refund_container {
+    display: flex;
+    margin: 20px;
+}
+
+.refund_amount {
+    width: 130px;
+    margin-bottom: 20px;
+}
+
+.refundBoxContainer {
+    margin: 0 30px;
+}
+
+
+span.img_loading_refundButton i.fa.fa-cog.fa-spin.fa-lg {
+    vertical-align: -75%;
+    padding: 0 10px;
+}
+
+span.img_loading_captureButton .capture_Spinner {
+    padding: 17px;
+}
+
+.action_wrapper {
+    margin-top: 15px;
+}
+
+.version-info .module-notification-wrapper{
+    margin-top: 10px;
+}
+.integration-model-container{
+    display: none;
+}
+.authorize-actions-container{
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+.authorize-actions-container .refund_button_container{
+    margin: 0;
+}
+.mastercard-admin-notes{
+    margin-top: 10px;
+}
+
+#form-mastercard .status-label{
+    font-size: 14px;
+}
+
+label.section-description{
+    margin-bottom: 16px;
+}
+
+.settings-division{
+    margin-bottom: 20px;
+}
+
+section.sec-divider {
+    margin-top: 30px;
+    margin-bottom: 15px;
+}
+
+#form-mastercard label.section-description{
+    margin-bottom: 15px;
+}
+#voidButton.btn_void,
+#refundButton.btn_refund{
+    margin-right: 12px;
+}
+.form-control,
+.form-select{
+    border: 1px solid black;
+}
+.merchant-info-parent-wrapper{
+    border: 1px solid #4c4d5a;
+    color: #4c4d5a;
+    outline: 0;
+    padding: 10px;
+}

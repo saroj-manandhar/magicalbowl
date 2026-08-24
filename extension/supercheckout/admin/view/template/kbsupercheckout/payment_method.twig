@@ -1,0 +1,199 @@
+{{ header }}{{ column_left }}
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript">
+		velovalidation.setErrorLanguage({empty_field: '{{ error_empty_field }}'});
+	</script>
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<style>
+		.kb-tab-error {
+			border-color: #ff3131 !important;
+			color: #fff !important;
+		}
+		.kb_error_message {
+			color: red;
+		}
+		.kb_error_field {
+			border-color: red;
+		}
+	</style>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+				<div class="float-end">
+					<button type="submit" id="save-button" form="form-payment-method" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+						<i class="fa fa-save"></i>
+					</button>
+					<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+						<i class="fa fa-reply"></i>
+					</a>
+				</div>
+				<h1>{{ heading_title }}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				{% if (success) %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-check-circle"></i>
+						{{ success }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			{% if (error_warning) %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning }}
+					<button type="button" class="`btn-close" data-bs-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div class="card">
+
+				{{ store_switcher }}
+				<h3 class="card-header">
+					<i class="fa fa-money"></i>
+					{{ supercheckout_text_payment_method }}
+                </h3>
+
+				<div class="card-body">
+					<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment-method" class="form-horizontal">
+						{{ tabs }}
+						<div class="layout">
+							<div class="tab-content">
+								<input type="hidden" name="supercheckout[step][payment_method][sort_order]" value="{{ supercheckout['step']['payment_method']['sort_order'] }}">
+								<input type="hidden" name="supercheckout[step][payment_method][display]" value="{{ supercheckout['step']['payment_method']['display'] }}">
+								<input type="hidden" name="supercheckout[step][payment_method][width]" value="{{ supercheckout['step']['payment_method']['width'] }}">
+
+								<div class="panel-body">
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ payment_method_display_options_supercheckout_tooltip }}">{{ supercheckout_text_payment_method_display_options }}</span>
+										</label>
+										<input type="hidden" name="supercheckout[step][payment_method][display_options]" value="{{ supercheckout['general']['version'] }}"/>
+										<div class="col-sm-1">
+											<div class="onoffswitch" style="min-width: 90px">
+												<input type="checkbox" name="supercheckout[step][payment_method][display_options]" value="1" class="onoffswitch-checkbox" id="payment_method_display_options" {% if (supercheckout['step']['payment_method']['display_options'] is defined and supercheckout['step']['payment_method']['display_options'] == 1) %} {{ 'checked' }} {% endif %}>
+												<label class="onoffswitch-label" for="payment_method_display_options">
+													<span class="onoffswitch-inner">
+														<span class="onoffswitch-active">
+															<span class="onoffswitch-switch">{{ text_yes }}</span>
+														</span>
+														<span class="onoffswitch-inactive">
+															<span class="onoffswitch-switch">{{ text_no }}</span>
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ payment_method_logo_display_options_supercheckout_tooltip }}">{{ supercheckout_text_payment_method_logo_display_options }}</span>
+										</label>
+										<div class="col-sm-10">
+											<span class="col-sm-2">
+												<input type="radio" id="textonly" value="textonly" name="supercheckout[payment_logo][default_option]" {% if (supercheckout['payment_logo']['default_option'] is defined and supercheckout['payment_logo']['default_option'] == 'textonly') %} {{ 'checked="checked"' }} {% endif %}/>
+												<label for="textonly">{{ supercheckout_text_only }}</label>&nbsp;&nbsp;
+											</span>
+											<span class="col-sm-2">
+												<input type="radio" id="imageonly" value="imageonly" name="supercheckout[payment_logo][default_option]" {% if (supercheckout['payment_logo']['default_option'] is defined and supercheckout['payment_logo']['default_option'] == 'imageonly') %} {{ 'checked="checked"' }} {% endif %}/>
+												<label for="imageonly">{{ supercheckout_image_only }}</label>&nbsp;&nbsp;
+											</span>
+											<span class="col-sm-3">
+												<input type="radio" value="textwithimage" id="textwithimage" name="supercheckout[payment_logo][default_option]" {% if (supercheckout['payment_logo']['default_option'] is defined and supercheckout['payment_logo']['default_option'] == 'textwithimage') %} {{ 'checked="checked"' }} {% endif %}/>
+												<label for="textwithimage">{{ supercheckout_text_with_image }}</label>
+											</span>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ payment_method_default_option_supercheckout_tooltip }}">{{ supercheckout_text_payment_method_default_option }}</span>
+										</label>
+										<div class="col-sm-10">
+											<select class="form-control" name="supercheckout[step][payment_method][default_option]">
+												{% set i = 0 %}
+												{% for payment_method in payment_methods %}
+													{% if (supercheckout['step']['payment_method']['default_option'] is defined and (supercheckout['step']['payment_method']['default_option'] == payment_method['code']) and i != 0) %}
+														<option value="{{ payment_method['code'] }}" selected="selected">{{ payment_method['title'] }}</option>
+													{% else %}
+														<option value="{{ payment_method['code'] }}">{{ payment_method['title'] }}</option>
+													{% endif %}
+													{% set i = i + 1 %}
+												{% endfor %}
+											</select>
+										</div>
+									</div>
+									{% for key,payment_method in payment_methods %}
+										<div class="row mb-3">
+											<label class="col-sm-2 col-form-label"><font style="color: red">*</font>{{ payment_method['title'] }}</label>
+											<div class="col-sm-10">
+												<ul class="nav nav-tabs err">
+													{% set i=1 %}
+													{% for language in languages %}
+														<li class="nav-item">
+															<a class="nav-link {% if (i == 1) %} active {% endif %} {% set i = i + 1 %}" href="#tab-{{ key~language['name'] }}" data-bs-toggle="tab" role="tab">{{ language['name'] }}</a>
+														</li>
+													{% endfor %}
+												</ul>
+												<div class="tab-content" style="border-right-width: 1px;padding-left: 20px">
+													{% set i=1 %}
+													{% for language in languages %}
+														<div {% if (i == 1) %} {{ "class='tab-pane active'" }} {% else %} {{ "class='tab-pane'" }} {% endif %} {% set i = i + 1 %} id="tab-{{ key~language['name'] }}">
+															<div class="form-group">
+																<label class="control-label col-sm-1">
+																	<span data-toggle="tooltip" title="{{ supercheckout_entry_payment_method_title_tooltip }}">{{ supercheckout_entry_title }}</span>
+																</label>
+																<div class="col-sm-12">
+																	<input type="text" name="supercheckout[step][payment_method][title][{{ payment_method['code'] }}][{{ language['language_id'] }}]" id="title_[{{ payment_method['code'] }}][{{ language['language_id'] }}]" value="{{ supercheckout['step']['payment_method']['title'][payment_method['code']][language['language_id']] is defined ? supercheckout['step']['payment_method']['title'][payment_method['code']][language['language_id']] : payment_method['title'] }}" class="form-control payment-title">
+																</div>
+															</div>
+														</div>
+													{% endfor %}
+												</div>
+												
+												<div class="col-lg-12" id="logo-images-thumbnails{{ payment_method['code'] }}" style="border-right-width: 1px; padding-left: 20px">
+                                                    <label class="col-lg-1" style="padding: 10px 0px 2px; font-weight: bold;">
+                                                        <span data-toggle="tooltip" title="{{ supercheckout_entry_payment_method_logo_tooltip }}">{{ supercheckout_entry_logo }}</span>
+                                                    </label>
+													<div>
+														{% if (supercheckout['step']['payment_method']['logo'][payment_method['code']]) %}
+															{% set img = image_dir_url~supercheckout['step']['payment_method']['logo'][payment_method['code']] %}
+															{% set img_value = supercheckout['step']['payment_method']['logo'][payment_method['code']] %}
+														{% else %}
+															{% set img = image_dir_url~'kbsupercheckout/'~payment_method['code']~'.png' %}
+															{% set img_value = 'kbsupercheckout/'~payment_method['code']~'.png' %}
+														{% endif %}
+
+                                                        
+                                                        <div class="card image">
+                                                            <img src="{{ img }}" alt="" title="" id="thumb-image{{ payment_method['code'] }}" data-oc-placeholder="{{ img }}" class="card-img-top"/> 
+														    <input type="hidden" name="supercheckout[step][payment_method][logo][{{ payment_method['code'] }}]" value="{{ img_value }}" id="input-image{{ payment_method['code'] }}"/>
+                                                            <div class="card-body">
+                                                                <button type="button" data-oc-toggle="image" data-oc-target="#input-image{{ payment_method['code'] }}" data-oc-thumb="#thumb-image{{ payment_method['code'] }}" class="btn btn-primary btn-sm btn-block"><i class="fa-solid fa-pencil"></i> Edit</button>
+                                                                <button type="button" data-oc-toggle="clear" data-oc-target="#input-image{{ payment_method['code'] }}" data-oc-thumb="#thumb-image{{ payment_method['code'] }}" class="btn btn-warning btn-sm btn-block"><i class="fa-regular fa-trash-can"></i> Clear</button>
+                                                            </div>
+                                                        </div>
+														<p style="font-weight: 100; font-style: italic">{{ text_img_hint }}</p>
+													</div>
+												</div>
+											</div>
+										</div>
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{ footer }}

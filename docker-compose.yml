@@ -1,0 +1,33 @@
+version: '3.3'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: opencart4-new-site:latest
+    container_name: opencart4_web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - DOCKER_ENV=true
+      - HTTP_SERVER=https://magicalbowls.com/new_site/
+      - DB_DRIVER=mysqli
+      - DB_HOSTNAME=127.0.0.1      # Change this to your database host (e.g. host IP or DB container)
+      - DB_DATABASE=neww_msb
+      - DB_USERNAME=root
+      - DB_PASSWORD=root
+      - DB_PORT=8889               # Change this to your database port (e.g. 3306 or host MAMP port)
+      - DB_PREFIX=oc_
+    volumes:
+      # Mount storage directory to persist uploads, logs, cache, etc.
+      - opencart_storage:/var/www/storage
+      # Mount storefront image directory to persist product images and uploads
+      - opencart_images:/var/www/html/new_site/image
+
+volumes:
+  opencart_storage:
+    driver: local
+  opencart_images:
+    driver: local

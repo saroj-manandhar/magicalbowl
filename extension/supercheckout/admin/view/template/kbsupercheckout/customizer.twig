@@ -1,0 +1,284 @@
+{{ header }}{{ column_left }}
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<script src="../extension/supercheckout/admin/view/javascript/colorpicker/jquery.colorpicker.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+
+    <script type="text/javascript">
+        velovalidation.setErrorLanguage({
+            empty_field: '{{ error_empty_field }}',
+            invalid_url: '{{ error_invalid_url }}',
+            max_url: '{{ error_max_url }}',
+        });
+    </script>
+
+    <script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js" ></script>
+    <div id="velsof_plugin">
+        <div class="page-header">
+            <div class="container-fluid">
+                <div class="float-end">
+                    <button type="submit" id="save-button" form="form-supercheckout" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+                        <i class="fa fa-save"></i>
+                    </button>
+                    <a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+                        <i class="fa fa-reply"></i>
+                    </a>
+                </div>
+                <h1>{{ heading_title }}</h1>
+                <ol class="breadcrumb">
+                    {% for breadcrumb in breadcrumbs %}
+                        <li class="breadcrumb-item">
+                            <a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+                        </li>
+                    {% endfor %}
+                </ol>
+                {% if (success) %}
+                    <div class="alert alert-success alert-dismissible">
+                        <i class="fa fa-check-circle"></i>
+                        {{ success }}
+                        <button type="button" class="btn-close" data-dismiss="alert">&times;</button>
+                    </div>
+                {% endif %}
+                <div id="error_message"></div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            {% if (error_warning) %}
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-circle alert-dismissible"></i>
+                    {{ error_warning }}
+                    <button type="button" class="btn-close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endif %}
+            <div class="card">
+
+                {{ store_switcher }}
+                <h3 class="card-header">
+                    <i class="fa fa-wrench"></i>
+                    {{ supercheckout_text_customizer }}</h3>
+
+                <div class="card-body">
+                    <form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-supercheckout" class="form-horizontal">
+                        {{ tabs }}
+                        {% set plugin_id = "OC001" %}
+                        <input type="hidden" name="supercheckout[general][plugin_id]" value="{{ plugin_id }}">
+                        <input type="hidden" name="supercheckout[general][layout]" value="{{ supercheckout['general']['layout'] }}">
+
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_background_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_button_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_button_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_button_bg_color]" id="color_0" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_button_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_0" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_border_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_button_border_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_button_border_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_button_border_color]" id="color_1" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_button_border_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_1" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div id="button_preview" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_button_bg_color'] }};border: 1px solid {{ supercheckout['supercheckout']['step']['customizer']['kb_button_border_color'] }} !important;color: {{ supercheckout['supercheckout']['step']['customizer']['kb_button_text_color'] }} !important;border-bottom:3px solid {{ supercheckout['supercheckout']['step']['customizer']['kb_border_bottom_color'] }} !important;width: 160px; display: inline-block; text-align: center; float: left; margin-left: 65%; padding: 10px; font-size: 16px; border-radius: 5px; margin-top: -38px;">
+                                <span data-original-title="" title="">{{ supercheckout_text_button_preview }}</span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_text_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_button_text_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_button_text_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_button_text_color]" id="color_2" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_button_text_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_2" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_border_bottom_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_border_bottom_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_border_bottom_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_border_bottom_color]" id="color_3" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_border_bottom_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_3" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_ac_bg_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_ac_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_ac_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_ac_bg_color]" id="color_4" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_ac_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_4" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_login_bg_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_login_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_login_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_login_bg_color]" id="color_5" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_login_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_5" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_logout_bg_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_logout_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_logout_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_logout_bg_color]" id="color_9" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_logout_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_9" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_coupon_bg_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_coupon_button_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_coupon_button_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_coupon_button_bg_color]" id="color_6" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_coupon_button_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_6" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_voucher_bg_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_voucher_button_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_voucher_button_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_voucher_button_bg_color]" id="color_7" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_voucher_button_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_7" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_button_shipping_bar_bg_color }}</span>
+                            </label>
+                            <div class="col-sm-3">
+                                <div class="input-group" id="bg_color">
+                                    <input type="text" data-hex="true" value="{{ supercheckout['supercheckout']['step']['customizer']['kb_shipping_bar_bg_color'] is defined ? supercheckout['supercheckout']['step']['customizer']['kb_shipping_bar_bg_color'] : '' }}" class="mColorPicker form-control" name="supercheckout[step][customizer][kb_shipping_bar_bg_color]" id="color_8" style="background-color:{{ supercheckout['supercheckout']['step']['customizer']['kb_shipping_bar_bg_color'] }} ; ">
+                                    <span style="cursor:pointer;" id="icp_color_8" class="mColorPickerTrigger input-group-addon" data-mcolorpicker="true">
+                                        <img src="../extension/supercheckout/admin/view/image/color.png" style="border:0;margin:0 0 0 3px" align="absmiddle">
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_customizer_custom_css }}</span>
+                            </label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <textarea rows="5" cols="50" style="resize: both;" class="vss_sc_ver15" name="supercheckout[step][customizer][custom_css]">{{ supercheckout['supercheckout']['step']['customizer']['custom_css'] is defined ? supercheckout['supercheckout']['step']['customizer']['custom_css'] : '' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="input-status">
+                                <span data-toggle="tooltip" title="">{{ supercheckout_text_customizer_custom_js }}</span>
+                            </label>
+                            <div class="col-md-10">
+                                <div class="input-group">
+                                    <textarea rows="5" cols="50" style="resize: both;" class="vss_sc_ver15" name="supercheckout[step][customizer][custom_js]">{{ supercheckout['supercheckout']['step']['customizer']['custom_js'] is defined ? supercheckout['supercheckout']['step']['customizer']['custom_js'] : '' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<style type="text/css">
+    .kb_error_message{
+        color:red;
+    }
+    .kb_error_field {
+        border-color: red;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function ()
+    { 
+        $(document).on("change", 'input[id="color_0"]', function() {
+            var bg_color_valid = velovalidation.isColor($(this));
+            if (bg_color_valid == true) {                
+                $('#button_preview').css('background', $(this).val());
+            }
+        });
+        
+        $(document).on("change", 'input[id="color_1"]', function() {
+            var bg_color_valid = velovalidation.isColor($(this));
+            if (bg_color_valid == true) {                
+                $('#button_preview').css('border', 'solid' + $(this).val());
+            }
+        });
+        
+        $(document).on("change", 'input[id="color_2"]', function() {
+            var bg_color_valid = velovalidation.isColor($(this));
+            if (bg_color_valid == true) {                
+                $('#button_preview').css('color', $(this).val());
+            }
+        });
+        
+        $(document).on("change", 'input[id="color_3"]', function() {
+            var bg_color_valid = velovalidation.isColor($(this));
+            if (bg_color_valid == true) {                
+                $('#button_preview').css('border-bottom', 'solid' + $(this).val());
+            }
+        });
+        
+    });    
+</script>
+
+{{ footer }} 

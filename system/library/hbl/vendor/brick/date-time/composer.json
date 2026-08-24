@@ -1,0 +1,34 @@
+{
+    "name": "brick/date-time",
+    "description": "Date and time library",
+    "type": "library",
+    "keywords": [
+        "Brick",
+        "DateTime",
+        "Date",
+        "Time"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^7.4 || ^8.0",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0",
+        "php-coveralls/php-coveralls": "^2.2",
+        "vimeo/psalm": "5.15.0"
+    },
+    "suggest": {
+        "ext-timezonedb": "This PECL extension provides up-to-date timezone information"
+    },
+    "autoload": {
+        "psr-4": {
+            "Brick\\DateTime\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Brick\\DateTime\\Tests\\": "tests/"
+        }
+    }
+}

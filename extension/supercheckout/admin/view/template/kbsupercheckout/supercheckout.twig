@@ -1,0 +1,437 @@
+{{ header }}{{ column_left }}
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript">
+		velovalidation.setErrorLanguage({
+            empty_field: '{{ error_empty_field }}', 
+            invalid_url: '{{ error_invalid_url }}', 
+            max_url: '{{ error_max_url }}'
+        });
+	</script>
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+				<div class="float-end">
+					<button type="button" id="save-button" form="form-supercheckout" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+						<i class="fa fa-save"></i>
+					</button>
+					<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-light">
+						<i class="fa fa-reply"></i>
+					</a>
+				</div>
+				<h1>{{ heading_title }}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				{% if (success) %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-check-circle"></i>
+						{{ success }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			{% if (error_warning) %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div class="card">
+				{{ store_switcher }}
+
+				<h3 class="card-header">
+					<i class="fa fa-wrench"></i>{{ supercheckout_text_general }}
+                </h3>
+
+				<div class="card-body">
+					<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-supercheckout" class="form-horizontal">
+						{{ tabs }}
+						{% set plugin_id = "OC001" %}
+						<input type="hidden" name="supercheckout[general][plugin_id]" value="{{ plugin_id }}">
+						<input
+						type="hidden" name="supercheckout[general][layout]" value="{{ supercheckout['general']['layout'] }}">
+
+						<!---------------------------------- General ---------------------------------->
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[general][enable]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ general_enable_supercheckout_tooltip }}">{{ supercheckout_text_general_enable }}</span>
+							</label>
+							<input type="hidden" name="supercheckout[general][version]" value="{{ supercheckout['general']['version'] }}"/>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" class="onoffswitch-checkbox" name="supercheckout[general][enable]" value="1" id="checkout_enable" {% if (supercheckout['general']['enable'] is defined and supercheckout['general']['enable'] == 1) %} {{ 'checked' }} {% endif %}>
+									<label class="onoffswitch-label" for="checkout_enable">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[general][newsletter]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ general_enable_newsletter_tooltip }}">{{ supercheckout_text_newsletter_enable }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[general][newsletter]" value="1" class="onoffswitch-checkbox" id="newsletter_enable" {% if (supercheckout['general']['newsletter'] is defined and supercheckout['general']['newsletter'] == 1) %} {{ 'checked' }} {% endif %}>
+									<label class="onoffswitch-label" for="newsletter_enable">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[general][guestenable]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ general_guestenable_supercheckout_tooltip }}">{{ supercheckout_text_general_guestenable }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[general][guestenable]" value="1" class="onoffswitch-checkbox" id="general_guestenable" {% if (supercheckout['general']['guestenable'] is defined and supercheckout['general']['guestenable'] == 1) %} {{ 'checked' }} {% endif %}>
+									<label class="onoffswitch-label" for="general_guestenable">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[general][guest_manual]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ general_guest_manual_supercheckout_tooltip }}">{{ supercheckout_text_general_guest_manual }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" class="onoffswitch-checkbox" name="supercheckout[general][guest_manual]" value="1" id="registration_enable" {% if (supercheckout['general']['guest_manual'] is defined and supercheckout['general']['guest_manual'] == 1) %} {{ 'checked' }} {% endif %}>
+									<label class="onoffswitch-label" for="registration_enable">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ general_default_supercheckout_tooltip }}">{{ supercheckout_text_general_default }}</span>
+							</label>
+							<div class="col-sm-10">
+								<span class="col-sm-2"><input type="radio" value="guest" name="supercheckout[general][default_option]" {% if (supercheckout['general']['default_option'] == 'guest') %} {{ 'checked' }} {% endif %} id="general_default_option_guest"/>
+									<label for="general_default_option_guest">{{ supercheckout_text_guest }}</label>
+								</span>
+								<span class="col-sm-2"><input type="radio" value="register" name="supercheckout[general][default_option]" {% if (supercheckout['general']['default_option'] == 'register') %} {{ 'checked' }} {% endif %} id="general_default_option_register"/>
+									<label for="general_default_option_register">{{ supercheckout_text_login }}</label>
+								</span>
+								<span class="col-sm-2"><input type="radio" value="register_manual" name="supercheckout[general][default_option]" {% if (supercheckout['general']['default_option'] == 'register_manual') %} {{ 'checked' }} {% endif %} id="general_default_option_login"/>
+									<label for="general_default_option_login">{{ supercheckout_text_register }}</label>
+								</span>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[step][login][option][guest][display]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ step_login_option_supercheckout_tooltip }}">{{ supercheckout_text_step_login_option }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[step][login][option][guest][display]" value="1" class="onoffswitch-checkbox" id="step_login_option_guest_display" {% if (supercheckout['step']['login']['option']['guest']['display'] is defined and supercheckout['step']['login']['option']['guest']['display'] == 1) %} {{ 'checked' }} {% endif %}/>
+									<label class="onoffswitch-label" for="step_login_option_guest_display">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ custom_style_supercheckout_tooltip }}">{{ supercheckout_text_custom_style }}</span>
+							</label>
+							<div class="col-sm-10">
+								{% if (supercheckout['custom']['style'] is defined and supercheckout['custom']['style'] != "") %}
+									<textarea class="form-control" id="input/Warning" class="form-control" name="supercheckout[custom][style]">{{ supercheckout['custom']['style'] }}</textarea>
+								{% else %}
+									<textarea class="form-control" class="form-control" name="supercheckout[custom][style]"></textarea>
+								{% endif %}
+							</div>
+						</div>
+						<div class="row mb-3" style="display:none;">
+							<label>
+								<span>{{ 'New Class or ID for anchor' }}</span>
+							</label>
+							<div class="col-sm-10">
+								<input id="hidden_text_classes" value="{{ anchor_classes }}" type="text" name="hidden_classes">
+								<input id="hidden_button_classes" type="button" value="save">
+							</div>
+						</div>
+						<div class="row mb-3" style="display:none;">
+							<label>
+								<span>{{ 'New Class or ID for trigger' }}</span>
+							</label>
+							<div class="col-sm-10">
+								<input id="hidden_text_classes_trigger" value="{{ anchor_classes_trigger }}" type="text" name="hidden_classes_trigger">
+								<input id="hidden_button_classes_trigger" type="button" value="save">
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ free_shipping_amount_tooltip }}">{{ supercheckout_free_shipping_amount }}</span>
+							</label>
+							<div class="col-sm-2">
+
+								<input class="form-control" id="free_shipping_amount" name="supercheckout[free_shipping_amount]" value="{{ supercheckout['free_shipping_amount'] is defined ? supercheckout['free_shipping_amount'] : 0 }}">
+								<p class="vss-info">
+									<i>{{ text_freeshipping_info }}</i>
+								</p>
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[step][autodetect_country]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ step_autodetect_country }}">{{ step_autodetect_country }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[step][autodetect_country]" value="1" class="onoffswitch-checkbox" id="step_autodetect_country" {% if (supercheckout['step']['autodetect_country'] is defined and supercheckout['step']['autodetect_country'] == 1) %} {{ 'checked' }} {% endif %}/>
+									<label class="onoffswitch-label" for="step_autodetect_country">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="row mb-3">
+							<input type="hidden" name="supercheckout[step][inlinevalidation]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ supercheckout_text_inline_validation }}">{{ supercheckout_text_inline_validation }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[step][inlinevalidation]" value="1" class="onoffswitch-checkbox" id="step_inline_validation" {% if (supercheckout['step']['inlinevalidation'] is defined and supercheckout['step']['inlinevalidation'] == 1) %} {{ 'checked' }} {% endif %}/>
+									<label class="onoffswitch-label" for="step_inline_validation">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="row mb-3" id="header-text">
+							<input type="hidden" name="supercheckout[autofill_address][enable]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ supercheckout_text_autofill_enable_tooltip }}">{{ supercheckout_text_autofill_enable_tooltip }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[autofill_address][enable]" value="1" class="onoffswitch-checkbox" id="autofill_address" {% if (supercheckout['autofill_address']['enable'] is defined and supercheckout['autofill_address']['enable'] == 1) %} {{ 'checked' }} {% endif %}/>
+									<label class="onoffswitch-label" for="autofill_address">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+						<div class="row mb-3" id="autofill_address-div">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ supercheckout_autofill_address_tooltip }}">{{ supercheckout_autofill_address_tooltip }}</span>
+							</label>
+							<div class="col-sm-10">
+								<input id="autofill_address_box" value="{{ supercheckout['autofill_address']['api'] is defined ? supercheckout['autofill_address']['api'] : '' }}" type="text" name="supercheckout[autofill_address][api]" class="form-control">
+
+							</div>
+						</div>
+
+                        <div class="row mb-3" >
+                            <input type="hidden" name="supercheckout[general][supercheckout_enable_new_template]" value="0" >
+                            <label class="col-sm-2 col-form-label"><span data-toggle="tooltip" title="{{ supercheckout_text_enable_new_template_tooltip }}">{{ supercheckout_text_enable_new_template }}</span></label>
+                            <div class="col-sm-1">
+                                <div class="onoffswitch" style="min-width: 90px">
+                                    <input type="checkbox" name="supercheckout[general][supercheckout_enable_new_template]" value="1" class="onoffswitch-checkbox" id="supercheckout_enable_new_template" {% if (supercheckout['general']['supercheckout_enable_new_template'] is defined and supercheckout['general']['supercheckout_enable_new_template'] == 1) %} {{ 'checked' }} {% endif %}/>
+                                    <label class="onoffswitch-label" for="supercheckout_enable_new_template">
+                                        <span class="onoffswitch-inner">
+                                            <span class="onoffswitch-active"><span class="onoffswitch-switch">{{ text_yes }}</span></span>
+                                            <span class="onoffswitch-inactive"><span class="onoffswitch-switch">{{ text_no }}</span></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+						<div class="row mb-3" id="header-text">
+							<input type="hidden" name="supercheckout[testing_mode][enable]" value="0">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ supercheckout_text_testing_enable_tooltip }}">{{ supercheckout_text_testing_enable }}</span>
+							</label>
+							<div class="col-sm-1">
+								<div class="onoffswitch" style="min-width: 90px">
+									<input type="checkbox" name="supercheckout[testing_mode][enable]" value="1" class="onoffswitch-checkbox" id="testing_mode" {% if (supercheckout['testing_mode']['enable'] is defined and supercheckout['testing_mode']['enable'] == 1) %} {{ 'checked' }} {% endif %}/>
+									<label class="onoffswitch-label" for="testing_mode">
+										<span class="onoffswitch-inner">
+											<span class="onoffswitch-active">
+												<span class="onoffswitch-switch">{{ text_yes }}</span>
+											</span>
+											<span class="onoffswitch-inactive">
+												<span class="onoffswitch-switch">{{ text_no }}</span>
+											</span>
+										</span>
+									</label>
+								</div>
+							</div>
+						</div>
+
+
+						<div class="row mb-3" id="testing-url">
+							<label class="col-sm-2 col-form-label">
+								<span data-toggle="tooltip" title="{{ supercheckout_text_testing_url_tooltip }}">{{ supercheckout_text_testing_url }}</span>
+							</label>
+							<div class="col-sm-10">
+								<div class="input-group">
+									<input id="testing-mode-url" value="{{ supercheckout['testing_mode']['url'] }}" readonly="" type="text" name="supercheckout[testing_mode][url]" class="form-control">
+									<input id="testing-mode-button" type="button" onclick="myFunction()" class="btn btn-primary" value="{{ text_copy }}">
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<style type="text/css">
+    .kb_error_message{
+        color:red;
+    }
+    .kb_error_field {
+        border-color: red;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function(){
+        if($('#autofill_address:checked').length == 1) {
+            $('#autofill_address-div').show();
+        } else {
+            $('#autofill_address-div').hide();
+        }
+        $('#autofill_address').change(function() {
+            if($('#autofill_address:checked').length == 1) {
+                $('#autofill_address-div').show();
+            } else {
+                $('#autofill_address-div').hide();
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        if($('#testing_mode:checked').length == 1) {
+            $('#testing-url').show();
+        } else {
+            $('#testing-url').hide();
+        }
+        $('#testing_mode').change(function() {
+            if($('#testing_mode:checked').length == 1) {
+                $('#testing-url').show();
+            } else {
+                $('#testing-url').hide();
+            }
+        });
+    });
+</script>
+<script>
+$('#testing-mode-btton').click(function(){
+    
+});
+function myFunction() {
+  var copyText = document.getElementById("testing-mode-url");
+  copyText.select();
+  document.execCommand("copy");
+}
+</script>
+
+<script>
+    $('#save-button').click(function(){
+        
+        if ($("#autofill_address").is(":checked")) {
+            var result;
+            result = velovalidation.checkMandatory($('#autofill_address_box'));
+            if (result != true) {
+                $('#autofill_address_box').after("<div class='text-danger'>" + result + "</div>");
+                $('#autofill_address_box').parent().parent().addClass("has-error");
+                return false;
+            } else {
+                $('#form-supercheckout').submit();
+            }
+        } else {
+                $('#form-supercheckout').submit();
+        }
+    });
+</script>
+{{ footer }} 

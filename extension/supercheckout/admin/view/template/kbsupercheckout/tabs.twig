@@ -1,0 +1,22 @@
+<ul class="nav nav-tabs velsof_supercheckout">
+
+     <li class="nav-item"> <a href="{{ tab_general_settings }}"  {% if (active == 1) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_general }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_general_customizer }}"  {% if (active == 2) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_customizer }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_login }}"  {% if (active == 3) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_login }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_payment_address }}"  {% if (active == 4) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} > {{ supercheckout_text_payment_address }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_shipping_address }}"  {% if (active == 5) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} > {{ supercheckout_text_shipping_address }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_shipping }}"  {% if (active == 6) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_shipping_method }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_ship2pay }}"  {% if (active == 7) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_ship2pay }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_payment }}"  {% if (active == 8) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} > {{ supercheckout_text_payment_method }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_confirm }}"  {% if (active == 9) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_confirm }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_design_checkout }}"  {% if (active == 10) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_design }}</a></li>
+    <li class="nav-item"> <a href="{{ tab_mailchimp }}"  {% if (active == 11) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_mailchimp }}</a></li>
+     <li class="nav-item"> <a href="{{ tab_support }}"  {% if (active == 12) %} {{ 'class=" nav-link active"' }} {%else %}{{ 'class=" nav-link "' }} {% endif %} >{{ supercheckout_text_support }}</a></li>
+    
+    
+    </ul>
+<style type="text/css">
+.velsof_supercheckout li a{
+    padding: 10px 11px;
+}
+</style>

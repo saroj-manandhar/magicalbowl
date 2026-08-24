@@ -1,0 +1,524 @@
+{{ header }}{{ column_left }}
+<!-- Main Container Fluid -->
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<script type="text/javascript">
+		velovalidation.setErrorLanguage({empty_field: '{{ error_empty_field }}', positive_number: '{{ error_positive_number }}', number_field: '{{ error_number }}'});
+	</script>
+	<style>
+		.kb-tab-error {
+			border-color: #ff3131 !important;
+			color: #fff !important;
+		}
+        .kb_error_message{
+            color:red;
+        }
+        .kb_error_field {
+            border-color: red;
+        }
+	</style>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+				<div class="float-end">
+					<button type="submit" id="save-button" form="form-confirm" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+						<i class="fa fa-save"></i>
+					</button>
+					<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+						<i class="fa fa-reply"></i>
+					</a>
+				</div>
+				<h1>{{ heading_title }}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				{% if (success) %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-check-circle"></i>
+						{{ success }}
+						<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			{% if (error_warning) %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div class="card">
+
+				{{ store_switcher }}
+				<h3 class="card-header">
+					<i class="fa fa-check"></i>
+					{{ supercheckout_text_cart }}</h3>
+
+				<div class="card-body">
+					<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-confirm" class="form-horizontal">
+						{{ tabs }}
+						<div class="layout">
+							<div
+								class="tab-content">
+
+								<!---------------------------------- Confirm ---------------------------------->
+								<div class="panel-body">
+									<table style="border-top:none !important;" class="table table-hover">
+										<thead>
+											<tr>
+												<th class="col-sm-4"></th>
+												<th class="guest">{{ supercheckout_text_guest_customer }}</th>
+												<th class="login">{{ supercheckout_text_logged_in_customer }}</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr>
+												<td>
+													<span data-toggle="tooltip" title="{{ cart_display_supercheckout_tooltip }}">{{ supercheckout_text_cart_display }}</span>
+												</td>
+												<td>
+													<input type="hidden" value="0" name="supercheckout[option][guest][cart][display]"/>
+													<div class="onoffswitch" style="min-width: 90px">
+														<input type="checkbox" name="supercheckout[option][guest][cart][display]" value='1' class="onoffswitch-checkbox" id="option_guest_cart_display" {% if (supercheckout['option']['guest']['cart']['display'] is defined and supercheckout['option']['guest']['cart']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+														<label class="onoffswitch-label" for="option_guest_cart_display">
+															<span class="onoffswitch-inner">
+																<span class="onoffswitch-active">
+																	<span class="onoffswitch-switch">{{ text_show }}</span>
+																</span>
+																<span class="onoffswitch-inactive">
+																	<span class="onoffswitch-switch">{{ text_hide }}</span>
+																</span>
+															</span>
+														</label>
+													</div>
+												</td>
+												<td>
+													<input type="hidden" value="0" name="supercheckout[option][logged][cart][display]"/>
+													<div class="onoffswitch" style="min-width: 90px">
+														<input type="checkbox" name="supercheckout[option][logged][cart][display]" value='1' class="onoffswitch-checkbox" id="option_logged_cart_display" {% if (supercheckout['option']['logged']['cart']['display'] is defined and supercheckout['option']['logged']['cart']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+														<label class="onoffswitch-label" for="option_logged_cart_display">
+															<span class="onoffswitch-inner">
+																<span class="onoffswitch-active">
+																	<span class="onoffswitch-switch">{{ text_show }}</span>
+																</span>
+																<span class="onoffswitch-inactive">
+																	<span class="onoffswitch-switch">{{ text_hide }}</span>
+																</span>
+															</span>
+														</label>
+													</div>
+												</td>
+											</tr>
+											{# Change added to remove option to hide total amount
+											@date 06-02-2025
+											@modifier Amit Singh
+											#}
+											{% set fields = ['image', 'name', 'model', 'quantity', 'price'] %}
+											{% for field in fields %}
+												<tr>
+													<td>
+														<span>
+															{% set field_name = 'supercheckout_text_cart_columns_' ~ field %}
+															{{ field_name_title[field_name] }}
+														</span>
+													</td>
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][guest][cart][columns][{{ field }}]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][guest][cart][columns][{{ field }}]" value='1' class="onoffswitch-checkbox" id="option_guest_cart_columns_{{ field }}" {% if (supercheckout['option']['guest']['cart']['columns'][field] is defined and supercheckout['option']['guest']['cart']['columns'][field] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_guest_cart_columns_{{ field }}">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][logged][cart][columns][{{ field }}]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][logged][cart][columns][{{ field }}]" value='1' class="onoffswitch-checkbox" id="option_logged_cart_columns_{{ field }}" {% if (supercheckout['option']['logged']['cart']['columns'][field] is defined and supercheckout['option']['logged']['cart']['columns'][field] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_logged_cart_columns_{{ field }}">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+												</tr>
+											{% endfor %}
+											<tr>
+												<td>
+													<span data-toggle="tooltip" title="{% set field_name = 'cart_option_coupon_supercheckout_tooltip' %} {{ field_name }}">{{ supercheckout_text_cart_option_coupon }}</span>
+												</td>
+												{% if (coupon_status) %}
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][guest][cart][option][coupon][display]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][guest][cart][option][coupon][display]" value='1' class="onoffswitch-checkbox" id="option_guest_cart_option_coupon_display" {% if (supercheckout['option']['guest']['cart']['option']['coupon']['display'] is defined and supercheckout['option']['guest']['cart']['option']['coupon']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_guest_cart_option_coupon_display">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][logged][cart][option][coupon][display]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][logged][cart][option][coupon][display]" value='1' class="onoffswitch-checkbox" id="option_logged_cart_option_coupon_display" {% if (supercheckout['option']['logged']['cart']['option']['coupon']['display'] is defined and supercheckout['option']['logged']['cart']['option']['coupon']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_logged_cart_option_coupon_display">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+												{% else %}
+													<td class="right-td">
+														<div class="widget-body uniformjs">
+															<input type="hidden" value="0" name="supercheckout[option][guest][cart][option][coupon][display]"/>
+															<input class="onoffswitch-checkbox" type="checkbox" value="1" name="supercheckout[option][guest][cart][option][coupon][display]" disabled="disabled" id="option_guest_cart_option_coupon_display"/>
+															<label for="option_guest_cart_option_coupon_display"></label>
+															<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_coupon_disabled_supercheckout_tooltip }}">
+																<span class="store_disabled_msg" style="color: red">
+																	{{ supercheckout_text_warning }}
+																</span>
+															</i>
+														</div>
+													</td>
+													<td class="right-td">
+														<div class="widget-body uniformjs">
+															<input type="hidden" value="0" name="supercheckout[option][logged][cart][option][coupon][display]"/>
+															<input class="onoffswitch-checkbox" type="checkbox" value="1" name="supercheckout[option][logged][cart][option][coupon][display]" disabled="disabled" id="option_logged_cart_option_coupon_display"/>
+															<label for="option_logged_cart_option_coupon_display"></label>
+															<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_coupon_disabled_supercheckout_tooltip }}">
+																<span class="store_disabled_msg" style="color: red">
+																	{{ supercheckout_text_warning }}
+																</span>
+															</i>
+														</div>
+													</td>
+												{% endif %}
+											</tr>
+											<tr>
+												<td>
+													<span data-toggle="tooltip" title="{% set field_name = 'cart_option_voucher_supercheckout_tooltip' %} {{ field_name }}">
+														{{ supercheckout_text_cart_option_voucher }}
+													</span>
+												</td>
+												{% if (voucher_status) %}
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][guest][cart][option][voucher][display]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][guest][cart][option][voucher][display]" value='1' class="onoffswitch-checkbox" id="option_guest_cart_option_voucher_display" {% if (supercheckout['option']['guest']['cart']['option']['voucher']['display'] is defined and supercheckout['option']['guest']['cart']['option']['voucher']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_guest_cart_option_voucher_display">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][logged][cart][option][voucher][display]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][logged][cart][option][voucher][display]" value='1' class="onoffswitch-checkbox" id="option_logged_cart_option_voucher_display" {% if (supercheckout['option']['logged']['cart']['option']['voucher']['display'] is defined and supercheckout['option']['logged']['cart']['option']['voucher']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_logged_cart_option_voucher_display">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+												{% else %}
+													<td class="right-td">
+														<div class="widget-body uniformjs">
+															<input type="hidden" value="0" name="supercheckout[option][guest][cart][option][voucher][display]"/>
+															<input class="onoffswitch-checkbox" type="checkbox" value="1" name="supercheckout[option][guest][cart][option][voucher][display]" disabled="disabled" id="option_guest_cart_option_voucher_display"/>
+															<label for="option_guest_cart_option_voucher_display"></label>
+															<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_voucher_disabled_supercheckout_tooltip }}">
+																<span class="store_disabled_msg" style="color: red">
+																	{{ supercheckout_text_warning }}
+																</span>
+															</i>
+														</div>
+													</td>
+													<td class="right-td">
+														<div class="widget-body uniformjs">
+															<input type="hidden" value="0" name="supercheckout[option][logged][cart][option][voucher][display]"/>
+															<input class="onoffswitch-checkbox" type="checkbox" value="1" name="supercheckout[option][logged][cart][option][voucher][display]" disabled="disabled" id="option_logged_cart_option_voucher_display"/>
+															<label for="option_logged_cart_option_voucher_display"></label>
+															<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_voucher_disabled_supercheckout_tooltip }}">
+																<span class="store_disabled_msg" style="color: red">
+																	{{ supercheckout_text_warning }}
+																</span>
+															</i>
+														</div>
+													</td>
+												{% endif %}
+											</tr>
+											<tr>
+												<td>
+													<span data-toggle="tooltip" title="{% set field_name = 'cart_option_reward_supercheckout_tooltip' %} {{ field_name }}">
+														{{ supercheckout_text_cart_option_reward }}
+													</span>
+												</td>
+												{% if (reward_status) %}
+													<td>
+														<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_reward_applicable_supercheckout_tooltip }}">
+															<span class="store_disabled_msg" style="color: red">
+																{{ supercheckout_text_applicable }}
+															</span>
+														</i>
+													</td>
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][logged][cart][option][reward][display]"/>
+														<div class="onoffswitch" style="min-width: 90px">
+															<input type="checkbox" name="supercheckout[option][logged][cart][option][reward][display]" value='1' class="onoffswitch-checkbox" id="option_logged_cart_option_reward_display" {% if (supercheckout['option']['logged']['cart']['option']['reward']['display'] is defined and supercheckout['option']['logged']['cart']['option']['reward']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+															<label class="onoffswitch-label" for="option_logged_cart_option_reward_display">
+																<span class="onoffswitch-inner">
+																	<span class="onoffswitch-active">
+																		<span class="onoffswitch-switch">{{ text_show }}</span>
+																	</span>
+																	<span class="onoffswitch-inactive">
+																		<span class="onoffswitch-switch">{{ text_hide }}</span>
+																	</span>
+																</span>
+															</label>
+														</div>
+													</td>
+												{% else %}
+													<td class="right-td">
+														<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_reward_disabled_supercheckout_tooltip }}">
+															<span class="store_disabled_msg" style="color: red">
+																{{ supercheckout_text_warning }}
+															</span>
+														</i>
+													</td>
+													<td>
+														<input type="hidden" value="0" name="supercheckout[option][logged][cart][option][reward][display]"/>
+														<input class="onoffswitch-checkbox" type="checkbox" value="1" name="supercheckout[option][logged][cart][option][reward][display]" disabled="disabled" id="option_logged_cart_option_reward_display"/>
+														<label for="option_logged_cart_option_reward_display"></label>
+														<i class="store_disabled" data-toggle="tooltip" data-placement="top" data-original-title="{{ cart_option_reward_applicable_supercheckout_tooltip }}">
+															<span class="store_disabled_msg">
+																{{ supercheckout_text_applicable }}
+															</span>
+														</i>
+													</td>
+												{% endif %}
+											</tr>
+											<tr>
+												<td>
+													<span data-toggle="tooltip" title="{{ image_size_supercheckout_tooltip }}">
+														{{ supercheckout_text_image_size }}
+													</span>
+													<p style="font-style: italic">(WxH)</p>
+												</td>
+												<td>
+													{% if (supercheckout['step']['cart']['image_width'] is defined and supercheckout['step']['cart']['image_width'] != "") %}
+														<input type="text" style="display: inline-block;width: 16%" class="form-control" value="{{ supercheckout['step']['cart']['image_width'] }}" name="supercheckout[step][cart][image_width]" id="image_width_id"/>
+													{% else %}
+														<input type="text" style="display: inline-block;width: 16%" class="form-control" value="" name="supercheckout[step][cart][image_width]" id="image_width_id"/>
+													{% endif %}
+													{% if (supercheckout['step']['cart']['image_height'] is defined and supercheckout['step']['cart']['image_height'] != "") %}
+														<input type="text" style="display: inline-block;width: 16%" class="form-control" value="{{ supercheckout['step']['cart']['image_height'] }}" name="supercheckout[step][cart][image_height]" id="image_height_id"/>
+													{% else %}
+														<input type="text" style="display: inline-block;width: 16%" class="form-control" value="" name="supercheckout[step][cart][image_height]" id="image_height_id"/>
+													{% endif %}
+												</td>
+												<td></td>
+											</tr>
+										</tbody>
+									</table>
+									<div class="blfock">
+										<i class="icon-confirm"></i>
+										<span>
+											<b>{{ supercheckout_text_confirm }}</b>
+										</span>
+									</div>
+
+									<table style="border-top:none !important;" class="table table-hover">
+										<thead>
+											<th class="col-sm-4"></th>
+											<th class="guest">{{ supercheckout_text_guest_customer }}</th>
+											<th class="login">{{ supercheckout_text_logged_in_customer }}</th>
+										</thead>
+										<tbody>
+											{% for field in supercheckout['step']['confirm']['fields'] %}
+												<input type="hidden" value="{{ field['id'] }}" name="supercheckout[step][confirm][fields][{{ field['id'] }}][id]"/>
+												<input type="hidden" value="{{ field['title'] }}" name="supercheckout[step][confirm][fields][{{ field['id'] }}][title]"/>
+												<tr id="confirm_{{ field['id'] }}_input" class="sort-item" sort-data="{{ supercheckout['step']['confirm']['fields'][field['id']]['sort_order'] is defined ? supercheckout['step']['confirm']['fields'][field['id']]['sort_order'] : '' }}">
+													<td style="vertical-align:middle;" class="left-td">
+														<span>{{ field['title'] }}
+															<input style="display:none;" class="sort" class="form-control" type="text" value="{{ supercheckout['step']['confirm']['fields'][field['id']]['sort_order'] is defined ? supercheckout['step']['confirm']['fields'][field['id']]['sort_order'] : '' }}" name="supercheckout[step][confirm][fields][{{ field['id'] }}][sort_order]"/>
+														</span>
+													</td>
+													<td>
+														{% set show_warning = 0 %}
+														{% if (supercheckout['option']['guest']['confirm']['fields'][field['id']]['display'] is defined) %}
+															<input type="hidden" value="0" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][display]"/>
+															{% if (field['id'] == 'agree') %}
+																{% if (text_agree) %}
+																	{% if (supercheckout['option']['guest']['confirm']['fields'][field['id']]['display'] is defined and supercheckout['option']['guest']['confirm']['fields'][field['id']]['display'] == 1) %}
+																		<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][display]" checked="checked" id="guest_confirm_fields_{{ field['id'] }}_display"/>
+																	{% else %}
+																		<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][display]" id="guest_confirm_fields_{{ field['id'] }}_display"/>
+																	{% endif %}
+																{% else %}
+																	{% set show_warning = 1 %}
+																	<input class="col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][display]" disabled="disabled" id="guest_confirm_fields_{{ field['id'] }}_display"/>
+																{% endif %}
+															{% else %}
+																{% if (supercheckout['option']['guest']['confirm']['fields'][field['id']]['display'] is defined and supercheckout['option']['guest']['confirm']['fields'][field['id']]['display'] == 1) %}
+																	<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][display]" checked="checked" id="guest_confirm_fields_{{ field['id'] }}_display"/>
+																{% else %}
+																	<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][display]" id="guest_confirm_fields_{{ field['id'] }}_display"/>
+																{% endif %}
+															{% endif %}
+															<label class="show1 col-sm-2" for="guest_confirm_fields_{{ field['id'] }}_display">{{ settings_display }}</label>
+															{% if (supercheckout['option']['guest']['confirm']['fields'][field['id']]['require'] is defined) %}
+																<input type="hidden" value="0" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][require]"/>
+																{% if (field['id'] == 'agree') %}
+																	{% if (text_agree) %}
+																		{% if (supercheckout['option']['guest']['confirm']['fields'][field['id']]['require'] == 1) %}
+																			<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][require]" checked="checked" id="guest_confirm_fields_{{ field['id'] }}_require"/>
+																		{% else %}
+																			<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][require]" id="guest_confirm_fields_{{ field['id'] }}_require"/>
+																		{% endif %}
+																	{% else %}
+																		<input class="col-sm-1" type="checkbox" value="1" disabled="disabled" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][require]" id="guest_confirm_fields_{{ field['id'] }}_require_disabled"/>
+																	{% endif %}
+																{% else %}
+																	{% if (supercheckout['option']['guest']['confirm']['fields'][field['id']]['require'] == 1) %}
+																		<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][require]" checked="checked" id="guest_confirm_fields_{{ field['id'] }}_require"/>
+																	{% else %}
+																		<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][guest][confirm][fields][{{ field['id'] }}][require]" id="guest_confirm_fields_{{ field['id'] }}_require"/>
+																	{% endif %}
+																{% endif %}
+																<label class="require1 col-sm-2" for="guest_confirm_fields_{{ field['id'] }}_require">{{ settings_require }}</label>
+															{% endif %}
+															{% if (show_warning) %}
+																<i class="store_disabled disable_field" data-toggle="tooltip" data-placement="top" data-original-title="{{ field_disabled_supercheckout_tooltip }}">
+																	<span class="store_disabled_msg" style="color: red">
+																		{{ supercheckout_text_warning }}
+																	</span>
+																</i>
+															{% endif %}
+														{% endif %}
+													</td>
+													<td>
+														{% if (supercheckout['option']['logged']['confirm']['fields'][field['id']]['display'] is defined) %}
+															<input type="hidden" value="0" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][display]"/>
+															{% if (field['id'] == 'agree') %}
+																{% if (text_agree) %}
+																	{% if (supercheckout['option']['logged']['confirm']['fields'][field['id']]['display'] is defined and supercheckout['option']['logged']['confirm']['fields'][field['id']]['display'] == 1) %}
+																		<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][display]" checked="checked" id="logged_confirm_fields_{{ field['id'] }}_display"/>
+																	{% else %}
+																		<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][display]" id="logged_confirm_fields_{{ field['id'] }}_display"/>
+																	{% endif %}
+																{% else %}
+																	<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][display]" disabled="disabled" id="logged_confirm_fields_{{ field['id'] }}_display"/>
+																{% endif %}
+															{% else %}
+																{% if (supercheckout['option']['logged']['confirm']['fields'][field['id']]['display'] is defined and supercheckout['option']['logged']['confirm']['fields'][field['id']]['display'] == 1) %}
+																	<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][display]" checked="checked" id="logged_confirm_fields_{{ field['id'] }}_display"/>
+																{% else %}
+																	{% set show_warning = 1 %}
+																	<input class="check1 col-sm-1" type="checkbox" value="1" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][display]" id="logged_confirm_fields_{{ field['id'] }}_display"/>
+																{% endif %}
+															{% endif %}
+															<label class="show2 col-sm-2" for="logged_confirm_fields_{{ field['id'] }}_display">{{ settings_display }}</label>
+															{% if (supercheckout['option']['logged']['confirm']['fields'][field['id']]['require'] is defined) %}
+																<input type="hidden" value="0" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][require]"/>
+																{% if (supercheckout['option']['logged']['confirm']['fields'][field['id']]['require'] == 4) %}
+																	<input class="check1 col-sm-1" type="checkbox" value="4" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][require]" checked="checked" id="logged_confirm_fields_{{ field['id'] }}_require"/>
+																{% else %}
+																	<input class="check1 col-sm-1" type="checkbox" value="4" name="supercheckout[option][logged][confirm][fields][{{ field['id'] }}][require]" id="logged_confirm_fields_{{ field['id'] }}_require"/>
+																{% endif %}
+																<label class="require2 col-sm-2" for="logged_confirm_fields_{{ field['id'] }}_require">{{ settings_require }}</label>
+																{% if (show_warning) %}
+																	<i class="store_disabled disable_field" data-toggle="tooltip" data-placement="top" data-original-title="{{ field_disabled_supercheckout_tooltip }}">
+																		<span class="store_disabled_msg" style="color: red">
+																			{{ supercheckout_text_applicable }}
+																		</span>
+																	</i>
+																{% endif %}
+															{% endif %}
+														{% endif %}
+													</td>
+												</tr>
+											{% endfor %}
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+$("#guest_confirm_fields_agree_display").change(function () {
+    if ($(this).is(":checked")) {
+        $("#guest_confirm_fields_agree_require").removeAttr('disabled');
+    } else {
+        $("#guest_confirm_fields_agree_require").attr('disabled', 'disabled');
+        $("#guest_confirm_fields_agree_require").removeAttr('checked');
+        $("#guest_confirm_fields_agree_require").addClass('disabled');
+    }
+});
+
+$("#logged_confirm_fields_agree_display").change(function () {
+    if ($(this).is(":checked")) {
+        $("#logged_confirm_fields_agree_require").removeAttr('disabled');
+    } else {
+        $("#logged_confirm_fields_agree_require").attr('disabled', 'disabled');
+        $("#logged_confirm_fields_agree_require").removeAttr("checked");
+    }
+});
+
+$("#guest_confirm_fields_agree_display").trigger('change');
+$("#logged_confirm_fields_agree_display").trigger('change');
+</script>
+{{ footer }} 

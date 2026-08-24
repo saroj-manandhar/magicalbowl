@@ -1,0 +1,187 @@
+{{ header }}{{ column_left }}
+<div id="content" class="bootstrap"><link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+
+				<h1>{{ heading_title }}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="card">
+
+				<h3 class="card-header">
+					<i class="fa fa-support"></i>
+					{{ supercheckout_text_support }}
+				</h3>
+
+				<div class="card-body">
+					{{ tabs }}
+					<div class="layout">
+						<div class="tab-content">
+							<div class="panel-body">
+								<div>
+									<style>
+										.productOCList .productImage img {
+											width: 100%;
+										}
+										.productOCName {
+											text-align: center;
+											font-size: 18px;
+											padding-top: 10px;
+											font-weight: 500;
+											color: #000;
+											line-height: 24px;
+										}
+										.productContent .productContentText {
+											font-size: 13px;
+											text-align: center;
+										}
+										.productContent p {
+											text-align: center;
+										}
+										.btn.btn-view {
+											background: #06b7f0;
+											width: 70%;
+											color: #fff;
+											text-transform: uppercase;
+											margin-top: 10px;
+											margin-bottom: 10px;
+										}
+										.productOCList {
+											border: 1px solid #efefef;
+											margin-bottom: 20px;
+										}
+										.productContent {
+											padding: 0 12px;
+										}
+										h2.productSupportHeading {
+											text-align: center;
+											font-size: 20px;
+											margin-bottom: 15px;
+											color: #000;
+											font-weight: 600;
+											text-transform: uppercase;
+										}
+										.productSupportSubHeading {
+											margin-bottom: 30px;
+										}
+										@media(max-width:1200px) {
+											.productOCName {
+												min-height: 60px;
+											}
+
+										}
+										@media(max-width:767px) {
+											.productOCName {
+												min-height: auto;
+											}
+											.productOCList {
+												max-width: 400px;
+												margin: 0 auto 20px;
+											}
+
+										}
+									</style>
+									<div class="productSupport">
+										<div class="container-fluid">
+											<p class="alert alert-info productSupportSubHeading">
+												<a href="http://www.knowband.com/blog/user-manual/opencart-one-page-checkout/" target="_blank">{{ text_click_here }}</a>
+												{{ text_user_manual }}<br>
+												{{ text_support_ticket1 }}<a href="https://www.knowband.com/create-ticket" target="_blank">{{ text_support_ticket2 }}</a>
+												{{ text_support_ticket3 }}</p>
+											<br>
+											<h2 class="productSupportHeading">{{ text_support_other }}</h2>
+											<br>
+											<div class="row">
+												<div class="col-lg-3 col-md-3 col-sm-6 customHeight">
+													<div class="productOCList" style="height: 374px;">
+														<div class="productImage">
+															<img src="..\extension\supercheckout\admin\view\image\supercheckout\multi-vendor-marketplace.jpg">
+														</div>
+														<div class="productContent">
+															<h4 class="productOCName">{{ text_support_marketplace }}</h4>
+															<p class="productContentText">
+																{{ text_support_marketplace_descp }}
+															</p>
+															<p>
+																<a target="_blank" href="https://www.knowband.com/opencart-multi-vendor-marketplace-plugin" class="btn btn-view">{{ text_support_view_more }}</a>
+															</p>
+														</div>
+													</div>
+												</div>
+												<div class="col-lg-3 col-md-3 col-sm-6 customHeight">
+													<div class="productOCList" style="height: 374px;">
+														<div class="productImage">
+															<img src="..\extension\supercheckout\admin\view\image\supercheckout\Opencart--etsy.jpg">
+														</div>
+														<div class="productContent">
+															<h4 class="productOCName">{{ text_support_etsy }}</h4>
+															<p class="productContentText">
+																{{ text_support_etsy_descp }}
+															</p>
+															<p>
+																<a target="_blank" href="https://www.knowband.com/opencart-etsy-marketplace-integration" class="btn btn-view">{{ text_support_view_more }}</a>
+															</p>
+														</div>
+													</div>
+												</div>
+												<div class="col-lg-3 col-md-3 col-sm-6 customHeight">
+													<div class="productOCList" style="height: 374px;">
+														<div class="productImage">
+															<img src="..\extension\supercheckout\admin\view\image\supercheckout\Opencart--ebay.jpg">
+														</div>
+														<div class="productContent">
+															<h4 class="productOCName">{{ text_support_ebay }}</h4>
+															<p class="productContentText">
+																{{ text_support_ebay_descp }}
+															</p>
+															<p>
+																<a target="_blank" href="https://www.knowband.com/opencart-ebay-integration" class="btn btn-view">{{ text_support_view_more }}</a>
+															</p>
+														</div>
+													</div>
+												</div>
+												<div class="col-lg-3 col-md-3 col-sm-6 customHeight">
+													<div class="productOCList" style="height: 374px;">
+														<div class="productImage">
+															<img src="..\extension\supercheckout\admin\view\image\supercheckout\Mobile-app-opencart-plugin.jpg">
+														</div>
+														<div class="productContent">
+															<h4 class="productOCName">{{ text_support_mab }}</h4>
+															<p class="productContentText">
+																{{ text_support_mab_descp }}
+															</p>
+															<p>
+																<a target="_blank" href="https://www.knowband.com/opencart-mobile-app-builder" class="btn btn-view">{{ text_support_view_more }}</a>
+															</p>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									{{ text_support_ticket1 }}
+									<a href="https://www.knowband.com/create-ticket" target="_blank">{{ text_support_ticket2 }}</a>
+									{{ text_support_ticket3 }}
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{{ footer }}
+

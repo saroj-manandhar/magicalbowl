@@ -1,0 +1,310 @@
+
+{{ header }}
+{#====  Loader breadcrumbs ==== #}
+{% include 'extension/so_theme/catalog/view/template/soconfig/breadcrumbs.twig' %}
+
+
+{#====  Variables url parameter ==== #}
+{% if url_asidePosition %}{% set col_position = url_asidePosition %}
+{% else %}{% set col_position = so_config.get_settings('catalog_col_position') %} {% endif %}
+{% if url_asideType %} {% set col_canvas = url_asideType %}
+{% else %}{% set col_canvas = so_config.get_settings('catalog_col_type') %}{% endif %}
+
+{% set desktop_canvas = col_canvas =='off_canvas' ? 'desktop-offcanvas' : '' %}
+
+
+{% if col_position == 'inside' %}
+<div class="container">
+	{% include 'extension/so_theme/catalog/view/template/soconfig/subcategory.twig' %}
+	
+</div>
+{% endif %}
+
+<div class="container product-listing content-main {{desktop_canvas}}">
+  
+  <div class="row">{{ column_left }}
+     {% if col_canvas =='off_canvas' %}
+    	{% set class = 'col-sm-12' %}
+    {% elseif column_left and column_right %}
+    	{% set class = 'col-md-6 col-sm-12 col-xs-12 col-12 fluid-allsidebar' %}
+    {% elseif column_left or column_right %}
+    	{% set class = 'col-lg-9 col-md-12 col-sm-12 col-xs-12 col-12 fluid-sidebar' %}
+    {% else %}
+    	{% set class = 'col-sm-12' %}
+    {% endif %}
+
+    <div id="content" class="{{ class }}">
+
+    	{{ content_top }}
+		<div class="products-category clearfix">
+
+			{% if col_position== 'outside' %}
+				{% include 'extension/so_theme/catalog/view/template/soconfig/subcategory.twig' %}
+			{% endif %}
+			
+			{% if custom_filter %}
+			<style>
+			.custom-filter-card {
+				clear: both;
+				margin: 20px 0;
+				padding: 20px;
+				border-radius: 8px;
+				background: rgba(0, 0, 0, 0.02);
+				border-left: 4px solid rgb(255, 204, 0);
+			}
+			.custom-filter-form {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 20px;
+				align-items: flex-end;
+			}
+			.custom-filter-group {
+				flex: 1;
+				min-width: 160px;
+			}
+			.custom-filter-group.price-group {
+				min-width: 180px;
+				max-width: 220px;
+			}
+			.custom-filter-label {
+				display: block;
+				font-weight: 600;
+				margin-bottom: 8px;
+				color: #333;
+				font-size: 13px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+			.custom-filter-select {
+				width: 100%;
+				height: 38px;
+				border: 1px solid #ddd;
+				border-radius: 4px;
+				padding: 6px 12px;
+				font-size: 14px;
+				color: #555;
+				background-color: #fff;
+			}
+			.nstSlider {
+				cursor: pointer;
+				border-radius: 4px;
+				position: relative;
+				width: 100%;
+				height: 8px;
+				background: #e0e0e0;
+				margin-top: 12px;
+				margin-bottom: 5px;
+			}
+			.nstSlider .leftGrip, .nstSlider .rightGrip {
+				position: absolute;
+				border-radius: 50%;
+				width: 16px;
+				height: 16px;
+				background: #fff;
+				border: 2px solid rgb(255, 204, 0);
+				top: -4px;
+				margin-left: -8px;
+				cursor: pointer;
+				box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+				transition: transform 0.1s ease;
+			}
+			.nstSlider .leftGrip:hover, .nstSlider .rightGrip:hover {
+				transform: scale(1.2);
+			}
+			.nstSlider .bar {
+				border-radius: 4px;
+				position: absolute;
+				background: rgb(255, 204, 0);
+				height: 8px;
+				top: 0;
+			}
+			.custom-filter-btn {
+				background: rgb(255, 204, 0);
+				color: #fff;
+				font-weight: 600;
+				padding: 8px 24px;
+				height: 38px;
+				border: none;
+				border-radius: 4px;
+				cursor: pointer;
+				transition: opacity 0.2s;
+				font-size: 14px;
+				text-transform: uppercase;
+			}
+			.custom-filter-btn:hover {
+				opacity: 0.9;
+			}
+			</style>
+			<div class="custom-filter-card">
+				<form class="custom-filter-form" action="index.php" method="get">
+					<input type="hidden" name="route" value="product/category" />
+					<input type="hidden" name="language" value="{{ language_code }}" />
+					<input type="hidden" name="path" value="{{ category_path }}" />
+					
+					<div class="custom-filter-group">
+						<label class="custom-filter-label">Type:</label>
+						<select name="type" class="custom-filter-select">
+							<option value="" {% if type == '' %}selected{% endif %}>All Bowl Types</option>
+							<option value="Thadobati" {% if type == 'Thadobati' %}selected{% endif %}>Thadobati</option>
+							<option value="Cobrebati" {% if type == 'Cobrebati' %}selected{% endif %}>Cobrebati</option>
+							<option value="Jambati" {% if type == 'Jambati' or type == 'Jamati' or type == 'Jamat' %}selected{% endif %}>Jambati</option>
+							<option value="Ultabati" {% if type == 'Ultabati' %}selected{% endif %}>Ultabati</option>
+							<option value="Chickenbati" {% if type == 'Chickenbati' %}selected{% endif %}>Chickenbati</option>
+							<option value="Golbati" {% if type == 'Golbati' %}selected{% endif %}>Golbati</option>
+							<option value="Manipuri" {% if type == 'Manipuri' %}selected{% endif %}>Manipuri</option>
+							<option value="Zen" {% if type == 'Zen' %}selected{% endif %}>Zen</option>
+							<option value="GT-DESIGN" {% if type == 'GT-DESIGN' or type == 'MCE-Standard' %}selected{% endif %}>GT-DESIGN</option>
+							<option value="Special" {% if type == 'Special' %}selected{% endif %}>Special</option>
+							<option value="Antique" {% if type == 'Antique' %}selected{% endif %}>Antique</option>
+							<option value="Lingam Bowl" {% if type == 'Lingam Bowl' %}selected{% endif %}>Lingam Bowl</option>
+							<option value="Stand Bowl" {% if type == 'Stand Bowl' %}selected{% endif %}>Stand Bowl</option>
+							<option value="Cast-Moulded" {% if type == 'Cast-Moulded' %}selected{% endif %}>Cast-Moulded</option>
+							<option value="Nerabati" {% if type == 'Nerabati' %}selected{% endif %}>Nerabati</option>
+							<option value="Jhumkabati" {% if type == 'Jhumkabati' %}selected{% endif %}>Jhumkabati</option>
+							<option value="Lingam" {% if type == 'Lingam' %}selected{% endif %}>Lingam</option>
+							<option value="Gunabati" {% if type == 'Gunabati' %}selected{% endif %}>Gunabati</option>
+							<option value="Unique" {% if type == 'Unique' %}selected{% endif %}>Unique</option>
+							<option value="Mani" {% if type == 'Mani' %}selected{% endif %}>Mani</option>
+							<option value="Other" {% if type == 'Other' %}selected{% endif %}>Other</option>
+						</select>
+					</div>
+
+					<div class="custom-filter-group">
+						<label class="custom-filter-label">SB Name/Note:</label>
+						<select name="note" class="custom-filter-select">
+							<option value="" {% if note == '' %}selected{% endif %}>All Notes</option>
+							<option value="A" {% if note == 'A' %}selected{% endif %}>A</option>
+							<option value="A#" {% if note == 'A#' %}selected{% endif %}>A#</option>
+							<option value="B" {% if note == 'B' %}selected{% endif %}>B</option>
+							<option value="C" {% if note == 'C' %}selected{% endif %}>C</option>
+							<option value="C#" {% if note == 'C#' %}selected{% endif %}>C#</option>
+							<option value="D" {% if note == 'D' %}selected{% endif %}>D</option>
+							<option value="D#" {% if note == 'D#' %}selected{% endif %}>D#</option>
+							<option value="E" {% if note == 'E' %}selected{% endif %}>E</option>
+							<option value="F" {% if note == 'F' %}selected{% endif %}>F</option>
+							<option value="F#" {% if note == 'F#' %}selected{% endif %}>F#</option>
+							<option value="G" {% if note == 'G' %}selected{% endif %}>G</option>
+							<option value="G#" {% if note == 'G#' %}selected{% endif %}>G#</option>
+							<option value="Jupiter" {% if note == 'Jupiter' %}selected{% endif %}>Jupiter</option>
+							<option value="Mars" {% if note == 'Mars' %}selected{% endif %}>Mars</option>
+							<option value="Mercury" {% if note == 'Mercury' %}selected{% endif %}>Mercury</option>
+							<option value="Moon" {% if note == 'Moon' %}selected{% endif %}>Moon</option>
+							<option value="Neptune" {% if note == 'Neptune' %}selected{% endif %}>Neptune</option>
+							<option value="Pluto" {% if note == 'Pluto' %}selected{% endif %}>Pluto</option>
+							<option value="Saturn" {% if note == 'Saturn' %}selected{% endif %}>Saturn</option>
+							<option value="Sun" {% if note == 'Sun' %}selected{% endif %}>Sun</option>
+							<option value="Uranus" {% if note == 'Uranus' %}selected{% endif %}>Uranus</option>
+							<option value="Venus" {% if note == 'Venus' %}selected{% endif %}>Venus</option>
+							<option value="Alpha" {% if note == 'Alpha' %}selected{% endif %}>Alpha</option>
+							<option value="Chiron" {% if note == 'Chiron' %}selected{% endif %}>Chiron</option>
+							<option value="Eros" {% if note == 'Eros' %}selected{% endif %}>Eros</option>
+							<option value="Hopi" {% if note == 'Hopi' %}selected{% endif %}>Hopi</option>
+							<option value="Lilith" {% if note == 'Lilith' %}selected{% endif %}>Lilith</option>
+							<option value="Om" {% if note == 'Om' %}selected{% endif %}>Om</option>
+							<option value="Platonic Year" {% if note == 'Platonic Year' %}selected{% endif %}>Platonic Year</option>
+							<option value="Earthday" {% if note == 'Earthday' %}selected{% endif %}>Earthday</option>
+							<option value="Theta Wave" {% if note == 'Theta Wave' %}selected{% endif %}>Theta Wave</option>
+							<option value="Synodic Month" {% if note == 'Synodic Month' %}selected{% endif %}>Synodic Month</option>
+							<option value="Saros Period" {% if note == 'Saros Period' %}selected{% endif %}>Saros Period</option>
+							<option value="Sidereal Month" {% if note == 'Sidereal Month' %}selected{% endif %}>Sidereal Month</option>
+							<option value="Culmination Period" {% if note == 'Culmination Period' %}selected{% endif %}>Culmination Period</option>
+							<option value="Metonic Month" {% if note == 'Metonic Month' %}selected{% endif %}>Metonic Month</option>
+							<option value="Nodical Month" {% if note == 'Nodical Month' %}selected{% endif %}>Nodical Month</option>
+							<option value="Biorhythm Soul" {% if note == 'Biorhythm Soul' %}selected{% endif %}>Biorhythm Soul</option>
+							<option value="Sedna" {% if note == 'Sedna' %}selected{% endif %}>Sedna</option>
+							<option value="Biorhythm Body" {% if note == 'Biorhythm Body' %}selected{% endif %}>Biorhythm Body</option>
+							<option value="Hydrogen Beta" {% if note == 'Hydrogen Beta' %}selected{% endif %}>Hydrogen Beta</option>
+							<option value="Geomagnetic Field" {% if note == 'Geomagnetic Field' %}selected{% endif %}>Geomagnetic Field</option>
+							<option value="Solar System" {% if note == 'Solar System' %}selected{% endif %}>Solar System</option>
+							<option value="Hydrogen Gamma" {% if note == 'Hydrogen Gamma' %}selected{% endif %}>Hydrogen Gamma</option>
+							<option value="Nibiru" {% if note == 'Nibiru' %}selected{% endif %}>Nibiru</option>
+							<option value="Hydrogen Delta" {% if note == 'Hydrogen Delta' %}selected{% endif %}>Hydrogen Delta</option>
+							<option value="Flora" {% if note == 'Flora' %}selected{% endif %}>Flora</option>
+							<option value="Aqua" {% if note == 'Aqua' %}selected{% endif %}>Aqua</option>
+							<option value="Biorhythm Spirit" {% if note == 'Biorhythm Spirit' %}selected{% endif %}>Biorhythm Spirit</option>
+							<option value="Hydrogen Alpha" {% if note == 'Hydrogen Alpha' %}selected{% endif %}>Hydrogen Alpha</option>
+							<option value="Ceres" {% if note == 'Ceres' %}selected{% endif %}>Ceres</option>
+							<option value="Schumann Resonance" {% if note == 'Schumann Resonance' %}selected{% endif %}>Schumann Resonance</option>
+							<option value="Universal Life" {% if note == 'Universal Life' %}selected{% endif %}>Universal Life</option>
+							<option value="Perfect A" {% if note == 'Perfect A' %}selected{% endif %}>Perfect A</option>
+						</select>
+					</div>
+
+					<div class="custom-filter-group">
+						<label class="custom-filter-label">Size:</label>
+						<select name="size" class="custom-filter-select">
+							<option value="" {% if size == '' %}selected{% endif %}>All Sizes</option>
+							<option value="xs" {% if size == 'xs' %}selected{% endif %}>Xs</option>
+							<option value="small" {% if size == 'small' %}selected{% endif %}>Small</option>
+							<option value="medium" {% if size == 'medium' %}selected{% endif %}>Medium</option>
+							<option value="large" {% if size == 'large' %}selected{% endif %}>Large</option>
+							<option value="xlarge" {% if size == 'xlarge' %}selected{% endif %}>Xlarge</option>
+							<option value="xxlarge" {% if size == 'xxlarge' %}selected{% endif %}>XXlarge</option>
+							<option value="huge" {% if size == 'huge' %}selected{% endif %}>Huge</option>
+						</select>
+					</div>
+
+					<div class="custom-filter-group price-group">
+						<label class="custom-filter-label">By price range:</label>
+						<div class="nstSlider" data-range_min="1" data-range_max="1500" 
+							 data-cur_min="{% if minPrice %}{{ minPrice }}{% else %}10{% endif %}" 
+							 data-cur_max="{% if maxPrice %}{{ maxPrice }}{% else %}1500{% endif %}">
+							<div class="bar"></div>
+							<div class="leftGrip"></div>
+							<div class="rightGrip"></div>
+						</div>
+						<div style="display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 5px;">
+							<span class="leftLabel"></span>
+							<span class="rightLabel"></span>
+						</div>
+						<input type="hidden" name="minPrice" id="min_price" value="{% if minPrice %}{{ minPrice }}{% else %}10{% endif %}" />
+						<input type="hidden" name="maxPrice" id="max_price" value="{% if maxPrice %}{{ maxPrice }}{% else %}1500{% endif %}" />
+					</div>
+
+					<div class="custom-filter-group" style="flex: 0 0 auto;">
+						<button type="submit" class="custom-filter-btn">FILTER</button>
+					</div>
+				</form>
+			</div>
+			
+			<script type="text/javascript" src="catalog/view/javascript/jquery.nstSlider.min.js"></script>
+			<script type="text/javascript">
+			$(document).ready(function() {
+				$('.nstSlider').nstSlider({
+					"left_grip_selector": ".leftGrip",
+					"right_grip_selector": ".rightGrip",
+					"value_bar_selector": ".bar",
+					"value_changed_callback": function(cause, leftValue, rightValue) {
+						$(this).parent().find('.leftLabel').text(leftValue);
+						$(this).parent().find('.rightLabel').text(rightValue);
+						$(this).parent().find('#min_price').val(leftValue);
+						$(this).parent().find('#max_price').val(rightValue);
+					}
+				});
+			});
+			</script>
+			{% endif %}
+			
+			{% if products %}
+				{#==== Product Listing ==== #}
+				{% include 'extension/so_theme/catalog/view/template/soconfig/listing.twig' with {listingType: listingType} %}
+				
+			{% endif %}
+		  
+			{% if not categories and not products %}
+			  <p>{{ text_empty }}</p>
+			  <div class="buttons">
+				<div class="pull-right"><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+			  </div>
+			{% endif %}
+
+	      	{{ content_bottom }}
+
+	  	</div>
+	 </div>
+
+    {{ column_right }}
+
+	</div>
+</div>
+{{ footer }} 

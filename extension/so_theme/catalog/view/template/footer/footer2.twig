@@ -1,0 +1,51 @@
+<footer class="footer-container typefooter-{{typefooter ? typefooter : '1'}}">
+	{#======	FOOTER TOP	=======#}  
+	{% if footer_block2 is not empty %}
+	<div class="footer-main desc-collapse showdown" id="collapse-footer">
+		{% set footer_cleaned = footer_block2|replace({
+			'San Luis potosí, centro historico, 78000 san luis potosí, SPL, Mexico': 'Magical Creation Enterprises Pvt. Ltd.',
+			'(+0214)0 315 215 - (+0214)0 315 215': 'Hot Lines: (Also Social Medias) <a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>',
+			'+977 98510 512 90': '<a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>',
+			'+977 9851051290': '<a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>',
+			'href="mailto:contact@opencartworks.com"': 'href="mailto:sales.magicalsb@gmail.com"',
+			'contact@opencartworks.com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
+			'Sales .Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
+			'Sales.Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
+			'.Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
+			'Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>'
+		}) %}
+		{{ footer_cleaned|raw }}
+	</div>
+	<div class="button-toggle hidden-lg hidden-md">
+         <a class="showmore" data-bs-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapse-footer">
+            <span class="toggle-more">{{ objlang.get('show_more') }} <i class="fa fa-angle-down"></i></span> 
+            <span class="toggle-less">{{ objlang.get('show_less') }} <i class="fa fa-angle-up"></i></span>           
+		</a>        
+	</div>
+	{% endif %}
+	
+	
+	{#======	FOOTER BOTTOM	=======#} 
+	<div class="footer-bottom ">
+		<div class="container">		
+		<div class="row">
+			<div class="col-lg-6 col-md-7 col-sm-12 col-xs-12 col-12 copyright-w">	
+				<div class="copyright">
+					{% if soconfig.get_settings('copyright') is empty %}
+						Copyright &copy; {{ "now"|date("Y") }}, Magical Singing Bowls, All Rights Reserved.
+					{% else %}
+						{{ soconfig.decode_entities(soconfig.get_settings('copyright'))|replace({'{year}': "now"|date("Y")}) }}
+					{% endif %}
+				</div>	
+			</div>
+			{% if soconfig.get_settings('imgpayment_status')%} 
+			<div class="col-lg-6 col-md-5 col-sm-12 col-xs-12 col-12 payment-w">
+				<img class="lazyload" data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="image/{{  soconfig.get_settings('imgpayment') }}"  alt="imgpayment">
+			</div>
+			{% endif %}
+		</div>
+		</div>
+
+		
+	</div>
+</footer>

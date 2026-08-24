@@ -1,0 +1,57 @@
+{% if (error_warning) %} 
+<div class="supercheckout-checkout-content" style="display:block;">
+    <div class="warning">{{ error_warning }}</div>
+</div>
+{% endif %} 
+{% if (payment_methods is defined and payment_methods) %}                 
+<table class="radio">
+    {% set all_payment_code = [] %}
+    {% for payment_method in payment_methods %} 
+        {% set all_payment_code = all_payment_code|merge([payment_method['code']]) %}
+    {% endfor %}
+    {% if (not (code in all_payment_code)) %}{% set code='' %}{% endif %}
+ 
+{% for payment_method_options in payment_methods %}
+			{% for payment_method in payment_method_options['option'] %}
+				<li class="highlight" id="{{ payment_method['code'] }}">
+					<div class="radio" style="position: relative;">
+						{% if (payment_method['code'] == code or not code ) %}
+							{% set code = payment_method['code'] %}
+							{% if (settings['payment_logo']['default_option'] == 'textwithimage') %}
+								
+							{% endif %}
+							<input type="radio" name="payment_method" value="{{ payment_method['code'] }}" id="{{ payment_method['code'] }}" checked="checked"/>
+						{% else %}
+							{% if (settings['payment_logo']['default_option'] == 'textwithimage') %}
+								
+							{% endif %}
+							<input type="radio" name="payment_method" value="{{ payment_method['code'] }}" id="{{ payment_method['code'] }}"/>
+						{% endif %}
+						<label for="{{ payment_method['code'] }}">
+							{% if (settings['payment_logo']['default_option'] == 'imageonly' and settings['step']['payment_method']['logo'][payment_method['code']|split('.')[0]] is not empty and payment_logo[payment_method['code']|split('.')[0]]) %}
+								{% if (payment_method['code'] == 'klarna_invoice') %}
+									{{ '<a><img src="image/'~settings['step']['payment_method']['logo'][payment_method['code']|split('.')[0]]~'" style="max-width: 100px;max-height: 100px"/></a>' }}
+								{% else %}
+									{{ '<a title="'~payment_method['title']~'"><img src="image/'~settings['step']['payment_method']['logo'][payment_method['code']|split('.')[0]]~'" alt="'~payment_method['title']~'" style="max-width: 100px;max-height: 100px" /></a>' }}
+								{% endif %}
+							{% elseif (settings['payment_logo']['default_option'] == 'textwithimage' and settings['step']['payment_method']['logo'][payment_method['code']|split('.')[0]] is not empty and payment_logo[payment_method['code']|split('.')[0]]) %}
+								{% if (payment_method['code'] == 'klarna_invoice') %}
+									{{ '<a><img src="image/'~settings['step']['payment_method']['logo'][payment_method['code']]~'" style="max-width: 100px;max-height: 100px" /></a><br>' }}
+									{{ settings['step']['payment_method']['title'][payment_method['code']][language_id] is defined ? settings['step']['payment_method']['title'][payment_method['code']][language_id] : payment_method['title'] }}
+								{% else %}
+									{{ '<a title="'~payment_method['title']~'"><img src="image/'~settings['step']['payment_method']['logo'][payment_method['code']|split('.')[0]]~'" alt="'~payment_method['title']~'" style="max-width: 100px;max-height: 100px" /></a><br>' }}
+									{{ settings['step']['payment_method']['title'][payment_method['code']][language_id] is defined ? settings['step']['payment_method']['title'][payment_method['code']][language_id] : payment_method['name'] }}
+								{% endif %}
+							{% else %}
+								{{ settings['step']['payment_method']['name'][payment_method['code']][language_id] is defined ? settings['step']['payment_method']['name'][payment_method['code']][language_id] : payment_method['name'] }}
+							{% endif %}
+						</label>
+					</div>
+				</li>
+			{% endfor %}
+		{% endfor %}
+</table>             
+<br />
+ {% else %} 
+ {{ '<font style="color: red">'~text_shipping_not_available~'</font>' }} 
+{% endif %} 

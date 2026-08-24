@@ -1,0 +1,49 @@
+<div class="custom-refine-search" style="margin-bottom: 40px; font-family: 'Outfit', 'Inter', 'Helvetica Neue', Arial, sans-serif;">
+  <div class="filter-groups-list">
+    {% for filter_group in filter_groups %}
+      <div class="filter-group-section" style="margin-bottom: 30px;">
+        <h4 class="filter-group-title" style="font-size: 20px; font-weight: 500; color: #29abe2; margin-top: 0; margin-bottom: 10px; font-family: 'Outfit', 'Inter', sans-serif;">
+          {{ filter_group.name }}
+        </h4>
+        <div style="border-bottom: 1px solid #eaeaea; margin-bottom: 15px;"></div>
+        
+        <div id="filter-group-{{ filter_group.filter_group_id }}" class="filter-options-list" style="padding-left: 5px;">
+          {% for filter in filter_group.filter %}
+            <div class="form-check custom-checkbox-item" style="margin-bottom: 12px; display: flex; align-items: center; cursor: pointer;">
+              <input type="checkbox" name="filter[]" value="{{ filter.filter_id }}" id="input-filter-{{ filter.filter_id }}" class="form-check-input" style="width: 17px; height: 17px; margin-right: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; accent-color: #29abe2; vertical-align: middle; flex-shrink: 0;"{% if filter.filter_id in filter_category %} checked{% endif %}/>
+              <label for="input-filter-{{ filter.filter_id }}" class="form-check-label" style="font-size: 15px; color: #333; cursor: pointer; font-weight: normal; line-height: 1.2; user-select: none; vertical-align: middle;">
+                {{ filter.name }}
+              </label>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="refine-button-container" style="background: #f5f5f5; padding: 20px; text-align: center; border-radius: 4px; border: 1px solid #e5e5e5; margin-top: 20px;">
+    <button type="button" id="button-filter" class="btn btn-primary" style="background: #7a2240; color: #fff; font-weight: bold; border: none; border-radius: 4px; padding: 10px 24px; font-size: 14px; text-transform: uppercase; cursor: pointer; display: inline-block; transition: opacity 0.2s;">
+      Refine Search
+    </button>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+$('#button-filter').on('click', function() {
+    var filter = [];
+
+    $('input[name^=\'filter\']:checked').each(function() {
+        filter.push(this.value);
+    });
+
+    var current_url = '{{ action|escape('js') }}';
+    
+    if (current_url.indexOf('filter=') !== -1) {
+        current_url = current_url.replace(/([&?]filter=)[^&]*/, '$1' + filter.join(','));
+    } else {
+        current_url += '&filter=' + filter.join(',');
+    }
+
+    location = current_url;
+});
+//--></script>

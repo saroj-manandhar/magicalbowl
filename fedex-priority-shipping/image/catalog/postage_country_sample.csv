@@ -1,0 +1,263 @@
+SN,Country name,Zone A,Zone B
+1,Aaland Island,k,k
+2,Afghanistan,j,j
+3,Albania ,j,j
+4,Algeria,j,j
+5,American Samoa,i,i
+6,Andorra,h,h
+7,Angola,j,j
+8,Anguilla,i,i
+9,Antarctica,k,k
+10,Antigua and Barbuda,i,i
+11,Argentina,i,i
+12,Armenia,j,j
+13,Aruba,i,i
+14,Ascension Island (British),k,k
+15,Australia,i,i
+16,Austria,h,h
+17,Azerbaijan,j,j
+18,Bahamas ,i,i
+19,Bahrain,d,d
+20,Bangladesh,d,d
+21,Barbados,i,i
+22,Barbuda,i,i
+23,Belarus,j,j
+24,Belgium,g,g
+25,Belize,i,i
+26,Benin,j,j
+27,Bermuda,i,i
+28,Bhutan,d,d
+29,Bolivia,i,i
+30,"Bonaire, SINT STATUIS AND SABA",k,k
+31,Bosnia & Herzegovina,j,j
+32,Botswana,j,j
+33,Bouvet Island ,k,k
+34,Brazil,i,i
+35,British indian Ocean Territory,k,k
+36,Brunei Dursslam,c,c
+37,Bulgaria,h,h
+38,Burkina Faso,j,j
+39,Burundi,j,j
+40,Cambodia,c,c
+41,Cameroon,j,j
+42,Canada,e,e
+43,Canaries Islands,j,j
+44,Cape Verde,j,j
+45,Cayman Islands,i,i
+46,Central African Republic,k,k
+47,Chad,j,j
+48,Chile,i,i
+49,China,c,c
+50,Christmas Island,k,k
+51,Cocos (Keeling) Island,k,k
+52,Colombia,i,i
+53,Comoros,k,k
+54,Cook Island,i,i
+55,Costa Rica,i,i
+56,Ivory Coast,k,k
+57,Croatia,h,h
+58,Cuba,k,k
+59,Curacao,k,k
+60,Cyprus,d,d
+61,Czech Republic,j,j
+62,Democatic Republic of Congo,j,j
+63,Denmark,h,h
+64,Djibouti,j,j
+65,Dominican Republic,i,i
+66,East Timor,i,i
+67,Ecuador,i,i
+68,Egypt,d,d
+69,El Salvador,i,i
+70,Equatorial Geinea,j,j
+71,Eritrea,j,j
+72,Estonia,h,h
+73,Ethiopia,j,j
+74,Falkland Island (Malvinas),k,k
+75,Federated States of Moldova,k,k
+76,Feroe Islands,j,j
+77,Fiji,i,i
+78,Finland,h,h
+79,France,g,g
+80,French Guyana,i,i
+81,French Polynesia,i,i
+82,French Southern Territories,k,k
+83,Gabon,j,j
+84,Gambia,j,j
+85,Georgia,j,j
+86,Germany,g,g
+87,Ghana,j,j
+88,Gibraltar,j,j
+89,Greece,h,h
+90,Greenland,j,j
+91,Grenada,i,i
+92,Guadeloupe,i,i
+93,Guam,i,i
+94,Guatemala,i,i
+95,Guernsey,k,k
+96,Guinea,j,j
+97,Guinea-Bissau,k,k
+98,Guyana,i,i
+99,Haiti,i,i
+100,Heard and Mc Donald Island ,k,k
+101,Honduras,i,i
+102,Hong Kong,b,b
+103,Hungary,h,h
+104,Iceland,j,j
+105,India,d,d
+106,Indonesia,c,c
+107,Iran (Islamic Republic of Iran),j,j
+108,Iraq,d,d
+109,Ireland,g,g
+110,Isle of Man,k,k
+111,Israel,d,d
+112,Italy,g,g
+113,Ivory Coast,j,j
+114,Jamaica,i,i
+115,Japan,g,g
+116,Jersey,k,k
+117,Jordan,d,d
+118,Kazakhstan,j,j
+119,Kenya,j,j
+120,Kiribati,k,k
+121,Kosovo,k,k
+122,Kuwait,d,d
+123,Kyrgyzstan,j,j
+124,Laos (Lao People's Democratic Republic),c,c
+125,Latvia,h,h
+126,Lebanon,d,d
+127,Lesotho,j,j
+128,Liberia,j,j
+129,Libya (Libyan Arab Jamahiriya),j,j
+130,Liechtenstein,g,g
+131,Lithuania,h,h
+132,Luxembourg,g,g
+133,Macau,b,b
+134,Macedonia,j,j
+135,Madagascar,j,j
+136,Malawi,j,j
+137,Malaysia,c,c
+138,Maldives,g,g
+139,Mali,j,j
+140,Malta,g,g
+141,Marshall Islands,j,j
+142,Martinique,i,i
+143,Mauritania,j,j
+144,Mauritius,j,j
+145,Mayotte,k,k
+146,Mayritania,h,h
+147,Mexico,i,i
+148,Micronesia,j,j
+149,Moldova,j,j
+150,Monaco,g,g
+151,Mongolia,j,j
+152,Montenegro,j,j
+153,Montserrat,i,i
+154,Morocco,j,j
+155,Mozambique,j,j
+156,Myanmar,j,j
+157,Namibia,j,j
+158,Nauru,k,k
+159,Nepal,a,a
+160,Netherland,g,g
+161,Netherland Antilles,i,i
+162,New Caledonia,i,i
+163,New Zealand,i,i
+164,Nicaragua,i,i
+165,Niger,j,j
+166,Nigeria ,j,j
+167,Niue,k,k
+168,Norfolk Island ,k,k
+169,North Korea,k,k
+170,North Macedonia (FYROM),k,k
+171,Northen Mariana Islands,k,k
+172,Norway ,h,h
+173,Oman,d,d
+174,Pakistan,d,d
+175,Palau,j,j
+176,Palestine,d,d
+177,Palestinian Territory  Occupied,k,k
+178,Panama,i,i
+179,Papua New Guinea,i,i
+180,Paraguay,i,i
+181,Peru,i,i
+182,Phillippines,c,c
+183,Pitcairn,k,k
+184,Poland,h,h
+185,Portugal,h,h
+186,Puerto Rico,i,i
+187,Qatar,d,d
+188,Reunion Island,j,j
+189,Romania,j,j
+190,Russian Federation,j,j
+191,Rwanda,j,j
+192,Saba,i,i
+193,Saipan Island,k,k
+194,Samoa,k,k
+195,San Marino,g,g
+196,Sao Tome and Principle,k,k
+197,Saudi Arabia,j,j
+198,Scotland,d,d
+199,Senegal,j,j
+200,Serbia,j,j
+201,Seychelles,j,j
+202,Sierra Leone,j,j
+203,Singapore,b,b
+204,Sint Eustatius,k,k
+205,Slovakia (Slovak Republic),j,j
+206,Slovenia,j,j
+207,Solomon Islands,k,k
+208,Somalia,k,k
+209,South Africa,j,j
+210,South Georgia Island,k,k
+211,South Korea,c,c
+212,South Sandwich Islands,k,k
+213,South Sudan,k,k
+214,Spain,h,h
+215,Sri Lanka,d,d
+216,Saint Barthélemy,i,i
+217,Saint Helena,k,k
+218,Saint Kitts & Nevis,i,i
+219,Saint Lucia,i,i
+220,Saint Martin (island),k,k
+221,Saint Pierre and Miquelon,k,k
+222,Saint Vincent and the Grenadines,i,i
+223,Sudan,j,j
+224,Suriname,i,i
+225,Svalbard and Jan mayen Island,k,k
+226,Swaziland,j,j
+227,Sweden,h,h
+228,Switzerland,g,g
+229,Syria (Syrian Arab Republic),d,d
+230,Taiwan,b,b
+231,Tajikistan,j,j
+232,Tanzania,j,j
+233,Thailand,b,b
+234,Togo,j,j
+235,Tokelau,k,k
+236,Tonga,i,i
+237,Trinidad & Tobago,i,i
+238,Tristan da Cunha,k,k
+239,Tunisia,j,j
+240,Turkey,d,d
+241,Turkmenistan,j,j
+242,Turks and Caicos Island,i,i
+243,Tuvalu,k,k
+244,Uganda,j,j
+245,Ukraine,j,j
+246,United Arab Emirates (UAE),a,a
+247,United Kingdom (UK),f,f
+248,United States America (USA),e,e
+249,United States Minor Outlying Island ,k,k
+250,Uruguay,i,i
+251,Uzbekistan ,j,j
+252,Vanuatu,i,i
+253,Vatican City,j,j
+254,Venezuela,i,i
+255,Vietnam,c,c
+256,Virgin Island (British),k,k
+257,Virgin Island (USA),k,k
+258,Wallis and Futuna,i,i
+259,Western Sahara,k,k
+260,Yemen,d,d
+261,Zambia,j,j
+262,Zimbabwe,j,j

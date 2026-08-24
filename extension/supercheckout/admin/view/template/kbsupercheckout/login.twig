@@ -1,0 +1,318 @@
+{{ header }}{{ column_left }}
+
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript">
+		velovalidation.setErrorLanguage({empty_field: '{{ error_empty_field }}'});
+	</script>
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+				<div class="float-end">
+					<button type="button" id="save-button" form="form-login" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+						<i class="fa fa-save"></i>
+					</button>
+					<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+						<i class="fa fa-reply"></i>
+					</a>
+				</div>
+				<h1>{{ heading_title }}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				{% if (success) %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-check-circle"></i>
+						{{ success }}
+						<button type="button" class="btn-close" data-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			{% if (error_warning) %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning }}
+					<button type="button" class="btn-close" data-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div class="card">
+
+				{{ store_switcher }}
+				<h3 class="card-header">
+					<i class="fa fa-key"></i>
+					{{ supercheckout_text_login }}</h3>
+
+				<div class="card-body">
+					<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-login" class="form-horizontal">
+						{{ tabs }}
+						<div class="layout">
+							<div class="tab-content">
+
+								<div class="panel-body">
+									<label style="font-size: 14px;" class="control-label" for="input-status">
+										<i class="fa fa-facebook"></i>
+										{{ heading_facebook }}</label>
+									<hr style="border: 2px solid red;margin-top: 8px; width: inherit"/>
+									<div class="row mb-3">
+										<input type="hidden" name="supercheckout[step][facebook_login][display]" value="0">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ facebook_login_display_supercheckout_tooltip }}">{{ supercheckout_text_facebook_login_display }}</span>
+										</label>
+										<div class="col-sm-1">
+											<div class="onoffswitch" style="min-width: 90px">
+												<input type="checkbox" name="supercheckout[step][facebook_login][display]" value="1" class="onoffswitch-checkbox" id="facebook_login_display" {% if (supercheckout['step']['facebook_login']['display'] is defined and supercheckout['step']['facebook_login']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+												<label class="onoffswitch-label" for="facebook_login_display">
+													<span class="onoffswitch-inner">
+														<span class="onoffswitch-active">
+															<span class="onoffswitch-switch">{{ text_yes }}</span>
+														</span>
+														<span class="onoffswitch-inactive">
+															<span class="onoffswitch-switch">{{ text_no }}</span>
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div id="facebook-container">
+										<div class="row mb-3 required">
+											<label class="col-sm-2 col-form-label">
+												<span data-toggle="tooltip" title="{{ facebook_app_id_supercheckout_tooltip }}">{{ supercheckout_text_facebook_app_id }}</span>
+											</label>
+											<div class="col-sm-10">
+												{% if (supercheckout['step']['facebook_login']['app_id'] is defined and supercheckout['step']['facebook_login']['app_id'] != "") %}
+													<input type="text" class="form-control" value="{{ supercheckout['step']['facebook_login']['app_id'] }}" name="supercheckout[step][facebook_login][app_id]" id="facebook_login_app_id" class="onoffswitch-checkbox"/>
+												{% else %}
+													<input type="text" class="form-control" value="" name="supercheckout[step][facebook_login][app_id]" id="facebook_login_app_id"/>
+												{% endif %}
+											</div>
+										</div>
+										<div class="row mb-3 required" id="header-text">
+											<label class="col-sm-2 col-form-label">
+												<span data-toggle="tooltip" title="{{ facebook_secret_supercheckout_tooltip }}">{{ supercheckout_text_facebook_app_secret }}</span>
+											</label>
+											<div class="col-sm-10">
+												{% if (supercheckout['step']['facebook_login']['app_secret'] is defined and supercheckout['step']['facebook_login']['app_secret'] != "") %}
+													<input class="form-control" type="text" value="{{ supercheckout['step']['facebook_login']['app_secret'] }}" name="supercheckout[step][facebook_login][app_secret]" id="facebook_login_app_secret" class="onoffswitch-checkbox"/>
+												{% else %}
+													<input class="form-control" type="text" value="" name="supercheckout[step][facebook_login][app_secret]" id="facebook_login_app_secret"/>
+												{% endif %}
+											</div>
+										</div>
+									</div>
+									<label style="font-size: 14px;" class="control-label" for="input-status">
+										<i class="fa fa-google"></i>
+										{{ heading_google }}</label>
+									<hr style="border: 2px solid red;margin-top: 8px; width: inherit"/>
+									<div class="row mb-3">
+										<input type="hidden" name="supercheckout[step][google_login][display]" value="0">
+										<label class="col-sm-2 col-form-label" for="input-status">
+											<span data-toggle="tooltip" title="{{ google_login_display_supercheckout_tooltip }}">{{ supercheckout_text_google_login_display }}</span>
+										</label>
+										<div class="col-sm-1">
+											<div class="onoffswitch" style="min-width: 90px">
+												<input type="checkbox" name="supercheckout[step][google_login][display]" value="1" class="onoffswitch-checkbox" id="google_login_display" {% if (supercheckout['step']['google_login']['display'] is defined and supercheckout['step']['google_login']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+												<label class="onoffswitch-label" for="google_login_display">
+													<span class="onoffswitch-inner">
+														<span class="onoffswitch-active">
+															<span class="onoffswitch-switch">{{ text_yes }}</span>
+														</span>
+														<span class="onoffswitch-inactive">
+															<span class="onoffswitch-switch">{{ text_no }}</span>
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div id="google-container">
+										<div class="row mb-3 required" id="header-text">
+											<label class="col-sm-2 col-form-label">{{ supercheckout_text_google_app_id }}</span>
+											<i class="icon-question-sign" data-toggle="tooltip" data-placement="top" data-original-title="{{ google_app_id_supercheckout_tooltip }}"></i>
+										</label>
+										<div class="col-sm-10">
+											{% if (supercheckout['step']['google_login']['app_id'] is defined and supercheckout['step']['google_login']['app_id'] != "") %}
+												<input class="form-control" type="text" value="{{ supercheckout['step']['google_login']['app_id'] }}" name="supercheckout[step][google_login][app_id]" id="google_login_app_id" class="onoffswitch-checkbox"/>
+											{% else %}
+												<input class="form-control" type="text" value="" name="supercheckout[step][google_login][app_id]" id="google_login_app_id"/>
+											{% endif %}
+										</div>
+									</div>
+									<div class="row mb-3 required" id="header-text">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ google_client_id_supercheckout_tooltip }}">{{ supercheckout_text_google_client_id }}</span>
+										</label>
+										<div class="col-sm-10">
+											{% if (supercheckout['step']['google_login']['client_id'] is defined and supercheckout['step']['google_login']['client_id'] != "") %}
+												<input class="form-control" type="text" value="{{ supercheckout['step']['google_login']['client_id'] }}" name="supercheckout[step][google_login][client_id]" id="google_login_client_id" class="onoffswitch-checkbox"/>
+											{% else %}
+												<input class="form-control" type="text" value="" name="supercheckout[step][google_login][client_id]" id="google_login_client_id"/>
+											{% endif %}
+										</div>
+									</div>
+									<div class="row mb-3 required" id="header-text">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ google_secret_supercheckout_tooltip }}">{{ supercheckout_text_google_app_secret }}</span>
+										</label>
+										<div class="col-sm-10">
+											{% if (supercheckout['step']['google_login']['app_secret'] is defined and supercheckout['step']['google_login']['app_secret'] != "") %}
+												<input class="form-control" type="text" value="{{ supercheckout['step']['google_login']['app_secret'] }}" name="supercheckout[step][google_login][app_secret]" id="google_login_app_secret" class="onoffswitch-checkbox"/>
+											{% else %}
+												<input class="form-control" type="text" value="" name="supercheckout[step][google_login][app_secret]" id="google_login_app_secret"/>
+											{% endif %}
+										</div>
+									</div>
+								</div>
+
+								<label style="font-size: 14px; display:none" class="control-label" for="input-status">
+									<i class="fa fa-paypal"></i>
+									{{ heading_paypal }}
+								</label>
+								<hr style="border: 2px solid red; margin-top: 8px; width: inherit; display:none"/>
+								<div class="row mb-3" style="display:none">
+									<input type="hidden" name="supercheckout[step][paypal_login][display]" value="0">
+									<label class="col-sm-2 col-form-label" for="input-status">
+										<span data-toggle="tooltip" title="{{ paypal_login_display_supercheckout_tooltip }}">{{ supercheckout_text_paypal_login_display }}</span>
+									</label>
+									<div class="col-sm-1">
+										<div class="onoffswitch" style="min-width: 90px">
+											<input type="checkbox" name="supercheckout[step][paypal_login][display]" value="1" class="onoffswitch-checkbox" id="paypal_login_display" {% if (supercheckout['step']['paypal_login']['display'] is defined and supercheckout['step']['paypal_login']['display'] == 1) %} {{ 'checked' }} {% endif %}>
+											<label class="onoffswitch-label" for="paypal_login_display">
+												<span class="onoffswitch-inner">
+													<span class="onoffswitch-active">
+														<span class="onoffswitch-switch">{{ text_yes }}</span>
+													</span>
+													<span class="onoffswitch-inactive">
+														<span class="onoffswitch-switch">{{ text_no }}</span>
+													</span>
+												</span>
+											</label>
+										</div>
+									</div>
+								</div>
+
+								<!--tab paypal -->
+								<div id="paypal-container" style="display:none">
+									<div class="row mb-3 required">
+										<label class="col-sm-2 col-form-label">
+											<span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="{{ paypal_client_id_supercheckout_tooltip }}">
+												{{ supercheckout_text_paypal_client_id }}
+											</span>
+										</label>
+										<div class="col-sm-10">
+											<input type="text" name="supercheckout[step][paypal_login][client_id]" value="{{ supercheckout['step']['paypal_login']['client_id'] is defined ? supercheckout['step']['paypal_login']['client_id'] : '' }}" placeholder="{{ supercheckout_text_paypal_client_id }}" id="kbsociallogin_paypal_client_id" class="form-control"/>
+										</div>
+									</div>
+									<div class="row mb-3 required">
+										<label class="col-sm-2 col-form-label">
+											<span class="label-tooltip" data-toggle="tooltip" data-html="true" title="" data-original-title="{{ paypal_secret_supercheckout_tooltip }}">
+												{{ supercheckout_text_paypal_secret }}
+											</span>
+										</label>
+										<div class="col-sm-10">
+											<input type="text" name="supercheckout[step][paypal_login][client_secret]" value="{{ supercheckout['step']['paypal_login']['client_secret'] is defined ? supercheckout['step']['paypal_login']['client_secret'] : '' }}" placeholder="{{ supercheckout_text_paypal_secret }}" id="kbsociallogin_paypal_client_secret" class="form-control"/>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div></div>
+
+
+<style type="text/css">
+.kb_error_message{
+    color:red;
+}
+.kb_error_field {
+    border-color: red;
+}
+</style>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    if($('#facebook_login_display:checked').length == 1) {
+        $('#facebook-container').show();
+    } else {
+        $('#facebook-container').hide();
+    }
+
+    if($('#google_login_display:checked').length == 1) {
+        $('#google-container').show();
+    } else {
+        $('#google-container').hide();
+    }
+
+    $('#facebook_login_display').change(function() {
+        if($('#facebook_login_display:checked').length == 1) {
+            $('#facebook-container').show();
+        }else{
+            $('#facebook-container').hide();
+        }
+    });
+
+    $('#google_login_display').change(function(){
+        if($('#google_login_display:checked').length == 1) {
+            $('#google-container').show();
+        } else {
+            $('#google-container').hide();
+        }
+    });
+    
+    if($('#paypal_login_display:checked').length == 1) {
+        $('#paypal-container').show();
+    } else {
+        $('#paypal-container').hide();
+    }
+    
+    $('#paypal_login_display').change(function(){
+        if($('#paypal_login_display:checked').length == 1) {
+            $('#paypal-container').show();
+        } else {
+            $('#paypal-container').hide();
+        }
+    });
+});
+
+$('#save-button').click(function(){
+    if ($("#paypal_login_display").is(":checked")) {
+        var result;
+        var flag = true;
+        result1 = velovalidation.checkMandatory($('#kbsociallogin_paypal_client_id'));
+        result2 = velovalidation.checkMandatory($('#kbsociallogin_paypal_client_secret'));
+        if (result1 != true) {
+            $('#kbsociallogin_paypal_client_id').after("<div class='text-danger'>" + result1 + "</div>");
+            $('#kbsociallogin_paypal_client_id').parent().parent().addClass("has-error");
+            flag = false;
+        } 
+        
+        if (result2 != true) {
+            $('#kbsociallogin_paypal_client_secret').after("<div class='text-danger'>" + result2 + "</div>");
+            $('#kbsociallogin_paypal_client_secret').parent().parent().addClass("has-error");
+            flag = false;
+        }
+        
+        if(flag == false){
+            return false;
+        } else {
+            $('#form-login').submit();
+        }
+    } else {
+        $('#form-login').submit();
+    }
+});
+</script>
+{{ footer }} 

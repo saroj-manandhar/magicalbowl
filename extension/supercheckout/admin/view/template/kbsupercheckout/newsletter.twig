@@ -1,0 +1,387 @@
+{{ header}}{{ column_left}}
+<div id="content" class="bootstrap">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/velovalidation.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/javascript/supercheckout/css/kbsupercheckout.css">
+	<script type="text/javascript">
+		var error_invalid_key = '{{ text_mailchimp_invalid_key }}';
+        velovalidation.setErrorLanguage({empty_field: '{{ error_empty_field }}'});
+	</script>
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/kbsupercheckout.js"></script>
+	<div id="velsof_plugin">
+		<div class="page-header">
+			<div class="container-fluid">
+				<div class="float-end">
+					<button type="submit" id="save-button" form="form-newsletter" data-toggle="tooltip" title="{{ button_save}}" class="btn btn-primary">
+						<i class="fa fa-save"></i>
+					</button>
+					<a href="{{ cancel}}" data-toggle="tooltip" title="{{ button_cancel}}" class="btn btn-default">
+						<i class="fa fa-reply"></i>
+					</a>
+				</div>
+				<h1>{{ heading_title}}</h1>
+				<ol class="breadcrumb">
+					{% for breadcrumb in breadcrumbs %}
+						<li class="breadcrumb-item">
+							<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+						</li>
+					{% endfor %}
+				</ol>
+				{% if (success) %}
+					<div class="alert alert-success alert-dismissible">
+						<i class="fa fa-check-circle"></i>
+						{{ success}}
+						<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+					</div>
+				{% endif %}
+				<div id="error_message"></div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			{% if (error_warning) %}
+				<div class="alert alert-danger alert-dismissible">
+					<i class="fa fa-exclamation-circle"></i>
+					{{ error_warning}}
+					<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div class="card">
+
+				{{ store_switcher}}
+				<h3 class="card-header">
+					<i class="fa fa-envelope"></i>
+					{{ supercheckout_text_mailchimp}}
+				</h3>
+
+				<div class="card-body">
+					<form action="{{ action}}" method="post" enctype="multipart/form-data" id="form-newsletter" class="form-horizontal">
+						{{ tabs}}
+						<div class="layout">
+							<div class="tab-content">
+								<div class="card-body">
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_mailchimp_enable_tooltip}}">{{ supercheckout_text_mailchimp_enable}}</span>
+										</label>
+										<input type="hidden" value="0" name="supercheckout[mailchimp][enable]"/>
+										<div class="col-sm-1">
+											<div class="onoffswitch" style="min-width: 90px">
+												<input type="checkbox" name="supercheckout[mailchimp][enable]" value="1" class="onoffswitch-checkbox" id="mailchimp_enable" {% if (supercheckout['mailchimp']['enable'] is defined and supercheckout['mailchimp']['enable'] == 1) %} {{ 'checked'}} {% endif %}>
+												<label class="onoffswitch-label" for="mailchimp_enable">
+													<span class="onoffswitch-inner">
+														<span class="onoffswitch-active">
+															<span class="onoffswitch-switch">{{ text_yes}}</span>
+														</span>
+														<span class="onoffswitch-inactive">
+															<span class="onoffswitch-switch">{{ text_no}}</span>
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_mailchimp_api_tooltip}}">{{ supercheckout_text_mailchimp_api}}</span>
+										</label>
+										<div class="col-sm-10">
+											<div class="input-group">
+												<input name="supercheckout[mailchimp][api]" id="mailchimp_api" value="{{ supercheckout['mailchimp']['api']}}" class="form-control">
+												<button type="button" id="mailchimp_list_button" class="btn btn-primary">{{ text_get_list}}</button>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_mailchimp_list_tooltip}}">{{ supercheckout_text_mailchimp_list}}</span>
+										</label>
+										<div class="col-sm-10" id="mailchimp_list_div"></div>
+									</div>
+
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_klaviyo_enable_tooltip}}">{{ supercheckout_text_klaviyo_enable}}</span>
+										</label>
+										<input type="hidden" value="0" name="supercheckout[klaviyo][enable]"/>
+										<div class="col-sm-1">
+											<div class="onoffswitch" style="min-width: 90px">
+												<input type="checkbox" name="supercheckout[klaviyo][enable]" value="1" class="onoffswitch-checkbox" id="klaviyo_enable" {% if (supercheckout['klaviyo']['enable'] is defined and supercheckout['klaviyo']['enable'] == 1) %} {{ 'checked'}} {% endif %}>
+												<label class="onoffswitch-label" for="klaviyo_enable">
+													<span class="onoffswitch-inner">
+														<span class="onoffswitch-active">
+															<span class="onoffswitch-switch">{{ text_yes}}</span>
+														</span>
+														<span class="onoffswitch-inactive">
+															<span class="onoffswitch-switch">{{ text_no}}</span>
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_klaviyo_api_tooltip}}">{{ supercheckout_text_klaviyo_api}}</span>
+										</label>
+										<div class="col-sm-10">
+											<div class="input-group">
+												<input name="supercheckout[klaviyo][api]" id="klaviyo_api" value="{{ supercheckout['klaviyo']['api'] is defined ? supercheckout['klaviyo']['api'] : ''}}" class="form-control">
+												<button type="button" id="klaviyo_list_button" class="btn btn-primary">{{ text_get_list}}</button>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_klaviyo_list_tooltip}}">{{ supercheckout_text_klaviyo_list}}</span>
+										</label>
+										<div class="col-sm-10" id="klaviyo_list_div"></div>
+									</div>
+
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_sendinblue_enable_tooltip}}">{{ supercheckout_text_sendinblue_enable}}</span>
+										</label>
+										<input type="hidden" value="0" name="supercheckout[sendinblue][enable]"/>
+										<div class="col-sm-1">
+											<div class="onoffswitch" style="min-width: 90px">
+												<input type="checkbox" name="supercheckout[sendinblue][enable]" value="1" class="onoffswitch-checkbox" id="sendinblue_enable" {% if (supercheckout['sendinblue']['enable'] is defined and supercheckout['sendinblue']['enable'] == 1) %} {{ 'checked'}} {% endif %}>
+												<label class="onoffswitch-label" for="sendinblue_enable">
+													<span class="onoffswitch-inner">
+														<span class="onoffswitch-active">
+															<span class="onoffswitch-switch">{{ text_yes}}</span>
+														</span>
+														<span class="onoffswitch-inactive">
+															<span class="onoffswitch-switch">{{ text_no}}</span>
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_sendinblue_api_tooltip}}">{{ supercheckout_text_sendinblue_api}}</span>
+										</label>
+										<div class="col-sm-10">
+											<div class="input-group">
+												<input name="supercheckout[sendinblue][api]" id="sendinblue_api" value="{{ supercheckout['sendinblue']['api'] is defined ? supercheckout['sendinblue']['api'] : ''}}" class="form-control">
+												<button type="button" id="sendinblue_list_button" class="btn btn-primary">{{ text_get_list}}</button>
+											</div>
+										</div>
+									</div>
+									<div class="row mb-3">
+										<label class="col-sm-2 col-form-label">
+											<span data-toggle="tooltip" title="{{ supercheckout_text_sendinblue_list_tooltip}}">{{ supercheckout_text_sendinblue_list}}</span>
+										</label>
+										<div class="col-sm-10" id="sendinblue_list_div"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function () {
+    var mailchimp_key = $('#mailchimp_api').val();
+    var mailchimp_error_list = '{{text_mailchimp_empty_list}}';
+    var mailchimp_error_invalid_key = '{{text_mailchimp_invalid_key}}';
+
+    if(mailchimp_key != "") {
+        $.ajax({
+            type: "GET",
+            url: '{{mailchimp_list_url}}',
+            data: 'key=' + mailchimp_key,
+            dataType: 'json',
+            beforeSend: function () {
+                $("#mailchimp_list").html('');
+            },
+            success: function (json) {
+                var html = '';
+                if(json.flag == 0) {
+                    html = '<span style="color: red">' + mailchimp_error_list + '</span>';
+                } else {
+                    html += '<select name="supercheckout[mailchimp][list]" id="mailchimp_list" class="form-control">';
+                    for (i in json.data['lists']) {
+                        if ('{{supercheckout['mailchimp']['list']}}' == json.data['lists'][i]['id']) {
+                            html += '<option value="' + json.data['lists'][i]['id'] + '" selected>' + json.data['lists'][i]['name'] + '</option>';
+                        } else {
+                            html += '<option value="' + json.data['lists'][i]['id'] + '">' + json.data['lists'][i]['name'] + '</option>';
+                        }
+                    }
+                    html += '</select>';
+                }
+                $('#mailchimp_list_div').html(html)
+            }
+        });
+    }
+
+    $('#mailchimp_list_button').click(function() {
+        $('.text-danger').remove();
+        if($('#mailchimp_api').val() != "") {
+            $.ajax({
+                type: "GET",
+                url: '{{mailchimp_list_url}}',
+                data: 'key=' + $('#mailchimp_api').val(),
+                dataType: 'json',
+                beforeSend: function () {
+                    $("#mailchimp_list").html('');
+                },
+                success: function (json) {
+                    var html = '';
+                    if(json.flag == 0) {
+                        html = '<span style="color: red">' + mailchimp_error_list + '</span>';
+                    } else {
+                        html += '<select name="supercheckout[mailchimp][list]" id="mailchimp_list" class="form-control">';
+                        for (i in json.data['lists']) {
+                            if ('{{supercheckout['mailchimp']['list']}}' == json.data['lists'][i]['id']) {
+                                html += '<option value="' + json.data['lists'][i]['id'] + '" selected>' + json.data['lists'][i]['name'] + '</option>';
+                            }  else {
+                                html += '<option value="' + json.data['lists'][i]['id'] + '">' + json.data['lists'][i]['name'] + '</option>';
+                            }
+                        }
+                        html += '</select>';
+                    }
+                    $('#mailchimp_list_div').html(html)
+                }
+            });
+        } else {
+            $("#mailchimp_list").html('');
+            $('#mailchimp_list_button').parent().after("<div class='text-danger'>" + mailchimp_error_invalid_key + "</div>");
+        }
+    });
+
+    var klaviyo_key = $('#klaviyo_api').val();
+    var klaviyo_error_list = '{{text_klaviyo_empty_list}}';
+    var klaviyo_error_invalid_key = '{{text_klaviyo_invalid_key}}';
+    
+    if(klaviyo_key != "") {
+        $.ajax({
+            type: "GET",
+            url: '{{klaviyo_list_url}}', 
+            data: 'key=' + klaviyo_key,
+            dataType: 'json',
+            beforeSend: function () {
+                $("#klaviyo_list").html('');
+            },
+            success: function (json) {
+                var html = '';
+                if(json.flag == 0) {
+                    html = '<span style="color: red">' + klaviyo_error_list + '</span>';
+                } else {
+                    html += '<select name="supercheckout[klaviyo][list]" id="klaviyo_list" class="form-control">';
+                    for (i in json.data) {
+                        if(json.data[i]['list_type'] == 'list'){
+                            if ('{{supercheckout['klaviyo']['list']}}' == json.data[i]['id']) {
+                                html += '<option value="' + json.data[i]['id'] + '" selected>' + json.data[i]['name'] + '</option>';
+                            } else {
+                                html += '<option value="' + json.data[i]['id'] + '">' + json.data[i]['name'] + '</option>';
+                            }
+                        }
+                    }
+                    html += '</select>';
+                }
+                $('#klaviyo_list_div').html(html)
+            }
+        });
+    }
+    
+    $('#klaviyo_list_button').click(function() {
+        $('.text-danger').remove();
+        var key = $('#klaviyo_api').val();
+        if($('#klaviyo_api').val() != "") {
+            $.ajax({
+                type: "GET",
+                url: '{{klaviyo_list_url}}',
+                data: 'key=' + $('#klaviyo_api').val(),
+                dataType: 'json',
+                beforeSend: function () {
+                    $("#klaviyo_list").html('');
+                },
+                success: function (json) {
+                    var html = '';
+                    if(json.status) {
+                        html = '<span style="color: red">' + klaviyo_error_list + '</span>';
+                    } else {
+                        html += '<select name="supercheckout[klaviyo][list]" id="klaviyo_list" class="form-control">';
+                        for (i in json.data) {
+                            if(json.data[i]['list_type'] == 'list') {
+                                html += '<option value="' + json.data[i]['id'] + '" selected>' + json.data[i]['name'] + '</option>';
+                            }
+                        }
+                        html += '</select>';
+                    }
+                    $('#klaviyo_list_div').html(html)
+                }
+            });
+        } else {
+            $("#klaviyo_list").html('');
+            $('#klaviyo_list_button').parent().after("<div class='text-danger'>" + klaviyo_error_invalid_key + "</div>");
+        }
+    });
+ 
+    
+    var sendinblue_key = $('#sendinblue_api').val();
+    var sendinblue_error_list = '{{text_sendinblue_empty_list}}';
+    var sendinblue_error_invalid_key = '{{text_sendinblue_invalid_key}}';
+    if(sendinblue_key != "") {
+        $.ajax({
+            type: "GET",
+            url: '{{sendinblue_list_url}}',
+            data: 'key=' + key,
+            dataType: 'json',
+            beforeSend: function () {
+                $("#sendinblue_list").html('');
+            },
+            success: function (json) {
+                var html = '';
+                if(json.flag == 0) {
+                    html = '<span style="color: red">' + sendinblue_error_list + '</span>';
+                } else {
+                    html += '<select name="supercheckout[sendinblue][list]" id="sendinblue_list" class="form-control">';
+                    for (i in json) {
+                        html += '<option value="' + json[i]['id'] + '" selected>' + json[i]['name'] + '</option>';
+                    }
+                    html += '</select>';
+                }
+                $('#sendinblue_list_div').html(html)
+            }
+        });
+    }
+    
+    $('#sendinblue_list_button').click(function() {
+        $('.text-danger').remove();
+        if($('#sendinblue_api').val() != "") {
+            $.ajax({
+                type: "GET",
+                url: '{{sendinblue_list_url}}',
+                data: 'key=' + $('#sendinblue_api').val(),
+                dataType: 'json',
+                beforeSend: function () {
+                    $("#sendinblue_list").html('');
+                },
+                success: function (json) {
+                    var html = '';
+                    if(json == '') {
+                        html = '<span style="color: red">' + sendinblue_error_list + '</span>';
+                    } else {
+                        html += '<select name="supercheckout[sendinblue][list]" id="sendinblue_list" class="form-control">';
+                        for (i in json) {
+                            html += '<option value="' + json[i]['id'] + '" selected>' + json[i]['name'] + '</option>';
+                        }
+                        html += '</select>';
+                    }
+                    $('#sendinblue_list_div').html(html)
+                }
+            });
+        } else {
+            $("#sendinblue_list").html('');
+            $('#sendinblue_list_button').parent().after("<div class='text-danger'>" + sendinblue_error_invalid_key + "</div>");
+        }
+    });
+});
+</script>
+{{ footer}} 

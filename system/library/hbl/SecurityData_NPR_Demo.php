@@ -1,0 +1,91 @@
+<?php
+
+namespace hbl;
+
+/**
+ * Class SecurityData_NPR
+ *
+ * Stores configuration and security data for HBL/Paco payment integration.
+ */
+class SecurityData_NPR
+{
+  /**
+   * Merchant ID assigned by HBL/Paco.
+   *
+   * @var string
+   */
+  public static string $MerchantId = "9104137120";//need to change this
+
+  /**
+   * JWE Key ID used for encryption.
+   *
+   * @var string
+   */
+  public static string $EncryptionKeyId = "7664a2ed0dee4879bdfca0e8ce1ac313"; //need to change this
+
+  /**
+   * Access Token for authentication.
+   * Example:
+   * - USD: d7d265e...
+   * - NPR: 94547adfa
+   *
+   * @var string
+   */
+  // public static string $AccessToken = "5fb21f4f4df842a7b4ad1b44674dcf20"; // NPR //need to change this
+  public static string $AccessToken = "65805a1636c74b8e8ac81a991da80be4";
+
+  /**
+   * Token type used in JWS and JWE headers.
+   *
+   * @var string
+   */
+  public static string $TokenType = "JWT";
+
+  /**
+   * JWS (JSON Web Signature) algorithm used for signing requests.
+   *
+   * @var string
+   */
+  public static string $JWSAlgorithm = "PS256";
+
+  /**
+   * JWE (JSON Web Encryption) key encryption algorithm used for encrypting requests.
+   *
+   * @var string
+   */
+  public static string $JWEAlgorithm = "RSA-OAEP";
+
+  /**
+   * JWE content encryption algorithm used on plaintext to produce encrypted ciphertext.
+   *
+   * @var string
+   */
+  public static string $JWEEncryptionAlgorithm = "A128CBC-HS256";
+
+  /**
+   * Merchant signing private key for cryptographically signing JWS requests.
+   *
+   * @var string
+   */
+  public static string $MerchantSigningPrivateKey = "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";//need to change this
+
+  /**
+   * Paco encryption public key for cryptographically encrypting JWE requests.
+   *
+   * @var string
+   */
+  public static string $PacoEncryptionPublicKey = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAviq4wrTmVMkRHouiHLUonJ1d6ss6nNreJ0JWpLwmTwAM7l35g8AFIvE8PqwWevtjuil9JZ1T1zwQTP8aM3s5/RzX5yFIhec/O14jib7Nmi4jACeJqDlHsnYzeCPw8WOhgmxWKHcORNLpn68jgnhLrKwh3Mooz/hXtIwGuNe/pYU7i/QaiuOjtmIcQ3yxJWjiHsllaogobZjbwMzwhp1fJ6ELmZp0FJvDrE8dn4UU9yzPFNzQ4gJzJAS/JKLXjfDw5mDQdw80vbzYuxksU0bc/3+DwY6hqaVJsP2AST7dCTR1wYzevzPxp0HMDmz1Ia/hSrmTPRhSa0qvxHMriVHUJvJeLTNI3cWM0RI9ukR7/v6vcf8ZwOZ+u7w4YfLpPCQFN7zGUN9Hho0pWBVYOstqsF5h/ZgBOlEHgSYY3CJdscV1+vKUvmFPiwkOdVxhc571RX56o+V71ZIGjXeYeqd3KNnND1JNsOn4hRPbk8Cl0e8CfZnEePfqtbFQGrzRU3GvSXscMb51TlvZu9i0toJdIJ4DiOCkUlB2sDI4x7N9ROOEbAD8uv68/jZqTM2paUNRN7Xvaa2LUCis3acadiyLt0tpuOT0sY2OejhLJshwNfTfc67gdtCJ3diddZWkXYpBgkMhuVj3TSx85sUklbGGJkzkwNsC0JhMSo7ZqbYxczECAwEAAQ==";    //need to change this
+
+  /**
+   * PACO Signing Public Key is used to cryptographically verify the response JWS signature.
+   *
+   * @var string
+   */
+  public static string $PacoSigningPublicKey = "MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAkEOCDQxCbyv/n1jadyDDL9KLRddF7W2eVNf7GwVeqlq3CVor0QHiU+yweO3b622NZAPDBy/GFeJJH5lwdJUbYojFWtHUqYN7/HoTHF50KhAbLMhnllsULuyVgG1l3m9xSjRJtQSaIZP5jF4LSM+m69Xd7U2qoTczMOaNZ36yWZzxN/OUQMjb2cWeZCLhVPf6zJwA35kC57NK2n1DDvvyFvLnh9gBd8EOkJuT9us1r01Ya3XpFHhXy1fTg9bmWXDMwMm5stnhmGOF2d6Uv4rYGqk67nRzX0ZEGrWW6X0tzeQESkQShx0algKIXeM/2RBfit1QHDHhI70CYTqt1eG05Cpr5u7FdvD4pk8fqfW8xJsmoZisQNQnov0oriUqrB1wZvWL8+calfoX0nxWMVlP37LspA6O2+dlnjFxpDQSjnfWVFyS6fKvr8jXWI6KG6L11J+yAXY4KjqGK+wEnH2yf8tK8NLkIAWNstlUQrycEkk4mP6ElKwkOMpRND0ArG1cG0uMx+VXd1vrWG6UePa+GHmgHbgLSkjI3hpz3wbpE5cbp73dbIgryeC0AeLY7kKDt7pMQpkg3gNxcvTGXjZYc1TQ5siuD1RBJUR5Lv/P8jjyQnB4D67AEuL1pw5acKQ3tfOEF+iuzzzV5zeSj5T5rYR1GpuPOqTz97AWSxawDUsCAwEAAQ=="; //need to change this
+
+  /**
+   * Merchant Decryption Private Key used to cryptographically decrypt the response JWE.
+   * @var string
+   */
+  public static string $MerchantDecryptionPrivateKey = "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"; //need to change this
+}

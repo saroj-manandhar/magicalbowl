@@ -1,0 +1,378 @@
+<style>
+/* Custom Footer Styling matching Journal 2 Old Flow */
+.footer-container.typefooter-1 {
+    background-color: #31353c !important;
+    background-image: url('image/data/journal2/background/fashion-bg-dark.jpg') !important; /* fallback if exists */
+    border-top: 5px solid #a1202f !important;
+    color: #e4e4e4 !important;
+    font-family: 'Outfit', 'Inter', 'Open Sans', sans-serif;
+    padding-top: 40px;
+}
+
+.footer-container.typefooter-1 a {
+    color: #bfbfbf !important;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-container.typefooter-1 a:hover {
+    color: #e62e45 !important;
+}
+
+.footer-container.typefooter-1 .footer-main {
+    padding-bottom: 30px;
+    border-bottom: 5px solid #a1202f !important;
+}
+
+.footer-container.typefooter-1 .box-footer {
+    margin-bottom: 20px;
+}
+
+.footer-container.typefooter-1 h3.modtitle {
+    color: #ffffff !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #444852;
+    padding-bottom: 10px;
+}
+
+/* Contact Us column */
+.footer-container.typefooter-1 .contact-info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.footer-container.typefooter-1 .contact-info-list li {
+    margin-bottom: 15px;
+    line-height: 1.5;
+    font-size: 13px;
+    color: #bfbfbf;
+}
+.footer-container.typefooter-1 .contact-info-list li strong {
+    color: #ffffff;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* Customer Service column (dot list) */
+.footer-container.typefooter-1 .service-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.footer-container.typefooter-1 .service-list li {
+    margin-bottom: 10px;
+    font-size: 13px;
+    position: relative;
+    padding-left: 15px;
+}
+.footer-container.typefooter-1 .service-list li::before {
+    content: "•";
+    color: #bfbfbf;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Important Information column (> list) */
+.footer-container.typefooter-1 .info-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.footer-container.typefooter-1 .info-list li {
+    margin-bottom: 10px;
+    font-size: 13px;
+    position: relative;
+    padding-left: 15px;
+}
+.footer-container.typefooter-1 .info-list li::before {
+    content: ">";
+    color: #bfbfbf;
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+/* Newsletter column */
+.footer-container.typefooter-1 .newsletter-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 15px;
+    color: #bfbfbf;
+    font-style: italic;
+}
+.footer-container.typefooter-1 .newsletter-form-custom {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 4px;
+    padding: 2px;
+    max-width: 280px;
+}
+.footer-container.typefooter-1 .newsletter-form-custom input[type="email"] {
+    border: none !important;
+    background: transparent !important;
+    padding: 6px 10px !important;
+    color: #333333 !important;
+    font-size: 12px !important;
+    flex-grow: 1;
+    width: 100%;
+    outline: none !important;
+    box-shadow: none !important;
+}
+.footer-container.typefooter-1 .newsletter-form-custom button {
+    background-color: #9c1f2e !important;
+    color: #ffffff !important;
+    border: none !important;
+    padding: 6px 15px !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    border-radius: 3px !important;
+    text-transform: uppercase;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+.footer-container.typefooter-1 .newsletter-form-custom button:hover {
+    background-color: #b82537 !important;
+}
+
+/* Follow Us column */
+.footer-container.typefooter-1 .social-list-custom {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.footer-container.typefooter-1 .social-list-custom li {
+    margin-bottom: 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+.footer-container.typefooter-1 .social-list-custom li img {
+    width: 24px;
+    height: auto;
+    margin-right: 10px;
+    border-radius: 4px;
+}
+.footer-container.typefooter-1 .social-list-custom li i.social-icon-blog {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    background-color: #4caf50;
+    color: #ffffff;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-size: 12px;
+}
+
+/* Copyright area styling */
+.footer-container.typefooter-1 .footer-bottom {
+    background-color: #1e2126 !important;
+    padding: 20px 0;
+}
+.footer-container.typefooter-1 .copyright-w {
+    background: transparent !important;
+    padding: 0 !important;
+}
+.footer-container.typefooter-1 .copyright {
+    text-align: left;
+    color: #8c919c !important;
+    font-size: 12px;
+}
+</style>
+
+<footer class="footer-container typefooter-{{typefooter ? typefooter : '1'}}">
+	{#======	FOOTER TOP / MAIN	=======#}  
+	<div class="footer-main desc-collapse showdown" id="collapse-footer">
+		<div class="container">
+			<div class="row">
+				{# Column 1: Contact Us #}
+				<div class="col-lg-3 col-md-3 col-sm-12 col-xs-12 col-12 box-footer">
+					<div class="module clearfix">
+						<h3 class="modtitle">CONTACT INFO</h3>
+						<div class="modcontent">
+							<ul class="contact-info-list">
+								<li>
+									<a href="index.php?route=information/information&information_id=4"><strong>Magical Creation Enterprises Pvt. Ltd.</strong></a>
+								</li>
+								<li>
+									Hot Lines: (Also Social Medias) <a href="tel:+9779851051290" class="contact-link">+977 9851051290</a>
+								</li>
+								<li>
+									<a href="mailto:sales.magicalsb@gmail.com" class="contact-link">sales.magicalsb@gmail.com</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				{# Column 2: Customer Service #}
+				<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12 col-12 box-footer">
+					<div class="module clearfix">
+						<h3 class="modtitle">Customer Service</h3>
+						<div class="modcontent">
+							<ul class="service-list">
+								<li><a href="{{ contact }}">Contact Us</a></li>
+								<li><a href="{{ return }}">Returns</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				{# Column 3: Important Information #}
+				{% set info_4_url = 'index.php?route=information/information&information_id=4' %}
+				{% set info_3_url = 'index.php?route=information/information&information_id=3' %}
+				{% set info_6_url = 'index.php?route=information/information&information_id=6' %}
+				{% set info_5_url = 'index.php?route=information/information&information_id=5' %}
+				{% set info_7_url = 'index.php?route=information/information&information_id=7' %}
+				{% set info_14_url = 'index.php?route=information/information&information_id=14' %}
+				{% for info in informations %}
+					{% if info.information_id == 4 %}{% set info_4_url = info.href %}{% endif %}
+					{% if info.information_id == 3 %}{% set info_3_url = info.href %}{% endif %}
+					{% if info.information_id == 6 %}{% set info_6_url = info.href %}{% endif %}
+					{% if info.information_id == 5 %}{% set info_5_url = info.href %}{% endif %}
+					{% if info.information_id == 7 %}{% set info_7_url = info.href %}{% endif %}
+					{% if info.information_id == 14 %}{% set info_14_url = info.href %}{% endif %}
+				{% endfor %}
+				<div class="col-lg-3 col-md-3 col-sm-6 col-xs-12 col-12 box-footer">
+					<div class="module clearfix">
+						<h3 class="modtitle">Important Information</h3>
+						<div class="modcontent">
+							<ul class="info-list">
+								<li><a href="{{ info_4_url }}">About Us, Contact Us</a></li>
+								<li><a href="{{ info_3_url }}">Privacy Policy</a></li>
+								<li><a href="{{ info_6_url }}">Packaging And Delivery Info</a></li>
+								<li><a href="{{ info_5_url }}">Terms &amp; Conditions</a></li>
+								<li><a href="{{ info_7_url }}">Return Policy</a></li>
+								<li><a href="{{ info_14_url }}">Payment</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+
+				{# Column 4: Newsletter #}
+				<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12 col-12 box-footer">
+					<div class="module clearfix">
+						<h3 class="modtitle">Newsletter</h3>
+						<div class="modcontent">
+							<div class="newsletter-desc">
+								Stay up to date with beneficial news, new products and promotions by signing up for our biweekly newsletter.
+							</div>
+							<div class="block_content">
+								<form method="post" id="signup" name="signup" class="form-group form-inline signup send-mail newsletter-form-custom">
+									<input type="email" placeholder="Only Email Address..." value="" id="txtemail" name="txtemail" autocomplete="off" required>
+									<button type="submit" onclick="return subscribe_newsletter();" name="submit">Send</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				{# Column 5: Follow Us #}
+				<div class="col-lg-2 col-md-2 col-sm-6 col-xs-12 col-12 box-footer">
+					<div class="module clearfix">
+						<h3 class="modtitle">Follow us</h3>
+						<div class="modcontent">
+							<ul class="social-list-custom">
+								<li>
+									<img src="image/data/FB logo 40x40px.png" alt="Facebook">
+									<a href="https://www.facebook.com/CosmicSoundHealingAcademy" target="_blank">Facebook</a>
+								</li>
+								<li>
+									<img src="image/data/YOUTUBE 40x30px.png" alt="YouTube">
+									<a href="https://www.youtube.com/c/GovindaDhrubaTiwariSound-healing-master" target="_blank">YouTube</a>
+								</li>
+								<li>
+									<img src="image/data/Instagram small 40x40px.png" alt="Instagram">
+									<a href="https://www.instagram.com/govinda.tiwari1/" target="_blank">Instagram</a>
+								</li>
+								<li>
+									<i class="fa fa-comments social-icon-blog"></i>
+									<a href="{{ blog ? blog : 'index.php?route=cms/blog' }}">Blog Posts</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="button-toggle hidden-lg hidden-md">
+         <a class="showmore" data-bs-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapse-footer">
+            <span class="toggle-more">{{ objlang.get('show_more') }} <i class="fa fa-angle-down"></i></span> 
+            <span class="toggle-less">{{ objlang.get('show_less') }} <i class="fa fa-angle-up"></i></span>           
+		</a>        
+	</div>
+	
+	{#======	FOOTER BOTTOM	=======#} 
+	<div class="footer-bottom">
+		<div class="container">
+			{% if soconfig.get_settings('imgpayment_status')%} 
+			<div class="col-lg-12 col-xs-12 col-12 payment-w text-center">
+				<img class="lazyload" data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="image/{{  soconfig.get_settings('imgpayment') }}"  alt="imgpayment">
+			</div>
+			{% endif %}
+		</div>
+		<div class="copyright-w">
+			<div class="container">
+				<div class="copyright">
+					{% if soconfig.get_settings('copyright') is empty %}
+						Copyright &copy; {{ "now"|date("Y") }}, Magical Singing Bowls, All Rights Reserved.
+					{% else %}
+						{{ soconfig.decode_entities(soconfig.get_settings('copyright'))|replace({'{year}': "now"|date("Y")}) }}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+<script type="text/javascript">
+	function subscribe_newsletter() {
+		var emailpattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		var email = $('#txtemail').val();
+		var d = new Date();
+		var createdate = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+		var status = 0;
+		var dataString = 'email='+email+'&createdate='+createdate+'&status='+status;
+
+		if(email != "") {
+			if(!emailpattern.test(email)) {
+				$('.show-error').remove();
+				$('.send-mail').after('<div class="alert alert-danger show-error" style="margin-top: 10px; font-size: 11px; padding: 5px;" role="alert">Invalid Email</div>');
+				return false;
+			} else {
+				$.ajax({
+					url: 'index.php?route=extension/so_theme/module/so_newletter_custom_popup|newsletter',
+					type: 'post',
+					data: dataString,
+					dataType: 'json',
+					success: function(json) {
+						$('.show-error').remove();
+						if(json.error == false) {
+							$('.send-mail').after('<div class="alert alert-success show-error" style="margin-top: 10px; font-size: 11px; padding: 5px;" role="alert">' + json.message + '</div>');
+						} else {
+							$('.send-mail').after('<div class="alert alert-danger show-error" style="margin-top: 10px; font-size: 11px; padding: 5px;" role="alert">' + json.message + '</div>');
+						}
+						var x = document.getElementsByClassName('signup');
+						for (i = 0; i < x.length; i++) {
+							x[i].reset();
+						}
+					}
+				});
+				return false;
+			}
+		} else {
+			alert("Email is required");
+			$('#txtemail').focus();
+			return false;
+		}
+	}
+</script>

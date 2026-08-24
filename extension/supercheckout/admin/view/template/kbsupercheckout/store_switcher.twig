@@ -1,0 +1,18 @@
+{% if stores|length > 0 %}
+<div style="float: right">
+    <select id="storeswticher" name="">
+        <option value="0" {% if (store_id == 0) %} {{ "selected" }}{% endif %}>{{ text_default }}</option>
+        {% for store in stores %} 
+        <option value="{{ store['store_id'] }}" {% if (store_id == store['store_id']) %}{{ "selected" }} {% endif %}>{{ store['name'] }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+<script type="text/javascript">
+        $(document).ready(function () {
+            var current_url = '{{ current_url }}';
+            $("#storeswticher").change(function () {
+                document.location.href = current_url + "&store_id=" + $(this).val();
+            })
+        });
+</script>

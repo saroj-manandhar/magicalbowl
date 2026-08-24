@@ -1,0 +1,98 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <h1>{{ heading_title }}</h1>
+      <ol class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+          <li class="breadcrumb-item"><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+      <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> {{ success }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+    {% endif %}
+
+    <div class="card">
+      <div class="card-header"><i class="fa-solid fa-file-import"></i> {{ text_edit }}</div>
+      <div class="card-body">
+        <div class="alert alert-info">
+          <i class="fa-solid fa-circle-info"></i> Upload your product Excel spreadsheet (<code>.xls</code>, <code>.xlsx</code>, <code>.csv</code>, or <code>.txt</code>). Products will be matched and updated by <strong>Product ID</strong> or <strong>Model</strong>, or newly added if they do not exist.
+        </div>
+
+        <div id="alert-zone"></div>
+
+        <form id="form-import" action="index.php?route=extension/tmd/other/import.upload&user_token={{ user_token }}" method="post" enctype="multipart/form-data">
+          <div class="row mb-4">
+            <label for="input-file" class="col-sm-3 col-form-label fw-bold">Select File for Import</label>
+            <div class="col-sm-9">
+              <input type="file" name="import_file" id="input-file" class="form-control" accept=".xls,.xlsx,.csv,.txt,.tsv" required />
+              <div class="form-text">Supports standard TMD format with all 57 columns (Price, Quantity, Categories, Diameter, Attributes, Filters, Specials, Images, etc.)</div>
+            </div>
+          </div>
+          <div class="text-end">
+            <a href="{{ export }}" class="btn btn-outline-secondary me-2"><i class="fa-solid fa-download"></i> Go to Export</a>
+            <button type="submit" id="button-upload" class="btn btn-primary"><i class="fa-solid fa-upload"></i> {{ button_import }}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript"><!--
+$('#form-import').on('submit', function(e) {
+    var fileInput = $('#input-file')[0];
+    if (!fileInput.files || !fileInput.files.length) {
+        alert('Please select a file to import!');
+        return false;
+    }
+
+    e.preventDefault();
+    var formData = new FormData(this);
+
+    $.ajax({
+        url: 'index.php?route=extension/tmd/other/import.upload&user_token={{ user_token }}&ajax=1',
+        type: 'post',
+        data: formData,
+        dataType: 'text',
+        cache: false,
+        contentType: false,
+        processData: false,
+        beforeSend: function() {
+            $('#button-upload').prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Importing...');
+            $('#alert-zone').html('');
+        },
+        complete: function() {
+            $('#button-upload').prop('disabled', false).html('<i class="fa-solid fa-upload"></i> {{ button_import }}');
+        },
+        success: function(raw) {
+            var json = {};
+            try {
+                json = JSON.parse(raw);
+            } catch (err) {
+                $('#alert-zone').html('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> Server Response: ' + raw + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                return;
+            }
+
+            if (json['error']) {
+                $('#alert-zone').html('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> ' + json['error'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+            }
+            if (json['success']) {
+                $('#alert-zone').html('<div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> ' + json['success'] + ' <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+                $('#form-import')[0].reset();
+            }
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+            var msg = xhr.responseText || thrownError;
+            $('#alert-zone').html('<div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> Import Error: ' + msg + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>');
+        }
+    });
+});
+//--></script>
+{{ footer }}

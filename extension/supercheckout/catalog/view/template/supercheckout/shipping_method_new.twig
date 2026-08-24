@@ -1,0 +1,74 @@
+{% if (not shipping_required) %}
+	<div class="supercheckout-checkout-content" style="display:block">
+		<div class="permanent-warning" style="display: block;">No shipping required with these product(s).<img src="catalog/view/theme/{{ default_theme }}/image/close.png" alt="" class="close"/></div>
+	</div>
+{% endif %}
+
+{% if (error_warning) %}
+	<div class="supercheckout-checkout-content" style="display:block;">
+		<div class="warning">{{ error_warning }}</div>
+	</div>
+{% endif %}
+
+{% if (shipping_methods is defined and shipping_methods and shipping_required) %}
+	{% set all_shipping_code = [] %}
+	{% for shipping_method in shipping_methods %}
+		{% for quote in shipping_method['quote'] %}
+			{% set all_shipping_code = all_shipping_code|merge([quote['code']]) %}
+		{% endfor %}
+	{% endfor %}
+	{% if codeShipping not in all_shipping_code %}
+		{% set codeShipping='' %}
+	{% endif %}
+
+	{% for key,shipping_method in shipping_methods %}
+		{% if (not shipping_method['error']) %}
+			<li class="highlight">
+				<div class="radio" style="position:relative">
+					{% for quote in shipping_method['quote'] %}
+						{% if (quote['code'] == codeShipping or codeShipping == '' ) %}
+							{% set codeShipping = quote['code'] %}
+							<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}" checked="checked"/>
+						{% else %}
+							<input type="radio" name="shipping_method" value="{{ quote['code'] }}" id="{{ quote['code'] }}"/>
+						{% endif %}
+
+						<label for="{{ quote['code'] }}">
+							{% if (settings['shipping_logo']['default_option'] == 'imageonly' and settings['step']['shipping_method']['logo'][quote['code']|split('.')[0]] is not empty and shipping_logo[quote['code']|split('.')[0]]) %}
+								{{ '<a title="'~quote['name']~'"><img src="image/'~settings['step']['shipping_method']['logo'][quote['code']|split('.')[0]]~'" alt="'~quote['title']~'" style="max-width: 100px;max-height: 100px" /></a>' }}
+								{{ '<span class="supercheckout-shipping-small-title shippingPrice" style="display: inline;" for="'~quote['code']~'">&nbsp&nbsp'~quote['text']~'</span>' }}
+							{% elseif (settings['shipping_logo']['default_option'] == 'textwithimage' and settings['step']['shipping_method']['logo'][quote['code']|split('.')[0]] is not empty and shipping_logo[quote['code']|split('.')[0]]) %}
+								{{ '<a title="'~quote['name']~'"><img src="image/'~settings['step']['shipping_method']['logo'][quote['code']|split('.')[0]]~'" alt="'~quote['title']~'" style="max-width: 100px;max-height: 100px" /></a><br>' }}
+                                {{ settings['step']['shipping_method']['title'][key~'.'~key][language_id] is defined ? settings['step']['shipping_method']['title'][key~'.'~key][language_id] : quote['name'] }}
+								{{ '<span class="supercheckout-shipping-small-title shippingPrice" style="display: inline;" for="'~quote['code']~'">&nbsp&nbsp'~quote['text']~'</span>' }}
+							{% else %}
+                                {{ settings['step']['shipping_method']['title'][key~'.'~key][language_id] is defined ? settings['step']['shipping_method']['title'][key~'.'~key][language_id] : quote['name'] }}
+								{{ '<span class="supercheckout-shipping-small-title shippingPrice" style="display: inline;" for="'~quote['code']~'">&nbsp&nbsp'~quote['text']~'</span>' }}
+							{% endif %}
+						</label>
+					{% endfor %}
+				</div>
+			</li>
+		{% else %}
+			<div colspan="3">
+				<div class="error">{{ shipping_method['error'] }}</div>
+			</div>
+		{% endif %}
+	{% endfor %}
+	{% set show_note = false %}
+	{% for shipping_method in shipping_methods %}
+		{% for quote in shipping_method['quote'] %}
+			{% if quote['code'] in ['eco.eco', 'aramexpri.aramexpri', 'pri.pri'] %}
+				{% set show_note = true %}
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+
+	{% if show_note %}
+	<div class="alert alert-info mt-3" style="font-size: 13px; background: #2cb3f2; color: #fff; border: none; padding: 15px; border-radius: 4px; margin-top: 15px; line-height: 1.5; list-style-type: none;">
+		Given shipping rate for below 20 kg is indicative only. If it looks incorrect or you have any doubt, please feel free to email us. We may find cheaper or better solution for your individual case.<br>
+		P.S. Above 20 kg (any weight, any country) we will provide you special cargo (probably also courier) rates. For further information please contact us by email <a href="mailto:sales.magicalsb@gmail.com" style="color: #7f0b00; font-weight: bold; text-decoration: underline;">sales.magicalsb@gmail.com</a>
+	</div>
+	{% endif %}
+{% endif %}
+

@@ -1,0 +1,1422 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/jquery.tinysort.min.js"></script>
+	<script type="text/javascript" src="view/javascript/jquery/jquery-ui/jquery-ui.js"></script>
+	<link type="text/css" rel="stylesheet" href="view/javascript/jquery/jquery-ui/jquery-ui.css">
+	<style>
+		.portlet {
+			border: 1px solid #B5B5B5;
+			clear: both;
+			display: block;
+			height: 90px;
+			width: 95%;
+			cursor: move;
+			overflow: hidden;
+			margin: 15px 10px;
+		}
+
+		.portlet-header {
+			border-bottom: 1px solid #b5b5b5;
+			text-align: center;
+			font-size: 14px;
+			font-weight: bold;
+			color: #7C7C7C;
+			min-width: 160px;
+			margin: 5px 10px;
+			padding-bottom: 5px;
+		}
+
+		.portlet-content .text {
+			margin: 8px 10px 0;
+			max-height: 33px;
+			color: #7C7C7C;
+			min-width: 160px;
+			overflow: hidden;
+			text-align: center;
+		}
+
+		.portlet-toggle {
+			position: absolute;
+			top: 50%;
+			right: 0;
+			margin-top: -8px;
+		}
+
+		.portlet-content {
+			padding: 0.4em;
+		}
+		.portlet-placeholder {
+			border: 1px dotted black;
+			margin: 0 1em 1em 0;
+			height: 50px;
+		}
+		.columns input {
+			background: none;
+			box-shadow: none;
+			padding: 0;
+			height: 16px;
+			text-align: center;
+			border: none;
+		}
+		.sort {
+			display: none;
+		}
+		.column {
+			width: 180px;
+			float: left;
+			margin: 10px 0;
+			padding: 0;
+			overflow: hidden;
+		}
+
+        .kb_error_message{
+            color:red;
+        }
+        .kb_error_field {
+            border-color: red;
+        }
+	</style>
+
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="float-end">
+				<button type="submit" id="save-button" form="form-product" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+					<i class="fa fa-save"></i>
+				</button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+					<i class="fa fa-reply"></i>
+				</a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ol class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li class="breadcrumb-item">
+						<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+					</li>
+				{% endfor %}
+			</ol>
+		</div>
+	</div>
+	<div class="container-fluid">
+		{% if (error_warning) %}
+			<div class="alert alert-danger alert-dismissible">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		{% if (success) %}
+			<div class="alert alert-success alert-dismissible">
+				<i class="fa fa-check-circle"></i>
+				{{ success }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		<div id="error_message"></div>
+
+		<div class="card">
+
+			{{ store_switcher }}
+			<h3 class="card-header">
+				<i class="fa fa-columns"></i>
+				{{ supercheckout_text_design }}
+            </h3>
+
+			<div class="card-body">
+				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-product" class="form-horizontal">
+					{{ tabs }}
+					<div class="tab-content" id="tab_design_checkout">
+
+						<div class="block">
+							<table class="form" style="width: 100%">
+								<tr>
+									<td>
+										<select class="form-control" name="supercheckout[general][layout]" onchange="location = '{{ action }}&layout=' + $(this).val();">
+											{% set i = 0 %}
+											{% if ((layout == '1-Column') and i != 0) %}
+												<option value="1-Column" selected="selected">{{ text_column_1 }}</option>
+											{% else %}
+												<option value="1-Column">{{ text_column_1 }}</option>
+											{% endif %}
+											{% set i = i + 1 %}
+											{% if (layout == '2-Column') %}
+												<option value="2-Column" selected="selected">{{ text_column_2 }}</option>
+											{% else %}
+												<option value="2-Column">{{ text_column_2 }}</option>
+											{% endif %}
+											{% if (layout == '3-Column') %}
+												<option value="3-Column" selected="selected">{{ text_column_3 }}</option>
+											{% else %}
+												<option value="3-Column">{{ text_column_3 }}</option>
+											{% endif %}
+										</select>
+									</td>
+								</tr>
+
+								<tbody>
+									<tr>
+										{% for k,v in supercheckout['step']['html'] %}
+											<input id="two_col_h_{{ k }}" type="hidden" class="sort col-data" name="supercheckout[step][html][{{ k }}][two-column][column]" value="{{ supercheckout['step']['html'][k]['two-column']['column'] }}"/>
+											<input id="two_row_h_{{ k }}" type="hidden" class="sort row-data" name="supercheckout[step][html][{{ k }}][two-column][row]" value="{{ supercheckout['step']['html'][k]['two-column']['row'] }}"/>
+											<input id="two_col_ins_h_{{ k }}" type="hidden" class="sort col-data-inside" name="supercheckout[step][html][{{ k }}][two-column][column-inside]" value="{{ supercheckout['step']['html'][k]['two-column']['column-inside'] }}"/>
+										{% endfor %}
+										{% for k,v in supercheckout['step']['html'] %}
+											<input id="one_col_h_{{ k }}" type="hidden" class="sort col-data" name="supercheckout[step][html][{{ k }}][one-column][column]" value="{{ supercheckout['step']['html'][k]['one-column']['column'] }}"/>
+											<input id="one_row_h_{{ k }}" type="hidden" class="sort row-data" name="supercheckout[step][html][{{ k }}][one-column][row]" value="{{ supercheckout['step']['html'][k]['one-column']['row'] }}"/>
+											<input id="one_col_ins_h_{{ k }}" type="hidden" class="sort col-data-inside" name="supercheckout[step][html][{{ k }}][one-column][column-inside]" value="{{ supercheckout['step']['html'][k]['one-column']['column-inside'] }}"/>
+										{% endfor %}
+										{% for k,v in supercheckout['step']['html'] %}
+											<input id="three_col_h_{{ k }}" type="hidden" class="sort col-data" name="supercheckout[step][html][{{ k }}][three-column][column]" value="{{ supercheckout['step']['html'][k]['three-column']['column'] }}"/>
+											<input id="three_row_h_{{ k }}" type="hidden" class="sort row-data" name="supercheckout[step][html][{{ k }}][three-column][row]" value="{{ supercheckout['step']['html'][k]['three-column']['row'] }}"/>
+											<input id="three_col_ins_h_{{ k }}" type="hidden" class="sort col-data-inside" name="supercheckout[step][html][{{ k }}][three-column][column-inside]" value="{{ supercheckout['step']['html'][k]['three-column']['column-inside'] }}"/>
+										{% endfor %}
+										<input id="value_modal" type="hidden" name="supercheckout[step][modal_value]" value="{{ supercheckout['step']['modal_value'] is defined ? supercheckout['step']['modal_value'] : 1 }}">
+										{% if (layout == '3-Column') %}
+											<td colspan="2" style="position:static">
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][two-column][column]" value="{{ supercheckout['step']['payment_address']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][two-column][row]" value="{{ supercheckout['step']['payment_address']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][two-column][column-inside]" value="{{ supercheckout['step']['payment_address']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][two-column][column]" value="{{ supercheckout['step']['login']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][two-column][row]" value="{{ supercheckout['step']['login']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][two-column][column-inside]" value="{{ supercheckout['step']['login']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][two-column][column]" value="{{ supercheckout['step']['shipping_address']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][two-column][row]" value="{{ supercheckout['step']['shipping_address']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][two-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][two-column][column]" value="{{ supercheckout['step']['shipping_method']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][two-column][row]" value="{{ supercheckout['step']['shipping_method']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][two-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][two-column][column]" value="{{ supercheckout['step']['payment_method']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][two-column][row]" value="{{ supercheckout['step']['payment_method']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][two-column][column-inside]" value="{{ supercheckout['step']['payment_method']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][two-column][column]" value="{{ supercheckout['step']['cart']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][two-column][row]" value="{{ supercheckout['step']['cart']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][two-column][column-inside]" value="{{ supercheckout['step']['cart']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][two-column][column]" value="{{ supercheckout['step']['confirm']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][two-column][row]" value="{{ supercheckout['step']['confirm']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][two-column][column-inside]" value="{{ supercheckout['step']['confirm']['two-column']['column-inside'] }}"/>
+
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][one-column][column]" value="{{ supercheckout['step']['payment_address']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][one-column][row]" value="{{ supercheckout['step']['payment_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][one-column][column-inside]" value="{{ supercheckout['step']['payment_address']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][one-column][column]" value="{{ supercheckout['step']['login']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][one-column][row]" value="{{ supercheckout['step']['login']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][one-column][column-inside]" value="{{ supercheckout['step']['login']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][one-column][column]" value="{{ supercheckout['step']['shipping_address']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][one-column][row]" value="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][one-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][one-column][column]" value="{{ supercheckout['step']['shipping_method']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][one-column][row]" value="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][one-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][one-column][column]" value="{{ supercheckout['step']['payment_method']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][one-column][row]" value="{{ supercheckout['step']['payment_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][one-column][column-inside]" value="{{ supercheckout['step']['payment_method']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][one-column][column]" value="{{ supercheckout['step']['cart']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][one-column][row]" value="{{ supercheckout['step']['cart']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][one-column][column-inside]" value="{{ supercheckout['step']['cart']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][one-column][column]" value="{{ supercheckout['step']['confirm']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][one-column][row]" value="{{ supercheckout['step']['confirm']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][one-column][column-inside]" value="{{ supercheckout['step']['confirm']['one-column']['column-inside'] }}"/>
+
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][three-column][column]" value="{{ supercheckout['step']['payment_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][three-column][row]" value="{{ supercheckout['step']['payment_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][three-column][column-inside]" value="{{ supercheckout['step']['payment_address']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][three-column][column]" value="{{ supercheckout['step']['login']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][three-column][row]" value="{{ supercheckout['step']['login']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][three-column][column-inside]" value="{{ supercheckout['step']['login']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][three-column][column]" value="{{ supercheckout['step']['shipping_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][three-column][row]" value="{{ supercheckout['step']['shipping_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][three-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][three-column][column]" value="{{ supercheckout['step']['shipping_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][three-column][row]" value="{{ supercheckout['step']['shipping_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][three-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][three-column][column]" value="{{ supercheckout['step']['payment_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][three-column][row]" value="{{ supercheckout['step']['payment_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][three-column][column-inside]" value="{{ supercheckout['step']['payment_method']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][three-column][column]" value="{{ supercheckout['step']['cart']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][three-column][row]" value="{{ supercheckout['step']['cart']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][three-column][column-inside]" value="{{ supercheckout['step']['cart']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][three-column][column]" value="{{ supercheckout['step']['confirm']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][three-column][row]" value="{{ supercheckout['step']['confirm']['three-column']['row'] }}"/>
+												<input
+												type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][three-column][column-inside]" value="{{ supercheckout['step']['confirm']['three-column']['column-inside'] }}"/>
+
+
+												<!-- author: mohit kochhar-->
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][three-column][inside][1]" value="{{ supercheckout['general']['column_width']['three-column']['inside'][1] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][three-column][inside][2]" value="{{ supercheckout['general']['column_width']['three-column']['inside'][2] }}"/>
+
+												<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][two-column][1]" value="{{ supercheckout['general']['column_width']['two-column'][1] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][two-column][2]" value="{{ supercheckout['general']['column_width']['two-column'][2] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][two-column][3]" value="{{ supercheckout['general']['column_width']['two-column'][3] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][two-column][inside][1]" value="{{ supercheckout['general']['column_width']['two-column']['inside'][1] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][two-column][inside][2]" value="{{ supercheckout['general']['column_width']['two-column']['inside'][2] }}"/>
+
+												<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][one-column][1]" value="{{ supercheckout['general']['column_width']['one-column'][1] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][one-column][2]" value="{{ supercheckout['general']['column_width']['one-column'][2] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][one-column][3]" value="{{ supercheckout['general']['column_width']['one-column'][3] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][one-column][inside][1]" value="{{ supercheckout['general']['column_width']['one-column']['inside'][1] }}"/>
+												<input
+												type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][one-column][inside][2]" value="{{ supercheckout['general']['column_width']['one-column']['inside'][2] }}"/>
+
+												<!-- author: mohit kochhar-->
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][one-column][row]" value="{{ supercheckout['step']['payment_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][one-column][row]" value="{{ supercheckout['step']['login']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][one-column][row]" value="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][one-column][row]" value="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][one-column][row]" value="{{ supercheckout['step']['payment_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][one-column][row]" value="{{ supercheckout['step']['cart']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][one-column][row]" value="{{ supercheckout['step']['confirm']['one-column']['row'] }}"/>
+
+												<div class="portlet">
+													<div class="portlet-header">{{ supercheckout_text_html_header }}</div>
+													<div class="portlet-content">
+														<div class="text" style="overflow:visible !important;">
+															<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_header" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px">
+																<div class="edit_html">
+																	<i></i>
+																	<div class="edit_html">
+																		<i></i>
+																	</div>
+																</div>
+															</a>
+														</div>
+													</div>
+												</div>
+
+
+												<div class="columns">
+													<input type="text" id="three-column-1" readonly="readonly" class="column-data-1 col" name="supercheckout[general][column_width][three-column][1]" value="{{ supercheckout['general']['column_width']['three-column'][1] }}"/>
+													<input type="text" id="three-column-2" readonly="readonly" class="column-data-2 col" name="supercheckout[general][column_width][three-column][2]" value="{{ supercheckout['general']['column_width']['three-column'][2] }}"/>
+													<input type="text" id="three-column-3" readonly="readonly" class="column-data-3 col" name="supercheckout[general][column_width][three-column][3]" value="{{ supercheckout['general']['column_width']['three-column'][3] }}"/>
+												</div>
+
+												<div id="slider" class="ui-editRangeSlider"></div>
+
+												<ul id="column_1" class="column column-1" col-data="1">
+													<li class="portlet" col-data="{{ supercheckout['step']['payment_address']['three-column']['column'] }}" row-data="{{ supercheckout['step']['payment_address']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-address"></i>
+															{{ supercheckout_text_payment_address }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][payment_address][three-column][column]" value="{{ supercheckout['step']['payment_address']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][payment_address][three-column][row]" value="{{ supercheckout['step']['payment_address']['three-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['login']['three-column']['column'] }}" row-data="{{ supercheckout['step']['login']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-address"></i>
+															{{ supercheckout_text_login }}
+                                                        </div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][login][three-column][column]" value="{{ supercheckout['step']['login']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][login][three-column][row]" value="{{ supercheckout['step']['login']['three-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['shipping_address']['three-column']['column'] }}" row-data="{{ supercheckout['step']['shipping_address']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-shipping-address"></i>
+															{{ supercheckout_text_shipping_address }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_shipping_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][shipping_address][three-column][column]" value="{{ supercheckout['step']['shipping_address']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][shipping_address][three-column][row]" value="{{ supercheckout['step']['shipping_address']['three-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['shipping_method']['three-column']['column'] }}" row-data="{{ supercheckout['step']['shipping_method']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-shipping-method"></i>
+															{{ supercheckout_text_shipping_method }}
+                                                        </div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_shipping_method_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][shipping_method][three-column][column]" value="{{ supercheckout['step']['shipping_method']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][shipping_method][three-column][row]" value="{{ supercheckout['step']['shipping_method']['three-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['payment_method']['three-column']['column'] }}" row-data="{{ supercheckout['step']['payment_method']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-method"></i>
+															{{ supercheckout_text_payment_method }}
+                                                        </div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_method_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][payment_method][three-column][column]" value="{{ supercheckout['step']['payment_method']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][payment_method][three-column][row]" value="{{ supercheckout['step']['payment_method']['three-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['cart']['three-column']['column'] }}" row-data="{{ supercheckout['step']['cart']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_cart }}
+                                                        </div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_cart_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][cart][three-column][column]" value="{{ supercheckout['step']['cart']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][cart][three-column][row]" value="{{ supercheckout['step']['cart']['three-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['confirm']['three-column']['column'] }}" row-data="{{ supercheckout['step']['confirm']['three-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_confirm }}
+                                                        </div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_confirm_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][confirm][three-column][column]" value="{{ supercheckout['step']['confirm']['three-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][confirm][three-column][row]" value="{{ supercheckout['step']['confirm']['three-column']['row'] }}"/>
+														</div>
+													</li>
+
+
+													{% for k,v in supercheckout['step']['html'] %}
+														<li class="portlet" id="portlet_{{ k }}" col-data="{{ supercheckout['step']['html'][k]['three-column']['column'] }}" row-data="{{ supercheckout['step']['html'][k]['three-column']['row'] }}">
+															<div class="portlet-header">{{ supercheckout_text_html }}</div>
+															<div class="portlet-content" id="portlet_content_{{ k }}">
+																<div class="text" style="overflow:visible !important;">
+																	<a data-toggle="tooltip" data-placement="top" data-original-title="Add new HTML content" id="duplicate_button_{{ k }}" data="0" class="fa fa-copy more_windows" style="font-size: 25px; min-width: 50px" onclick="duplicate_html(this.id);">
+																		<div class="edit_html"></div>
+																	</a>
+																	<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_{{ k }}" data-bs-toggle="modal" class="fa fa-edit edit" style="font-size: 25px; min-width: 50px">
+																		<div class="edit_html">
+																			<i></i>
+																		</div>
+																	</a>
+																	{% if (k != "0_0") %}
+																		<a data-toggle="tooltip" data-placement="top" data-original-title="Remove this HTML content" id="delete_button_{{ k }}" data="{{ k }}" data-toggle="modal" class="fa fa-trash-o remove" style="font-size: 25px" onclick="remove_html(this.id);">
+																			<div class="edit_html">
+																				<i></i>
+																			</div>
+																		</a>
+																	{% endif %}
+																</div>
+																<input id="col_text_{{ k }}" type="text" class="sort col-data" name="supercheckout[step][html][{{ k }}][three-column][column]" value="{{ supercheckout['step']['html'][k]['three-column']['column'] }}"/>
+																<input id="row_text_{{ k }}" type="text" class="sort row-data" name="supercheckout[step][html][{{ k }}][three-column][row]" value="{{ supercheckout['step']['html'][k]['three-column']['row'] }}"/>
+															</div>
+														</li>
+													{% endfor %}
+												</ul>
+												<ul id="column_2" class="column column-2" col-data="2"></ul>
+												<ul id="column_3" class="column column-3" col-data="3"></ul>
+												<div class="portlet">
+													<div class="portlet-header">{{ supercheckout_text_html_footer }}</div>
+													<div class="portlet-content">
+														<div class="text" style="overflow:visible !important;">
+															<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_footer" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px">
+																<div class="edit_html">
+																	<i></i>
+																</div>
+															</a>
+														</div>
+													</div>
+												</div>
+												<br style="clear:both">
+											</td>
+										{% elseif (layout == '2-Column') %}
+											<td colspan="2" style="position:static">
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][two-column][column]" value="{{ supercheckout['step']['payment_address']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][two-column][row]" value="{{ supercheckout['step']['payment_address']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][two-column][column-inside]" value="{{ supercheckout['step']['payment_address']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][two-column][column]" value="{{ supercheckout['step']['login']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][two-column][row]" value="{{ supercheckout['step']['login']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][two-column][column-inside]" value="{{ supercheckout['step']['login']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][two-column][column]" value="{{ supercheckout['step']['shipping_address']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][two-column][row]" value="{{ supercheckout['step']['shipping_address']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][two-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][two-column][column]" value="{{ supercheckout['step']['shipping_method']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][two-column][row]" value="{{ supercheckout['step']['shipping_method']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][two-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][two-column][column]" value="{{ supercheckout['step']['payment_method']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][two-column][row]" value="{{ supercheckout['step']['payment_method']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][two-column][column-inside]" value="{{ supercheckout['step']['payment_method']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][two-column][column]" value="{{ supercheckout['step']['cart']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][two-column][row]" value="{{ supercheckout['step']['cart']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][two-column][column-inside]" value="{{ supercheckout['step']['cart']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][two-column][column]" value="{{ supercheckout['step']['confirm']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][two-column][row]" value="{{ supercheckout['step']['confirm']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][two-column][column-inside]" value="{{ supercheckout['step']['confirm']['two-column']['column-inside'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][one-column][column]" value="{{ supercheckout['step']['payment_address']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][one-column][row]" value="{{ supercheckout['step']['payment_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][one-column][column-inside]" value="{{ supercheckout['step']['payment_address']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][one-column][column]" value="{{ supercheckout['step']['login']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][one-column][row]" value="{{ supercheckout['step']['login']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][one-column][column-inside]" value="{{ supercheckout['step']['login']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][one-column][column]" value="{{ supercheckout['step']['shipping_address']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][one-column][row]" value="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][one-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][one-column][column]" value="{{ supercheckout['step']['shipping_method']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][one-column][row]" value="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][one-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][one-column][column]" value="{{ supercheckout['step']['payment_method']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][one-column][row]" value="{{ supercheckout['step']['payment_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][one-column][column-inside]" value="{{ supercheckout['step']['payment_method']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][one-column][column]" value="{{ supercheckout['step']['cart']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][one-column][row]" value="{{ supercheckout['step']['cart']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][one-column][column-inside]" value="{{ supercheckout['step']['cart']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][one-column][column]" value="{{ supercheckout['step']['confirm']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][one-column][row]" value="{{ supercheckout['step']['confirm']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][one-column][column-inside]" value="{{ supercheckout['step']['confirm']['one-column']['column-inside'] }}"/>
+
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][three-column][column]" value="{{ supercheckout['step']['payment_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][three-column][row]" value="{{ supercheckout['step']['payment_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][three-column][column-inside]" value="{{ supercheckout['step']['payment_address']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][three-column][column]" value="{{ supercheckout['step']['login']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][three-column][row]" value="{{ supercheckout['step']['login']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][three-column][column-inside]" value="{{ supercheckout['step']['login']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][three-column][column]" value="{{ supercheckout['step']['shipping_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][three-column][row]" value="{{ supercheckout['step']['shipping_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][three-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][three-column][column]" value="{{ supercheckout['step']['shipping_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][three-column][row]" value="{{ supercheckout['step']['shipping_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][three-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][three-column][column]" value="{{ supercheckout['step']['payment_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][three-column][row]" value="{{ supercheckout['step']['payment_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][three-column][column-inside]" value="{{ supercheckout['step']['payment_method']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][three-column][column]" value="{{ supercheckout['step']['cart']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][three-column][row]" value="{{ supercheckout['step']['cart']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][three-column][column-inside]" value="{{ supercheckout['step']['cart']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][three-column][column]" value="{{ supercheckout['step']['confirm']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][three-column][row]" value="{{ supercheckout['step']['confirm']['three-column']['row'] }}"/>
+												<input
+												type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][three-column][column-inside]" value="{{ supercheckout['step']['confirm']['three-column']['column-inside'] }}"/>
+
+
+												<!--                                               one- column- part-->
+												<input type="text" class="sort row-data" name="supercheckout[step][payment_address][one-column][row]" value="{{ supercheckout['step']['payment_address']['one-column']['row'] }}"/>
+												<input type="text" class="sort row-data" name="supercheckout[step][login][one-column][row]" value="{{ supercheckout['step']['login']['one-column']['row'] }}"/>
+												<input type="text" class="sort row-data" name="supercheckout[step][shipping_address][one-column][row]" value="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}"/>
+												<input type="text" class="sort row-data" name="supercheckout[step][shipping_method][one-column][row]" value="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}"/>
+												<input type="text" class="sort row-data" name="supercheckout[step][payment_method][one-column][row]" value="{{ supercheckout['step']['payment_method']['one-column']['row'] }}"/>
+												<input type="text" class="sort row-data" name="supercheckout[step][cart][one-column][row]" value="{{ supercheckout['step']['cart']['one-column']['row'] }}"/>
+												<input type="text" class="sort row-data" name="supercheckout[step][confirm][one-column][row]" value="{{ supercheckout['step']['confirm']['one-column']['row'] }}"/>
+												<div class="portlet">
+													<div class="portlet-header">{{ supercheckout_text_html_header }}</div>
+													<div class="portlet-content">
+														<div class="text" style="overflow:visible !important;">
+															<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_header" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px">
+																<div class="edit_html">
+																	<i></i>
+																</div>
+															</a>
+														</div>
+													</div>
+												</div>
+												<div class="columns">
+													<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][three-column][1]" value="{{ supercheckout['general']['column_width']['three-column'][1] }}"/>
+													<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][three-column][2]" value="{{ supercheckout['general']['column_width']['three-column'][2] }}"/>
+													<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][three-column][3]" value="{{ supercheckout['general']['column_width']['three-column'][3] }}"/>
+													<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][three-column][inside][1]" value="{{ supercheckout['general']['column_width']['three-column']['inside'][1] }}"/>
+													<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][three-column][inside][2]" value="{{ supercheckout['general']['column_width']['three-column']['inside'][2] }}"/>
+
+													<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][one-column][1]" value="{{ supercheckout['general']['column_width']['one-column'][1] }}"/>
+													<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][one-column][2]" value="{{ supercheckout['general']['column_width']['one-column'][2] }}"/>
+													<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][one-column][3]" value="{{ supercheckout['general']['column_width']['one-column'][3] }}"/>
+													<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][one-column][inside][1]" value="{{ supercheckout['general']['column_width']['one-column']['inside'][1] }}"/>
+													<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][one-column][inside][2]" value="{{ supercheckout['general']['column_width']['one-column']['inside'][2] }}"/>
+													<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][two-column][3]" value="{{ supercheckout['general']['column_width']['two-column'][3] }}"/>
+
+
+													<input type="text" id="column-1-text" class="column-data-1 col" name="supercheckout[general][column_width][two-column][1]" value="{{ supercheckout['general']['column_width']['two-column'][1] }}"/>
+													<input type="text" id="column-2-text" class="column-data-2 col" name="supercheckout[general][column_width][two-column][2]" value="{{ supercheckout['general']['column_width']['two-column'][2] }}"/>
+												</div>
+												<div id="slider" class="ui-editRangeSlider"></div>
+
+												<ul id="column-1" class="column column-1" col-data="1" col-inside-data="1">
+													<li class="portlet" col-data="{{ supercheckout['step']['payment_address']['two-column']['column'] }}" row-data="{{ supercheckout['step']['payment_address']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['payment_address']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-address"></i>
+															{{ supercheckout_text_payment_address }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][payment_address][two-column][column]" value="{{ supercheckout['step']['payment_address']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][payment_address][two-column][row]" value="{{ supercheckout['step']['payment_address']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][payment_address][two-column][column-inside]" value="{{ supercheckout['step']['payment_address']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['login']['two-column']['column'] }}" row-data="{{ supercheckout['step']['login']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['login']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-address"></i>
+															{{ supercheckout_text_login }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][login][two-column][column]" value="{{ supercheckout['step']['login']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][login][two-column][row]" value="{{ supercheckout['step']['login']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][login][two-column][column-inside]" value="{{ supercheckout['step']['login']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['shipping_address']['two-column']['column'] }}" row-data="{{ supercheckout['step']['shipping_address']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['shipping_address']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-shipping-address"></i>
+															{{ supercheckout_text_shipping_address }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_shipping_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][shipping_address][two-column][column]" value="{{ supercheckout['step']['shipping_address']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][shipping_address][two-column][row]" value="{{ supercheckout['step']['shipping_address']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][shipping_address][two-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['shipping_method']['two-column']['column'] }}" row-data="{{ supercheckout['step']['shipping_method']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['shipping_method']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-shipping-method"></i>
+															{{ supercheckout_text_shipping_method }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_shipping_method_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][shipping_method][two-column][column]" value="{{ supercheckout['step']['shipping_method']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][shipping_method][two-column][row]" value="{{ supercheckout['step']['shipping_method']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][shipping_method][two-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['payment_method']['two-column']['column'] }}" row-data="{{ supercheckout['step']['payment_method']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['payment_method']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-method"></i>
+															{{ supercheckout_text_payment_method }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_method_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][payment_method][two-column][column]" value="{{ supercheckout['step']['payment_method']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][payment_method][two-column][row]" value="{{ supercheckout['step']['payment_method']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][payment_method][two-column][column-inside]" value="{{ supercheckout['step']['payment_method']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['cart']['two-column']['column'] }}" row-data="{{ supercheckout['step']['cart']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['cart']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_cart }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_cart_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][cart][two-column][column]" value="{{ supercheckout['step']['cart']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][cart][two-column][row]" value="{{ supercheckout['step']['cart']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][cart][two-column][column-inside]" value="{{ supercheckout['step']['cart']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" col-data="{{ supercheckout['step']['confirm']['two-column']['column'] }}" row-data="{{ supercheckout['step']['confirm']['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['confirm']['two-column']['column-inside'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_confirm }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_confirm_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort col-data" name="supercheckout[step][confirm][two-column][column]" value="{{ supercheckout['step']['confirm']['two-column']['column'] }}"/>
+															<input type="text" class="sort row-data" name="supercheckout[step][confirm][two-column][row]" value="{{ supercheckout['step']['confirm']['two-column']['row'] }}"/>
+															<input type="text" class="sort col-data-inside" name="supercheckout[step][confirm][two-column][column-inside]" value="{{ supercheckout['step']['confirm']['two-column']['column-inside'] }}"/>
+														</div>
+													</li>
+
+													{% for k,v in supercheckout['step']['html'] %}
+														<li class="portlet" id="portlet_{{ k }}" col-data="{{ supercheckout['step']['html'][k]['two-column']['column'] }}" row-data="{{ supercheckout['step']['html'][k]['two-column']['row'] }}" col-inside-data="{{ supercheckout['step']['html'][k]['two-column']['column-inside'] }}">
+															<div class="portlet-header">{{ supercheckout_text_html }}</div>
+															<div class="portlet-content" id="portlet_content_{{ k }}">
+																<div class="text" style="overflow:visible !important;">
+
+																	<a data-toggle="tooltip" data-placement="top" data-original-title=" Add new HTML content" id="duplicate_button_{{ k }}" data="0" class="fa fa-copy more_windows" style="font-size: 25px; min-width: 50px" onclick="duplicate_html(this.id);">
+																		<div class="edit_html">
+																			<i></i>
+																		</div>
+																	</a>
+
+																	<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_{{ k }}" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px; min-width: 50px">
+																		<div class="edit_html">
+																			<i></i>
+																		</div>
+																	</a>
+																	{% if (k != "0_0") %}
+																		<a data-toggle="tooltip" data-placement="top" data-original-title="Remove this HTML content" id="delete_button_{{ k }}" data="{{ k }}" data-toggle="modal" class="fa fa-trash-o remove" style="font-size: 25px;" onclick="remove_html(this.id);">
+																			<div class="edit_html">
+																				<i></i>
+																			</div>
+																		</a>
+																	{% endif %}
+																</div>
+																<input id="col_text_{{ k }}" type="text" class="sort col-data" name="supercheckout[step][html][{{ k }}][two-column][column]" value="{{ supercheckout['step']['html'][k]['two-column']['column'] }}"/>
+																<input id="row_text_{{ k }}" type="text" class="sort row-data" name="supercheckout[step][html][{{ k }}][two-column][row]" value="{{ supercheckout['step']['html'][k]['two-column']['row'] }}"/>
+																<input id="col_inside_text_{{ k }}" type="text" class="sort col-data-inside" name="supercheckout[step][html][{{ k }}][two-column][column-inside]" value="{{ supercheckout['step']['html'][k]['two-column']['column-inside'] }}"/>
+															</div>
+														</li>
+													{% endfor %}
+												</ul>
+												<ul id="column-2" class="column column-2" col-data="2">
+
+													<ul id="column-2-upper" class="column column-1" col-data="1" col-inside-data="2" style="min-height: 30px !important;margin: 0px; width:100% !important; height:auto !important;"></ul>
+													<div class="columns">
+														<input type="text" id="column-1-inside-text" class="column-data-1 col" name="supercheckout[general][column_width][two-column][inside][1]" value="{{ supercheckout['general']['column_width']['two-column']['inside'][1] }}"/>
+														<input type="text" id="column-2-inside-text" class="column-data-2 col" name="supercheckout[general][column_width][two-column][inside][2]" value="{{ supercheckout['general']['column_width']['two-column']['inside'][2] }}"/>
+													</div>
+													<div id="slider_inside" class="ui-editRangeSlider" style="clear:both;"></div>
+													<ul id="column-1-inside" class="column column-1" col-inside-data="3" col-data="1" style="min-height: 30px !important; height:auto !important;"></ul>
+													<ul id="column-2-inside" class="column column-2" col-inside-data="3" col-data="2" style="min-height: 30px !important; height:auto !important;"></ul>
+													<hr class="design-separator" size="2">
+													<ul id="column-2-lower" class="column column-1" col-data="1" col-inside-data="4" style="min-height: 30px !important; width:100% !important; height:auto !important;"></ul>
+												</ul>
+
+												<div class="portlet">
+													<div class="portlet-header">{{ supercheckout_text_html_footer }}</div>
+													<div class="portlet-content">
+														<div class="text" style="overflow:visible !important;">
+															<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_footer" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px;">
+																<div class="edit_html">
+																	<i></i>
+																</div>
+															</a>
+														</div>
+													</div>
+												</div>
+												<br style="clear:both">
+											</td>
+										{% elseif (layout == '1-Column') %}
+
+											<td colspan="2" style="position:static">
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][two-column][column]" value="{{ supercheckout['step']['payment_address']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][two-column][row]" value="{{ supercheckout['step']['payment_address']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][two-column][column-inside]" value="{{ supercheckout['step']['payment_address']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][two-column][column]" value="{{ supercheckout['step']['login']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][two-column][row]" value="{{ supercheckout['step']['login']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][two-column][column-inside]" value="{{ supercheckout['step']['login']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][two-column][column]" value="{{ supercheckout['step']['shipping_address']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][two-column][row]" value="{{ supercheckout['step']['shipping_address']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][two-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][two-column][column]" value="{{ supercheckout['step']['shipping_method']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][two-column][row]" value="{{ supercheckout['step']['shipping_method']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][two-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][two-column][column]" value="{{ supercheckout['step']['payment_method']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][two-column][row]" value="{{ supercheckout['step']['payment_method']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][two-column][column-inside]" value="{{ supercheckout['step']['payment_method']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][two-column][column]" value="{{ supercheckout['step']['cart']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][two-column][row]" value="{{ supercheckout['step']['cart']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][two-column][column-inside]" value="{{ supercheckout['step']['cart']['two-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][two-column][column]" value="{{ supercheckout['step']['confirm']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][two-column][row]" value="{{ supercheckout['step']['confirm']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][two-column][column-inside]" value="{{ supercheckout['step']['confirm']['two-column']['column-inside'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][html][0_0][two-column][column]" value="{{ supercheckout['step']['html']['0_0']['two-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][html][0_0][two-column][row]" value="{{ supercheckout['step']['html']['0_0']['two-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][html][0_0][two-column][column-inside]" value="{{ supercheckout['step']['html']['0_0']['two-column']['column-inside'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][one-column][column]" value="{{ supercheckout['step']['payment_address']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][one-column][row]" value="{{ supercheckout['step']['payment_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][one-column][column-inside]" value="{{ supercheckout['step']['payment_address']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][one-column][column]" value="{{ supercheckout['step']['login']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][one-column][row]" value="{{ supercheckout['step']['login']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][one-column][column-inside]" value="{{ supercheckout['step']['login']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][one-column][column]" value="{{ supercheckout['step']['shipping_address']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][one-column][row]" value="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][one-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][one-column][column]" value="{{ supercheckout['step']['shipping_method']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][one-column][row]" value="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][one-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][one-column][column]" value="{{ supercheckout['step']['payment_method']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][one-column][row]" value="{{ supercheckout['step']['payment_method']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][one-column][column-inside]" value="{{ supercheckout['step']['payment_method']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][one-column][column]" value="{{ supercheckout['step']['cart']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][one-column][row]" value="{{ supercheckout['step']['cart']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][one-column][column-inside]" value="{{ supercheckout['step']['cart']['one-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][one-column][column]" value="{{ supercheckout['step']['confirm']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][one-column][row]" value="{{ supercheckout['step']['confirm']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][one-column][column-inside]" value="{{ supercheckout['step']['confirm']['one-column']['column-inside'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][html][0_0][one-column][column]" value="{{ supercheckout['step']['html']['0_0']['one-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][html][0_0][one-column][row]" value="{{ supercheckout['step']['html']['0_0']['one-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][html][0_0][one-column][column-inside]" value="{{ supercheckout['step']['html']['0_0']['one-column']['column-inside'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][three-column][column]" value="{{ supercheckout['step']['payment_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][three-column][row]" value="{{ supercheckout['step']['payment_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_address][three-column][column-inside]" value="{{ supercheckout['step']['payment_address']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][three-column][column]" value="{{ supercheckout['step']['login']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][three-column][row]" value="{{ supercheckout['step']['login']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][login][three-column][column-inside]" value="{{ supercheckout['step']['login']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][three-column][column]" value="{{ supercheckout['step']['shipping_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][three-column][row]" value="{{ supercheckout['step']['shipping_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_address][three-column][column-inside]" value="{{ supercheckout['step']['shipping_address']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][three-column][column]" value="{{ supercheckout['step']['shipping_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][three-column][row]" value="{{ supercheckout['step']['shipping_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][shipping_method][three-column][column-inside]" value="{{ supercheckout['step']['shipping_method']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][three-column][column]" value="{{ supercheckout['step']['payment_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][three-column][row]" value="{{ supercheckout['step']['payment_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][payment_method][three-column][column-inside]" value="{{ supercheckout['step']['payment_method']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][three-column][column]" value="{{ supercheckout['step']['cart']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][three-column][row]" value="{{ supercheckout['step']['cart']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][cart][three-column][column-inside]" value="{{ supercheckout['step']['cart']['three-column']['column-inside'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][three-column][column]" value="{{ supercheckout['step']['confirm']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][three-column][row]" value="{{ supercheckout['step']['confirm']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data-inside" name="supercheckout[step][confirm][three-column][column-inside]" value="{{ supercheckout['step']['confirm']['three-column']['column-inside'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][html][0_0][three-column][column]" value="{{ supercheckout['step']['html']['0_0']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][html][0_0][three-column][row]" value="{{ supercheckout['step']['html']['0_0']['three-column']['row'] }}"/>
+												<input
+												type="hidden" class="sort col-data-inside" name="supercheckout[step][html][0_0][three-column][column-inside]" value="{{ supercheckout['step']['html']['0_0']['three-column']['column-inside'] }}"/>
+
+												<!--                                            mk-->
+												<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][three-column][1]" value="{{ supercheckout['general']['column_width']['three-column'][1] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][three-column][2]" value="{{ supercheckout['general']['column_width']['three-column'][2] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][three-column][3]" value="{{ supercheckout['general']['column_width']['three-column'][3] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][three-column][inside][1]" value="{{ supercheckout['general']['column_width']['three-column']['inside'][1] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][three-column][inside][2]" value="{{ supercheckout['general']['column_width']['three-column']['inside'][2] }}"/>
+
+												<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][two-column][1]" value="{{ supercheckout['general']['column_width']['two-column'][1] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][two-column][2]" value="{{ supercheckout['general']['column_width']['two-column'][2] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][two-column][3]" value="{{ supercheckout['general']['column_width']['two-column'][3] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][two-column][inside][1]" value="{{ supercheckout['general']['column_width']['two-column']['inside'][1] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][two-column][inside][2]" value="{{ supercheckout['general']['column_width']['two-column']['inside'][2] }}"/>
+
+												<input type="hidden" class="column-data-1 col" name="supercheckout[general][column_width][one-column][1]" value="{{ supercheckout['general']['column_width']['one-column'][1] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][one-column][2]" value="{{ supercheckout['general']['column_width']['one-column'][2] }}"/>
+												<input type="hidden" class="column-data-2 col" name="supercheckout[general][column_width][one-column][3]" value="{{ supercheckout['general']['column_width']['one-column'][3] }}"/>
+												<input type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][one-column][inside][1]" value="{{ supercheckout['general']['column_width']['one-column']['inside'][1] }}"/>
+												<input
+												type="hidden" class="column-data-3 col" name="supercheckout[general][column_width][one-column][inside][2]" value="{{ supercheckout['general']['column_width']['one-column']['inside'][2] }}"/>
+
+												<!--                                            mk-->
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_address][three-column][column]" value="{{ supercheckout['step']['payment_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_address][three-column][row]" value="{{ supercheckout['step']['payment_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][login][three-column][column]" value="{{ supercheckout['step']['login']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][login][three-column][row]" value="{{ supercheckout['step']['login']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_address][three-column][column]" value="{{ supercheckout['step']['shipping_address']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_address][three-column][row]" value="{{ supercheckout['step']['shipping_address']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][shipping_method][three-column][column]" value="{{ supercheckout['step']['shipping_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][shipping_method][three-column][row]" value="{{ supercheckout['step']['shipping_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][payment_method][three-column][column]" value="{{ supercheckout['step']['payment_method']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][payment_method][three-column][row]" value="{{ supercheckout['step']['payment_method']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][cart][three-column][column]" value="{{ supercheckout['step']['cart']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][cart][three-column][row]" value="{{ supercheckout['step']['cart']['three-column']['row'] }}"/>
+												<input type="hidden" class="sort col-data" name="supercheckout[step][confirm][three-column][column]" value="{{ supercheckout['step']['confirm']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][confirm][three-column][row]" value="{{ supercheckout['step']['confirm']['three-column']['row'] }}"/>
+
+												<input type="hidden" class="sort col-data" name="supercheckout[step][html][0_0][three-column][column]" value="{{ supercheckout['step']['html']['0_0']['three-column']['column'] }}"/>
+												<input type="hidden" class="sort row-data" name="supercheckout[step][html][0_0][three-column][row]" value="{{ supercheckout['step']['html']['0_0']['three-column']['row'] }}"/>
+												<div class="portlet">
+													<div class="portlet-header">{{ supercheckout_text_html_header }}</div>
+													<div class="portlet-content">
+														<div class="text" style="overflow:visible !important;">
+
+															<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_header" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px;">
+																<div class="edit_html">
+																	<i></i>
+																</div>
+															</a>
+														</div>
+													</div>
+												</div>
+												<ul id="column-1" class="column column-1" col-data="1" col-inside-data="1" style="width:100%  !important;">
+													<li class="portlet" row-data="{{ supercheckout['step']['payment_address']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-address"></i>
+															{{ supercheckout_text_payment_address }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][payment_address][one-column][row]" value="{{ supercheckout['step']['payment_address']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['login']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-address"></i>
+															{{ supercheckout_text_login }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][login][one-column][row]" value="{{ supercheckout['step']['login']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-shipping-address"></i>
+															{{ supercheckout_text_shipping_address }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_shipping_address_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][shipping_address][one-column][row]" value="{{ supercheckout['step']['shipping_address']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-shipping-method"></i>
+															{{ supercheckout_text_shipping_method }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_shipping_method_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][shipping_method][one-column][row]" value="{{ supercheckout['step']['shipping_method']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['payment_method']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-payment-method"></i>
+															{{ supercheckout_text_payment_method }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_payment_method_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][payment_method][one-column][row]" value="{{ supercheckout['step']['payment_method']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['cart']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_cart }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_cart_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][cart][one-column][row]" value="{{ supercheckout['step']['cart']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['confirm']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_confirm }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_confirm_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][confirm][one-column][row]" value="{{ supercheckout['step']['confirm']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													<li class="portlet" row-data="{{ supercheckout['step']['html']['0_0']['one-column']['row'] }}">
+														<div class="portlet-header">
+															<i class="icon-small-confirm"></i>
+															{{ supercheckout_text_html }}</div>
+														<div class="portlet-content">
+															<div class="text">{{ supercheckout_text_html_description }}</div>
+															<div class="text">
+																<i class="icon-drag"></i>
+																<i class="icon-drag"></i>
+															</div>
+															<input type="text" class="sort row-data" name="supercheckout[step][html][0_0][one-column][row]" value="{{ supercheckout['step']['html']['0_0']['one-column']['row'] }}"/>
+														</div>
+													</li>
+													{% for k,v in supercheckout['step']['html'] %}
+														<li class="portlet" id="portlet_{{ k }}" row-data="{{ supercheckout['step']['html'][k]['one-column']['row'] }}">
+															<div class="portlet-header">{{ supercheckout_text_html }}</div>
+															<div class="portlet-content" id="portlet_content_{{ k }}">
+																<div class="text" style="overflow:visible !important;">
+																	<a data-toggle="tooltip" data-placement="top" data-original-title=" Add new HTML content" id="duplicate_button_{{ k }}" data="0" class="fa fa-copy more_windows" style="font-size: 25px; min-width: 50px" onclick="duplicate_html(this.id);">
+																		<div class="edit_html">
+																			<i></i>
+																		</div>
+																	</a>
+
+																	<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_{{ k }}" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px; min-width: 50px">
+																		<div class="edit_html">
+																			<i></i>
+																		</div>
+																	</a>
+																	{% if (k != "0_0") %}
+																		<a data-toggle="tooltip" data-placement="top" data-original-title="Remove this HTML content" id="delete_button_{{ k }}" data="{{ k }}" data-toggle="modal" class="fa fa-trash-o remove" style="font-size: 25px;" onclick="remove_html(this.id);">
+																			<div class="edit_html">
+																				<i></i>
+																			</div>
+																		</a>
+																	{% endif %}
+																</div>
+
+																<input id="row_text_{{ k }}" type="text" class="sort row-data" name="supercheckout[step][html][{{ k }}][one-column][row]" value="{{ supercheckout['step']['html'][k]['one-column']['row'] }}"/>
+															</div>
+														</li>
+													{% endfor %}
+												</ul>
+												<div class="portlet">
+													<div class="portlet-header">{{ supercheckout_text_html_footer }}</div>
+													<div class="portlet-content">
+														<div class="text" style="overflow:visible !important;">
+															<a data-toggle="tooltip" data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_footer" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px;">
+																<div class="edit_html">
+																	<i></i>
+																</div>
+															</a>
+														</div>
+													</div>
+												</div>
+												<br style="clear:both">
+											</td>
+										{% endif %}
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div id="editHTMLModal" class="modal fade" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">{{ text_edit_html }}</h5>
+					<button type="button" class="close" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+			</div>
+			<div class="modal-body">
+				<textarea name="" class="form-control" id="editHTMLModal_field"></textarea>
+				<input type="hidden" id="editHTMLModal_hidden"/>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="modalsave">{{ text_save }}</button>
+				<button type="button" class="btn btn-default closeclass" data-bs-dismiss="modal">{{ text_close }}</button>
+			</div>
+		</div>
+
+	</div>
+</div>
+
+{% set column_1 = '' %}
+{% set column_2 = '' %}
+{% set column_3 = '' %}
+{% set column_4 = '' %}
+{% set column_5 = '' %}
+{% if (layout == '3-Column') %}
+	{% set main_width = 100/100 %}
+	{% set column_1 = supercheckout['general']['column_width']['three-column'][1]/main_width %}
+	{% set column_2 = supercheckout['general']['column_width']['three-column'][2]/main_width %}
+	{% set column_3 = supercheckout['general']['column_width']['three-column'][3]/main_width-1 %}
+{% elseif (layout == '2-Column') %}
+	{% set main_width = 100/100 %}
+	{% set column_1 = supercheckout['general']['column_width']['two-column'][1]/main_width %}
+	{% set column_2 = supercheckout['general']['column_width']['two-column'][2]/main_width-1 %}
+	{% set column_4 = supercheckout['general']['column_width']['two-column']['inside'][1]/main_width %}
+	{% set column_5 = supercheckout['general']['column_width']['two-column']['inside'][2]/main_width-1 %}
+{% endif %}
+
+ 
+<style type="text/css">
+    tr.even { background-color: #EDEDED; }
+    tr.odd { background-color: white; }
+    .column-1, .column-data-1{width:{{ column_1 }}%;}
+    .column-2, .column-data-2{width:{{ column_2 }}%;}
+    .column-3, .column-data-3{width:{{ column_3 }}%;}
+    #column-1-inside,#column-1-inside-text {width:{{ column_4 }}%;}
+    #column-2-inside,#column-2-inside-text {width:{{ column_5 }}%;}
+</style>
+
+<script type="text/javascript">
+function save_modal() {
+    $.ajax({
+        type: "POST",
+        url: $('#form').attr( 'action' ) + '&save',
+        data: $('#form').serialize(),
+        beforeSend: function() {
+            $('#form').fadeTo('slow', 0.4);
+        },
+        complete: function() {
+            $('#form').fadeTo('slow', 1);
+        },
+        success: function( response ) {
+            $('.gritter-add-primary').trigger('click');
+            $('#button_close_modal').trigger('click');
+        }
+    });
+}
+
+$(function() {
+    {% if (layout == '3-Column') %} 
+        var main_width = 100 / 100;
+        $( "#slider" ).slider({
+            range: true,
+            min: 0,
+            max: 100,
+            step: 1.00,
+            values: [ {{ column_1 }},  {{ column_1 + column_2 }}],
+            slide: function( event, ui ) {
+                $('#three-column-1').val(Math.round(main_width*(ui.values[ 0 ])))
+                .attr('width-data', ui.values[ 0 ])
+                .attr('left-data', 0)
+                .css({'width' : parseInt( ui.values[ 0 ] ) + '%'})
+                $('#three-column-2').val(Math.round(main_width*(ui.values[ 1 ] - ui.values[ 0 ])))
+                .attr('width-data',ui.values[ 1 ] - ui.values[ 0 ])
+                .attr('left-data', parseInt(ui.values[ 0 ]+10))
+                .css({'width' : parseInt( ui.values[ 1 ] - ui.values[ 0 ]) + '%'})
+                $('#three-column-3').val(Math.round(main_width*(100 - ui.values[ 1 ])))
+                .attr('width-data',100 - ui.values[ 1 ]-1)
+                .attr('left-data', parseInt(ui.values[ 1 ]))
+                .css({'width' : parseInt( 100 - ui.values[ 1 ]-1) + '%'})
+                $('.column-1').css({'width' :  parseInt( ui.values[ 0 ]) +'%' })
+                $('.column-2').css({'width' : parseInt( ui.values[ 1 ] - ui.values[ 0 ])+'%'})
+                $('.column-3').css({'width' :  parseInt(100 - ui.values[ 1 ]) +'%'})
+            }
+        });
+
+        $(".column" ).sortable({
+            connectWith: ".column",
+            scroll: false,
+            stop: function( event, ui ) {
+                $('.column').find("li").each(function(i, el){
+                    $(this).find(".row-data").val($(el).index())
+                    $(this).find(".col-data").val($(this).parent().attr('col-data'))
+                });
+            }
+        });
+
+        $( ".column" ).disableSelection();
+        $('.column > li').tsort({attr:'row-data'});
+        $('.column > li').each(function(){
+            $(this).appendTo('.column-' + $(this).attr('col-data'));
+        })
+    {% elseif (layout == '2-Column') %} 
+        var main_width = 100 / 100;
+
+    $( "#slider" ).slider({
+        range: false,
+        min: 0,
+        max: 100,
+        step: 1.00,
+        values: [ {{ column_1 }}],
+        slide: function( event, ui ) {
+
+            $('#column-1-text').val(Math.round(main_width*(ui.values[ 0 ])))
+            .attr('width-data', ui.values[ 0 ])
+            .attr('left-data', 0)
+            .css({'width' : parseInt( ui.values[ 0 ] ) + '%'})
+            $('#column-2-text').val(Math.round(main_width*(100 - ui.values[ 0 ])))
+            .attr('width-data',100 - ui.values[ 0 ]-1)
+            .attr('left-data', parseInt(ui.values[ 0 ]))
+            .css({'width' : parseInt( 100 - ui.values[ 0 ]-1) + '%'})
+            $('#column-1').css({'width' :  parseInt( ui.values[ 0 ]) +'%' })
+            $('#column-2').css({'width' :  parseInt(100 - ui.values[ 0 ]-1) +'%'})
+        }
+    });
+    var main_width_inside = 100 / 100;
+
+    $( "#slider_inside" ).slider({
+        range: false,
+        min: 0,
+        max: 100,
+        step: 1.00,
+        values: [ {{ column_4 }}],
+        slide: function( event, ui ) {
+
+            $('#column-1-inside-text').val(Math.round(main_width_inside*(ui.values[ 0 ])))
+            .attr('width-data', ui.values[ 0 ])
+            .attr('left-data', 0)
+            .css({'width' : parseInt( ui.values[ 0 ] ) + '%'})
+            $('#column-2-inside-text').val(Math.round(main_width_inside*(100 - ui.values[ 0 ])))
+            .attr('width-data',100 - ui.values[ 0 ]-1)
+            .attr('left-data', parseInt(ui.values[ 0 ]))
+            .css({'width' : parseInt( 100 - ui.values[ 0 ]-1) + '%'})
+            $('#column-1-inside').css({'width' :  parseInt( ui.values[ 0 ]) +'%' })
+            $('#column-2-inside').css({'width' :  parseInt(100 - ui.values[ 0 ]-1) +'%'})
+        }
+    });
+    $( ".column" ).sortable({
+        connectWith: ".column",
+        scroll: false,
+        stop: function( event, ui ) {
+            $('.column').find("li").each(function(i, el){
+
+                $(this).find(".row-data").val($(el).index())
+                $(this).find(".col-data").val($(this).parent().attr('col-data'))
+                $(this).find(".col-data-inside").val($(this).parent().attr('col-inside-data'))
+
+            });
+        }
+    });
+    $( ".column" ).disableSelection();
+    $('.column > li').tsort({attr:'col-inside-data'});
+    $('.column > li').each(function(){
+    if($(this).attr('col-inside-data')=="4"){
+        $(this).appendTo('#column-2-lower' );
+    }
+    else if($(this).attr('col-inside-data')=="3"){
+        $(this).appendTo('#column-1-inside' );
+    }else if($(this).attr('col-inside-data')=="2"){
+        $(this).appendTo('#column-2-upper');
+    }else{
+        $(this).appendTo('#column-1');
+    }
+
+    })
+    $('#column-1 > li').tsort({attr:'row-data'});
+    $('#column-1 > li').each(function(){
+        $(this).appendTo('#column-' + $(this).attr('col-data') );
+
+    })
+    $('#column-2-upper > li').tsort({attr:'row-data'});
+    $('#column-2-upper > li').each(function(){
+        $(this).appendTo('#column-2-upper' );
+
+    })
+    $('#column-2-lower > li').tsort({attr:'row-data'});
+    $('#column-2-lower > li').each(function(){
+        $(this).appendTo('#column-2-lower' );
+
+    })
+    $('#column-1-inside > li').tsort({attr:'row-data'});
+    $('#column-1-inside > li').each(function(){
+        $(this).appendTo('#column-' + $(this).attr('col-data')+'-inside' );
+
+    })
+
+    {% elseif (layout == '1-Column') %} 
+        $( ".column" ).sortable({
+            connectWith: ".column",
+            scroll: false,
+            stop: function( event, ui ) {
+                $('.column').find("li").each(function(i, el){
+                    $(this).find(".row-data").val($(el).index())
+                });
+            }
+        });
+    $( ".column" ).disableSelection();
+    $('#column-1 > li').tsort({attr:'row-data'});
+    $('#column-1 > li').each(function(){
+        $(this).appendTo('#column-1' );
+
+    })
+    {% endif %} 
+
+});
+
+//Adding alternate colors to column
+$(function(){
+    $('.alternate').each(function() {
+        $('tr:odd',  this).addClass('odd').removeClass('even');
+        $('tr:even', this).addClass('even').removeClass('odd');
+    });
+});
+
+function save() {
+    $.ajax( {
+        type: "POST",
+        url: $('form').attr( 'action' ) + '&save',
+        data: $('form').serialize(),
+        complete: function() {
+            $('#form').fadeTo('slow', 1);
+        },
+        success: function( response ) {
+        }
+    });
+}
+
+{% for k,v in supercheckout['step']['html'] %} 
+    hidden_field = '<input type="hidden" id="modals-bootbox-prompt_h_{{ k }}" name="supercheckout[step][html][{{ k }}][value]" value="{% if (supercheckout["step"]["html"][k]["value"] is defined) %} {{ (supercheckout["step"]["html"][k]["value"])|e('html') }} {% endif %}">'
+    $('#tab_design_checkout').append(hidden_field);
+{% endfor %} 
+{% for k,v in supercheckout['step']['html'] %} 
+    $('#modals-bootbox-prompt_{{ k }}').click(function() {
+        if($("#modals-bootbox-prompt_h_{{ k }}").length) {
+            var stored_value = $('#modals-bootbox-prompt_h_{{ k }}').val();
+        } else {
+            hidden_field = '<input type="hidden" id="modals-bootbox-prompt_h_{{ k }}" name="supercheckout[step][html][{{ k }}][value]" value="{% if (supercheckout["step"]["html"][k]["value"] is defined) %} {{ (supercheckout["step"]["html"][k]["value"])|e('html') }} {% endif %}">'
+            $('#tab_design_checkout').append(hidden_field);
+            var stored_value = "";
+        }
+        $('#editHTMLModal').modal("show").on('shown.bs.modal', function() {
+            $("#editHTMLModal_field").val($('#modals-bootbox-prompt_h_{{ k }}').val());
+            $("#editHTMLModal_hidden").val('modals-bootbox-prompt_h_{{ k }}');
+        });
+    });
+{% endfor %} 
+
+var hidden_field = '<input type="hidden" id="modals-bootbox-prompt_h_header" name="supercheckout[step][html_value][value][header]" value="{% if (supercheckout["step"]["html_value"]["value"]["header"] is defined) %} {{ (supercheckout["step"]["html_value"]["value"]["header"])|e('html') }} {% endif %}">'
+$('#tab_design_checkout').append(hidden_field);
+$('#modals-bootbox-prompt_header').click(function() {
+    if($("#modals-bootbox-prompt_h_header").length) {
+        var stored_value = $('#modals-bootbox-prompt_h_header').val();
+    } else {
+        hidden_field = '<input type="hidden" id="modals-bootbox-prompt_h_header" name="supercheckout[step][html_value][value][header]" value="{% if (supercheckout["step"]["html_value"]["value"]["header"] is defined) %} {{ (supercheckout["step"]["html_value"]["value"]["header"])|e('html') }} {% endif %}">'
+        $('#tab_design_checkout').append(hidden_field);
+        var stored_value = "";
+    }
+    $('#editHTMLModal').modal("show").on('shown.bs.modal', function() {
+        $("#editHTMLModal_field").val($('#modals-bootbox-prompt_h_header').val());
+        $("#editHTMLModal_hidden").val('modals-bootbox-prompt_h_header');
+        
+    });
+});
+var hidden_field = '<input type="hidden" id="modals-bootbox-prompt_h_footer" name="supercheckout[step][html_value][value][footer]" value="{% if (supercheckout["step"]["html_value"]["value"]["footer"] is defined) %} {{ (supercheckout["step"]["html_value"]["value"]["footer"])|e('html') }} {% endif %}">'
+$('#tab_design_checkout').append(hidden_field);
+$('#modals-bootbox-prompt_footer').click(function(){
+    
+    if($("#modals-bootbox-prompt_h_footer").length){
+        var stored_value = $('#modals-bootbox-prompt_h_footer').val();
+    }else{
+        hidden_field = '<input type="hidden" id="modals-bootbox-prompt_h_footer" name="supercheckout[step][html_value][value][footer]" value="{% if (supercheckout["step"]["html_value"]["value"]["footer"] is defined) %} {{ (supercheckout["step"]["html_value"]["value"]["footer"])|e('html') }} {% endif %}">'
+        $('#tab_design_checkout').append(hidden_field);
+        var stored_value="";
+    }
+    $('#editHTMLModal').modal("show").on('shown.bs.modal', function() {
+        $("#editHTMLModal_field").val($('#modals-bootbox-prompt_h_footer').val());
+        $("#editHTMLModal_hidden").val('modals-bootbox-prompt_h_footer');
+    });
+});
+</script>
+<script type="text/javascript">
+
+function duplicate_html(id) {
+    var portlet_id = $('#'+id).parent().parent().attr('id');
+    var col_data=$('#'+portlet_id +' .col-data').val();
+    var row_data=$('#'+portlet_id +' .row-data').val();
+    if("{{ layout }}"=='2-Column'){
+        var col_data_inside=$('#'+portlet_id +' .col-data-inside').val();
+    } else {
+        var col_data_inside=4;
+    }
+    var data = $('#value_modal').val();
+    var new_data =  parseInt(data);
+    new_data++;
+    $('#value_modal').val(new_data);
+    string = '<li id="portlet_'+ data +'_'+ data +'" class="portlet" col-data="" row-data="" col-inside-data="">';
+    string += '<div class="portlet-header">{{ supercheckout_text_html }}</div>';
+    string += '<div id="portlet_content_'+  data+'_'+ data +'" class="portlet-content">';
+    string += '<div class="text" style="overflow:visible !important;" >';
+    string += '<a data-toggle="tooltip"  data-placement="top" data-original-title="Add new HTML content" id="duplicate_button_'+  data+'_'+ data +'" data="'+ (new_data) +'" class="fa fa-copy more_windows" style="font-size: 25px; min-width: 50px" onClick="duplicate_html(this.id);" ><div class="edit_html"><i></i></div></a>';
+    string += '<a data-toggle="tooltip"  data-placement="top" data-original-title="Edit this HTML content" id="modals-bootbox-prompt_'+  data+'_'+ data +'" data-toggle="modal" class="fa fa-edit edit" style="font-size: 25px; min-width: 50px" ><div class="edit_html"><i></i></div></a>';
+    string += '<a data-toggle="tooltip"  data-placement="top" data-original-title="Remove this HTML content" id="delete_button_'+  data+'_'+ data +'" data="'+  data+'_'+ data +'" data-toggle="modal" class="fa fa-trash-o remove" style="font-size: 25px"  onClick="remove_html(this.id);" ><div class="edit_html"><i></i></div></a>';
+    string += '</div>';
+
+    string += '<input   type="hidden"  class="sort col-data" name="supercheckout[step][html]['+  data+'_'+ data +'][two-column][column]" value="'+ col_data +'" />';
+    string += '<input   type="hidden"  class="sort row-data" name="supercheckout[step][html]['+  data+'_'+ data +'][two-column][row]" value="'+ row_data +'" />';
+    string += '<input   type="hidden"  class="sort col-data-inside" name="supercheckout[step][html]['+  data+'_'+ data +'][two-column][column-inside]" value="'+ col_data_inside +'" />';
+
+
+    string += '<input   type="hidden"  class="sort col-data" name="supercheckout[step][html]['+  data+'_'+ data +'][one-column][column]" value="'+ col_data +'" />';
+    string += '<input   type="hidden"  class="sort row-data" name="supercheckout[step][html]['+  data+'_'+ data +'][one-column][row]" value="'+ row_data +'" />';
+    string += '<input   type="hidden"  class="sort col-data-inside" name="supercheckout[step][html]['+  data+'_'+ data +'][one-column][column-inside]" value="'+ col_data_inside +'" />';
+
+
+    string += '<input   type="hidden"  class="sort col-data" name="supercheckout[step][html]['+  data+'_'+ data +'][three-column][column]" value="'+ col_data +'" />';
+    string += '<input   type="hidden"  class="sort row-data" name="supercheckout[step][html]['+  data+'_'+ data +'][three-column][row]" value="'+ row_data +'" />';
+    string += '<input   type="hidden"  class="sort col-data-inside" name="supercheckout[step][html]['+  data+'_'+ data +'][three-column][column-inside]" value="'+ col_data_inside +'" />';
+
+    if("{{ layout }}"=='3-Column'){
+        string += '<input id="col_text_'+  data+'_'+ data +'"  type="text"  class="sort col-data" name="supercheckout[step][html]['+ data+'_'+ data +'][three-column][column]" value="'+ col_data +'" />';
+        string += '<input id="row_text_'+  data+'_'+ data +'"  type="text"  class="sort row-data" name="supercheckout[step][html]['+ data+'_'+ data +'][three-column][row]" value="'+ row_data +'" />';
+    }
+    if("{{ layout }}"=='2-Column'){
+        string += '<input id="col_text_'+  data+'_'+ data +'"  type="text"  class="sort col-data" name="supercheckout[step][html]['+ data+'_'+ data +'][two-column][column]" value="'+ col_data +'" />';
+        string += '<input id="row_text_'+  data+'_'+ data +'"  type="text"  class="sort row-data" name="supercheckout[step][html]['+ data+'_'+ data +'][two-column][row]" value="'+ row_data +'" />';
+        string += '<input id="col_inside_text_'+  data+'_'+ data +'"  type="text"  class="sort col-data-inside" name="supercheckout[step][html]['+ data+'_'+ data +'][two-column][row]" value="'+ col_data_inside +'" />';
+    }
+    if("{{ layout }}"=='1-Column'){
+        string += '<input id="row_text_'+  data+'_'+ data +'"  type="text"  class="sort row-data" name="supercheckout[step][html]['+ data+'_'+ data +'][one-column][row]" value="'+ row_data +'" />';
+    }
+    string += '</div>';
+    string += '</li>';
+     script = '<script type="text/javascript">';
+
+    script += '$("#modals-bootbox-prompt_'+  data+'_'+ data +'").click(function(){ ';
+    script += 'if($("#modals-bootbox-prompt_h_'+  data+'_'+ data +'").length){ ';
+    script += 'var stored_value = $("#modals-bootbox-prompt_h_'+  data+'_'+ data +'").val();';
+    script +=    '}else{ ';
+    script += 'hidden_field = \'<input type="hidden" id="modals-bootbox-prompt_h_'+  data+'_'+ data +'" name="supercheckout[step][html]['+  data+'_'+ data +'][value]" value="{% if (supercheckout["step"]["html"]["'+ data+'_'+ data +'"]["value"] is defined) %} {{ (supercheckout["step"]["html"]["'+ data+'_'+ data +'"]["value"])|e('html') }} {% endif %}">\';';
+    script +=  '$("#tab_design_checkout").append(hidden_field);';
+    script += 'var stored_value="";';
+    script +='}';
+
+    script +=    '$("#editHTMLModal").modal("show").on("shown.bs.modal", function() {'
+                        + '$("#editHTMLModal_field").val($("#modals-bootbox-prompt_h_'+  data+'_'+ data +'").val());'
+                        + '$("#editHTMLModal_hidden").val("modals-bootbox-prompt_h_'+  data+'_'+ data +'");'
+                    + '});';
+    script += '});';
+    script += '$(\'[data-toggle="tooltip"]\').tooltip();';
+    script +='</script'+'>';
+    string += script;
+    var a = $('#'+id).parent().parent().parent().parent().append(string);
+}
+
+function remove_html(id){
+    var data = $('#'+id).attr('data');
+    $('#portlet_'+ data).remove();
+    $('#modals-bootbox-prompt_h_'+ data).remove();
+    $('#three_col_h_'+data).remove();
+    $('#three_row_h_'+data).remove();
+    $('#three_col_ins_h_'+data).remove();
+    $('#two_col_h_'+data).remove();
+    $('#two_row_h_'+data).remove();
+    $('#two_col_ins_h_'+data).remove();
+    $('#one_col_h_'+data).remove();
+    $('#one_row_h_'+data).remove();
+    $('#one_col_ins_h_'+data).remove();
+}
+</script>
+<div class="wait"><span></span></div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#modalsave").click(function() {
+            var html_string = $('#editHTMLModal_field').val().replace(/(\r\n|\n|\r)/gm, "<br/>");
+            $("#" + $("#editHTMLModal_hidden").val()).val(html_string);
+            save();
+            $('#editHTMLModal .closeclass').click();
+        });
+     });
+</script>
+
+{{ footer }} 

@@ -1,0 +1,153 @@
+{% if products %}
+  {% if error_warning %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  {% if error_stock %}
+    <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_stock }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  {% if success %}
+    <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> {{ success }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  {% if attention %}
+    <div class="alert alert-info"><i class="fa-solid fa-circle-info"></i> {{ attention }} <button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+  {% endif %}
+  <h1>{{ heading_title }}{% if weight %} ({{ weight }}){% endif %}</h1>
+  <div id="output-cart" class="table-responsive">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th class="text-center">{{ column_image }}</th>
+          <th>{{ column_name }}</th>
+          <th>{{ column_quantity }}</th>
+          <th class="text-end">{{ column_price }}</th>
+          <th class="text-end">{{ column_total }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for product in products %}
+          <tr>
+            <td class="text-center">{% if product.thumb %}<a href="{{ product.href }}"><img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-thumbnail"/></a>{% endif %}</td>
+            <td class="text-start text-wrap"><a href="{{ product.href }}">{{ product.name }}</a>{% if not product.stock %} <span class="text-danger">***</span>{% endif %}
+              <ul class="list-unstyled mb-0">
+                <li>
+                  <small> - {{ text_model }}: {{ product.model }}</small>
+                </li>
+                {% for option in product.option %}
+                  <li>
+                    <small> - {{ option.name }}: {{ option.value }}</small>
+                  </li>
+                {% endfor %}
+                {% if product.subscription %}
+                  <li>
+                    <small> - {{ text_subscription }}: {{ product.subscription }}</small>
+                  </li>
+                {% endif %}
+                {% if product.reward %}
+                  <li>
+                    <small> - {{ text_points }}: {{ product.reward }}</small>
+                  </li>
+                {% endif %}
+              </ul>
+            </td>
+            <td>
+              <form method="post" data-oc-target="#shopping-cart">
+                <div class="input-group">
+                  <input type="text" name="quantity" value="{{ product.quantity }}" size="1" class="form-control{% if product.minimum %} is-invalid{% endif %}"/>
+                  <input type="hidden" name="key" value="{{ product.cart_id }}"/>
+                  <button type="submit" formaction="{{ edit }}" data-bs-toggle="tooltip" title="{{ button_update }}" class="btn btn-primary"><i class="fa-solid fa-rotate"></i></button>
+                  <a href="{{ product.remove }}" data-bs-toggle="tooltip" title="{{ button_remove }}" class="btn btn-danger"><i class="fa-solid fa-circle-xmark"></i></a>
+                </div>
+              </form>
+              {% if product.minimum %}
+                <small class="invalid-feedback d-block">{{ product.minimum }}</small>
+              {% endif %}</td>
+            <td class="text-end">{{ product.price }}</td>
+            <td class="text-end">{{ product.total }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot id="checkout-total">
+        {% for total in totals %}
+          <tr>
+            <td colspan="4" class="text-end"><strong>{{ total.title }}</strong></td>
+            <td class="text-end">{{ total.text }}</td>
+          </tr>
+        {% endfor %}
+      </tfoot>
+    </table>
+  </div>
+
+  {% if modules %}
+    <h2>{{ text_next }}</h2>
+    <p>{{ text_next_choice }}</p>
+    <div id="accordion" class="accordion">
+      {% for module in modules %}
+        {{ module }}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <br/>
+  <div class="row">
+    <div class="col"><a href="{{ continue }}" class="btn btn-light">{{ button_shopping }}</a></div>
+    <div class="col text-end"><a href="{{ checkout }}" class="btn btn-primary">{{ button_checkout }}</a></div>
+  </div>
+
+  {% if recomended_products %}
+    <div class="recommended-products-section mt-5 py-4 border-top">
+      <h3 class="mb-2 text-primary" style="font-weight: 700; letter-spacing: -0.5px;">We Recommend</h3>
+      <p class="text-muted mb-4" style="font-size: 0.95rem; max-width: 800px; line-height: 1.5;">
+        We recommend checking out these associated products that go perfectly with your chosen items. Buying them now saves time and shipping costs!
+      </p>
+      
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+        {% for product in recomended_products %}
+          <div class="col">
+            <div class="card h-100 border-0 shadow-sm recommended-card" style="border-radius: 12px; transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1); background: #ffffff;">
+              <div class="position-relative text-center p-3" style="background: #f8f9fa; border-top-left-radius: 12px; border-top-right-radius: 12px;">
+                <a href="{{ product.href }}">
+                  <img src="{{ product.thumb }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-fluid" style="max-height: 160px; object-fit: contain; border-radius: 8px;" />
+                </a>
+              </div>
+              <div class="card-body d-flex flex-column p-3">
+                <h5 class="card-title text-wrap mb-2" style="font-size: 0.95rem; font-weight: 600; line-height: 1.4; min-height: 40px;">
+                  <a href="{{ product.href }}" class="text-dark text-decoration-none hover-primary" style="transition: color 0.2s;">{{ product.name }}</a>
+                </h5>
+                <div class="mt-auto pt-2">
+                  {% if product.price %}
+                    <div class="mb-3">
+                      {% if not product.special %}
+                        <span class="text-dark font-weight-bold" style="font-size: 1.1rem; font-weight: 700;">{{ product.price }}</span>
+                      {% else %}
+                        <span class="text-decoration-line-through text-muted me-2" style="font-size: 0.9rem;">{{ product.price }}</span>
+                        <span class="text-danger font-weight-bold" style="font-size: 1.1rem; font-weight: 700;">{{ product.special }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                  <button type="button" class="btn btn-primary w-100 d-flex align-items-center justify-content-center gap-2 py-2" style="border-radius: 8px; font-weight: 600; font-size: 0.9rem; transition: all 0.2s;" onclick="cart.add('{{ product.product_id }}', '{{ product.minimum }}');">
+                    <i class="fa-solid fa-shopping-cart" style="font-size: 0.85rem;"></i>
+                    Add to Cart
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+    
+    <style>
+      .recommended-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08) !important;
+      }
+      .hover-primary:hover {
+        color: #0d6efd !important;
+      }
+    </style>
+  {% endif %}
+{% else %}
+  <h1>{{ heading_title }}</h1>
+  <p>{{ text_no_results }}</p>
+  <div class="text-end"><a href="{{ continue }}" class="btn btn-primary">{{ button_continue }}</a></div>
+{% endif %}

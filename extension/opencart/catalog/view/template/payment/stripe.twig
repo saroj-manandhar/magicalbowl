@@ -1,0 +1,81 @@
+<div id="stripe-payment-form">
+  <div id="stripe-card-element" style="padding: 12px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 15px; background: #fff;"></div>
+  <div id="stripe-card-errors" role="alert" style="color: #dc3545; margin-bottom: 10px; font-size: 14px;"></div>
+  <div class="text-end">
+    <button type="button" id="button-confirm-stripe" class="btn btn-primary">
+      <i class="fa-solid fa-lock"></i> Confirm Order
+    </button>
+  </div>
+</div>
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript"><!--
+(function() {
+    var stripe = Stripe('{{ stripe_public_key }}');
+    var elements = stripe.elements();
+    var cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#32325d',
+                fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
+                '::placeholder': {
+                    color: '#aab7c4'
+                }
+            },
+            invalid: {
+                color: '#dc3545',
+                iconColor: '#dc3545'
+            }
+        }
+    });
+    cardElement.mount('#stripe-card-element');
+
+    // Handle real-time validation errors from the card Element
+    cardElement.on('change', function(event) {
+        var displayError = document.getElementById('stripe-card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    // Handle form submission
+    document.getElementById('button-confirm-stripe').addEventListener('click', function() {
+        var btn = this;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+
+        stripe.createToken(cardElement).then(function(result) {
+            if (result.error) {
+                document.getElementById('stripe-card-errors').textContent = result.error.message;
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fa-solid fa-lock"></i> Confirm Order';
+            } else {
+                // Send the token to server
+                $.ajax({
+                    url: 'index.php?route=extension/opencart/payment/stripe.confirm&language={{ language }}',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { stripeToken: result.token.id },
+                    success: function(json) {
+                        if (json['error']) {
+                            document.getElementById('stripe-card-errors').textContent = json['error'];
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="fa-solid fa-lock"></i> Confirm Order';
+                        }
+                        if (json['redirect']) {
+                            location = json['redirect'];
+                        }
+                    },
+                    error: function() {
+                        document.getElementById('stripe-card-errors').textContent = 'An error occurred. Please try again.';
+                        btn.disabled = false;
+                        btn.innerHTML = '<i class="fa-solid fa-lock"></i> Confirm Order';
+                    }
+                });
+            }
+        });
+    });
+})();
+//--></script>

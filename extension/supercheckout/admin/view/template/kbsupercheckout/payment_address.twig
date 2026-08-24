@@ -1,0 +1,360 @@
+{{ header }}{{ column_left }}
+
+<div id="content">
+	<link type="text/css" rel="stylesheet" href="view/javascript/jquery/jquery-ui/jquery-ui.css">
+	<script type="text/javascript" src="view/javascript/jquery/jquery-ui/jquery-ui.js"></script>
+	<script type="text/javascript" src="../extension/supercheckout/admin/view/javascript/supercheckout/js/jquery.tinysort.min.js"></script>
+	<link rel="stylesheet" href="../extension/supercheckout/admin/view/stylesheet/supercheckout/stylesheet.css">
+	<style>
+		#sortable {
+			list-style-type: none;
+			margin: 0;
+			padding: 0;
+			width: 60%;
+		}
+		.kb_error_message {
+			color: red;
+		}
+		.kb_error_field {
+			border-color: red;
+		}
+	</style>
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="float-end">
+				<button type="submit" id="save-button" form="form-payment-address" data-toggle="tooltip" title="{{ button_save }}" class="btn btn-primary">
+					<i class="fa fa-save"></i>
+				</button>
+				<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default">
+					<i class="fa fa-reply"></i>
+				</a>
+			</div>
+			<h1>{{ heading_title }}</h1>
+			<ol class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+					<li class="breadcrumb-item">
+						<a href="{{ breadcrumb['href'] }}">{{ breadcrumb['text'] }}</a>
+					</li>
+				{% endfor %}
+			</ol>
+			{% if (success) %}
+				<div class="alert alert-success alert-dismissible">
+					<i class="fa fa-check-circle"></i>
+					{{ success }}
+					<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+				</div>
+			{% endif %}
+			<div id="error_message"></div>
+		</div>
+	</div>
+	<div class="container-fluid">
+		{% if (error_warning) %}
+			<div class="alert alert-danger alert-dismissible">
+				<i class="fa fa-exclamation-circle"></i>
+				{{ error_warning }}
+				<button type="button" class="btn-close" data-bs-dismiss="alert">&times;</button>
+			</div>
+		{% endif %}
+		<div class="card">
+
+			{{ store_switcher }}
+			<h3 class="card-header">
+				<i class="fa fa-hospital-o"></i>
+				{{ supercheckout_text_payment_address }}</h3>
+
+			<div class="card-body">
+
+				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-payment-address" class="form-horizontal">
+					{{ tabs }}
+					<div class="tab-content">
+						<input type="hidden" name="supercheckout[option][guest][payment_address][display]" value="{{ supercheckout['option']['guest']['payment_address']['display'] }}">
+						<table style="border-top:none !important;" class="table table-hover">
+							<thead>
+								<tr>
+									<th class="col-sm-4"></th>
+									<th class="guest">{{ supercheckout_text_guest_customer }}</th>
+									<th class="login">{{ supercheckout_text_logged_in_customer }}</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="sortable">
+								{% for field in supercheckout['step']['payment_address']['fields'] %}
+									{% if (field['id'] is defined) and (field['id'] != constant('null')) %}
+										<input type="hidden" value="{{ field['id'] }}" name="supercheckout[step][payment_address][fields][{{ field['id'] }}][id]"/>
+										<input type="hidden" value="{{ field['title'] }}" name="supercheckout[step][payment_address][fields][{{ field['id'] }}][title]"/>
+										<tr id="payment_address_{{ field['id'] }}_input" class="ui-state-default" sort-data="{{ supercheckout['step']['payment_address']['fields'][field['id']]['sort_order'] is defined ? supercheckout['step']['payment_address']['fields'][field['id']]['sort_order'] : '' }}">
+											<td class="left-td">
+												<span style="font-weight: bold">{{ field['title'] }}
+													<input class="sort" class="input-sm form-control col-md-12" type="hidden" value="{{ supercheckout['step']['payment_address']['fields'][field['id']]['sort_order'] is defined ? supercheckout['step']['payment_address']['fields'][field['id']]['sort_order'] : '' }}" name="supercheckout[step][payment_address][fields][{{ field['id'] }}][sort_order]"/>
+												</span>
+											</td>
+											<td>
+												{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['display'] is defined) %}
+													{% set show_warning = 0 %}
+													<input type="hidden" value="0" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][display]"/>
+													{% if ( custom_group_field_array is defined and (field['id'] in custom_group_field_array)) %}
+														{% if (custom_fields_status[field['id']] is defined and custom_fields_status[field['id']] == 1) %}
+															{% set field_status = field['id'] ~ '_display' %}
+														{% else %}
+															{% set field_status = 0 %}
+														{% endif %}
+														{% if (field_status is defined and field_status) %}
+
+															{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['display'] is defined and supercheckout['option']['guest']['payment_address']['fields'][field['id']]['display'] == 1) %}
+
+																<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][display]" checked="checked" id="guest_payment_address_fields_{{ field['id'] }}_display"/>
+																<label class="checkboxinline payment_show1 col-sm-3">{{ settings_display }}
+																</label>
+															{% else %}
+
+																<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][display]" id="guest_payment_address_fields_{{ field['id'] }}_display"/>
+																<label class="checkboxinline payment_show1 col-sm-3">{{ settings_display }}</label>
+															{% endif %}
+														{% else %}
+															{% set show_warning = 1 %}
+
+															<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][display]" disabled="disabled" id="guest_payment_address_fields_{{ field['id'] }}_display"/>
+															<label class="checkboxinline payment_show1 col-sm-3">{{ settings_display }}</label>
+														{% endif %}
+													{% else %}
+														{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['display'] is defined and supercheckout['option']['guest']['payment_address']['fields'][field['id']]['display'] == 1) %}
+
+															<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][display]" checked="checked" id="guest_payment_address_fields_{{ field['id'] }}_display"/>
+															<label class="checkboxinline payment_show1 col-sm-3">{{ settings_display }}</label>
+														{% else %}
+
+															<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][display]" id="guest_payment_address_fields_{{ field['id'] }}_display"/>
+															<label class="checkboxinline payment_show1 col-sm-3">{{ settings_display }}</label>
+														{% endif %}
+													{% endif %}
+													{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['require'] is defined) %}
+														<input type="hidden" value="0" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][require]"/>
+														{% if ( custom_group_field_array is defined and (field['id'] in custom_group_field_array)) %}
+															{% set field_status = field['id'] ~ '_required' %}
+															{% if (field_status is defined and field_status) %}
+																{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['require'] == 1) %}
+																	<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][require]" checked="checked" id="guest_payment_address_fields_{{ field['id'] }}_require"/>
+																{% else %}
+																	<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][require]" id="guest_payment_address_fields_{{ field['id'] }}_require"/>
+																{% endif %}
+																<label class="payment_require1 col-sm-3" for="guest_payment_address_fields_{{ field['id'] }}_require">{{ settings_require }}</label>
+															{% else %}
+																{% set show_warning = 1 %}
+																<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][require]" disabled="disabled" id="guest_payment_address_fields_{{ field['id'] }}_require_disable"/>
+																<label class="payment_require1 col-sm-3" for="guest_payment_address_fields_{{ field['id'] }}_require">{{ settings_require }}</label>
+															{% endif %}
+														{% else %}
+															{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['require'] == 1) %}
+																<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][require]" checked="checked" id="guest_payment_address_fields_{{ field['id'] }}_require"/>
+															{% else %}
+																<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][require]" id="guest_payment_address_fields_{{ field['id'] }}_require"/>
+															{% endif %}
+															<label class="payment_require1 col-sm-3" for="guest_payment_address_fields_{{ field['id'] }}_require">{{ settings_require }}</label>
+														{% endif %}
+													{% endif %}
+													{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['checked'] is defined) %}
+														<input type="hidden" value="0" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][checked]"/>
+														{% if ( custom_group_field_array is defined and (field['id'] in custom_group_field_array)) %}
+															{% if (custom_fields_status[field['id']] is defined and custom_fields_status[field['id']] == 1) %}
+																{% set field_status = field['id'] ~ '_display' %}
+															{% else %}
+																{% set field_status = 0 %}
+															{% endif %}
+															{% if (field_status is defined and field_status) %}
+																{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['checked'] == 1) %}
+																	<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][checked]" checked="checked" id="guest_payment_address_fields_{{ field['id'] }}_checked"/>
+																{% else %}
+																	<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][checked]" id="guest_payment_address_fields_{{ field['id'] }}_checked"/>
+																{% endif %}
+																<label class="payment_checked1 col-sm-3" for="guest_payment_address_fields_{{ field['id'] }}_checked">{{ settings_checked }}</label>
+															{% else %}
+																{% set show_warning = 1 %}
+																<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][checked]" disabled="disabled" id="guest_payment_address_fields_{{ field['id'] }}_checked_disable"/>
+																<label class="payment_checked1 col-sm-3" for="guest_payment_address_fields_{{ field['id'] }}_checked">{{ settings_checked }}</label>
+															{% endif %}
+														{% else %}
+															{% if (supercheckout['option']['guest']['payment_address']['fields'][field['id']]['checked'] == 1) %}
+																<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][checked]" checked="checked" id="guest_payment_address_fields_{{ field['id'] }}_checked"/>
+															{% else %}
+																<input class="payment_check2 col-sm-3" type="checkbox" value="1" name="supercheckout[option][guest][payment_address][fields][{{ field['id'] }}][checked]" id="guest_payment_address_fields_{{ field['id'] }}_checked"/>
+															{% endif %}
+															<label class="payment_checked1 col-sm-3" for="guest_payment_address_fields_{{ field['id'] }}_checked">{{ settings_checked }}</label>
+														{% endif %}
+													{% endif %}
+												{% endif %}
+												{% if (show_warning) %}
+													<span class="store_disabled_msg" data-toggle="tooltip" title="{{ field_disabled_supercheckout_tooltip }}" style="color: red">
+														{{ text_warning }}
+													</span>
+												{% endif %}
+											</td>
+											<td>
+												{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['display'] is defined) %}
+													<input type="hidden" value="0" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][display]"/>
+													{% if ( custom_group_field_array is defined and (field['id'] in custom_group_field_array)) %}
+														{% if (custom_fields_status[field['id']] is defined and custom_fields_status[field['id']] == 1) %}
+															{% set field_status = field['id'] ~ '_display' %}
+														{% else %}
+															{% set field_status = 0 %}
+														{% endif %}
+														{% if (field_status is defined and field_status) %}
+															{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['display'] is defined and supercheckout['option']['logged']['payment_address']['fields'][field['id']]['display'] == 1) %}
+																<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][display]" checked="checked" id="logged_payment_address_fields_{{ field['id'] }}_display"/>
+															{% else %}
+																<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][display]" id="logged_payment_address_fields_{{ field['id'] }}_display"/>
+															{% endif %}
+														{% else %}
+															<input class="payment_check1 col-sm-3" type="checkbox" value="1" disabled="disabled" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][display]" id="logged_payment_address_fields_{{ field['id'] }}_display"/>
+														{% endif %}
+													{% else %}
+														{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['display'] is defined and supercheckout['option']['logged']['payment_address']['fields'][field['id']]['display'] == 1) %}
+															<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][display]" checked="checked" id="logged_payment_address_fields_{{ field['id'] }}_display"/>
+														{% else %}
+															<input class="payment_check1 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][display]" id="logged_payment_address_fields_{{ field['id'] }}_display"/>
+														{% endif %}
+													{% endif %}
+													<label class="payment_show2 col-sm-3" for="logged_payment_address_fields_{{ field['id'] }}_display">{{ settings_display }}</label>
+													{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['require'] is defined) %}
+														<input type="hidden" value="0" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][require]"/>
+														{% if ( custom_group_field_array is defined and (field['id'] in custom_group_field_array)) %}
+															{% set field_status = field['id'] ~ '_required' %}
+															{% if (field_status is defined and field_status) %}
+																{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['require'] == 1) %}
+																	<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][require]" checked="checked" id="logged_payment_address_fields_{{ field['id'] }}_require"/>
+																{% else %}
+																	<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][require]" id="logged_payment_address_fields_{{ field['id'] }}_require"/>
+																{% endif %}
+															{% else %}
+																{% set show_warning = 1 %}
+																<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][require]" disabled="disabled" id="logged_payment_address_fields_{{ field['id'] }}_require_disable"/>
+															{% endif %}
+														{% else %}
+															{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['require'] == 1) %}
+																<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][require]" checked="checked" id="logged_payment_address_fields_{{ field['id'] }}_require"/>
+															{% else %}
+																<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][require]" id="logged_payment_address_fields_{{ field['id'] }}_require"/>
+															{% endif %}
+														{% endif %}
+														<label class="payment_require2 col-sm-3" for="logged_payment_address_fields_{{ field['id'] }}_require">{{ settings_require }}</label>
+													{% endif %}
+													{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['checked'] is defined) %}
+														<input type="hidden" value="0" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][checked]"/>
+														{% if ( custom_group_field_array is defined and (field['id'] in custom_group_field_array)) %}
+															{% set field_status = field['id'] ~ '_checked' %}
+															{% if (field_status is defined and field_status) %}
+																{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['checked'] == 1) %}
+																	<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][checked]" checked="checked" id="logged_payment_address_fields_{{ field['id'] }}_checked"/>
+																{% else %}
+																	<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][checked]" id="logged_payment_address_fields_{{ field['id'] }}_checked"/>
+																{% endif %}
+															{% else %}
+																{% set show_warning = 1 %}
+																<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][checked]" disabled="disabled" id="logged_payment_address_fields_{{ field['id'] }}_checked_disable"/>
+															{% endif %}
+														{% else %}
+															{% if (supercheckout['option']['logged']['payment_address']['fields'][field['id']]['checked'] == 1) %}
+																<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][checked]" checked="checked" id="logged_payment_address_fields_{{ field['id'] }}_checked"/>
+															{% else %}
+																<input class="payment_check3 col-sm-3" type="checkbox" value="1" name="supercheckout[option][logged][payment_address][fields][{{ field['id'] }}][checked]" id="logged_payment_address_fields_{{ field['id'] }}_checked"/>
+															{% endif %}
+														{% endif %}
+														<label class="payment_checked2 col-sm-3" for="logged_payment_address_fields_{{ field['id'] }}_checked">{{ settings_checked }}</label>
+													{% endif %}
+												{% endif %}
+												{% if (show_warning) %}
+													<span class="store_disabled_msg" data-toggle="tooltip" title="{{ field_disabled_supercheckout_tooltip }}" style="color: red">
+														{{ text_warning }}
+													</span>
+												{% endif %}
+											</td>
+											<td class="reorder">
+												<i class="fa fa-reorder"></i>
+											</td>
+										</tr>
+									{% endif %}
+								{% endfor %}
+								{# foreach fields #}
+							</tbody>
+						</table>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+//Adding alternate colors to  column
+$(function () {
+    $('.alternate').each(function () {
+        $('tr:odd', this).addClass('odd').removeClass('even');
+        $('tr:even', this).addClass('even').removeClass('odd');
+    });
+});
+{% for field in supercheckout['step']['payment_address']['fields'] %} 
+    $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_display").change(function () {
+        if ($(this).is(":checked")) {
+            $("#uniform-guest_payment_address_fields_" + "{{ field['id'] }}" + "_require").removeClass('disabled');
+            $("#uniform-guest_payment_address_fields_" + "{{ field['id'] }}" + "_checked").removeClass('disabled');
+            $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_require").removeAttr('disabled');
+            $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_checked").removeAttr('disabled');
+        } else {
+            $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_require").attr('disabled', 'disabled');
+            $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_checked").attr('disabled', 'disabled');
+            $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_require").removeAttr('checked');
+            $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_checked").removeAttr('checked');
+            $("#uniform-guest_payment_address_fields_" + "{{ field['id'] }}" + "_require").addClass('disabled');
+            $("#uniform-guest_payment_address_fields_" + "{{ field['id'] }}" + "_checked").addClass('disabled');
+        }
+    });
+    $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_display").change(function () {
+        if ($(this).is(":checked")) {
+            $("#uniform-logged_payment_address_fields_" + "{{ field['id'] }}" + "_require").removeClass('disabled');
+            $("#uniform-logged_payment_address_fields_" + "{{ field['id'] }}" + "_checked").removeClass('disabled');
+
+            $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_require").removeAttr('disabled');
+            $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_checked").removeAttr('disabled');
+        } else {
+            $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_require").attr('disabled', 'disabled');
+            $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_checked").attr('disabled', 'disabled');
+            $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_require").removeAttr('checked');
+            $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_checked").removeAttr('checked');
+            $("#uniform-logged_payment_address_fields_" + "{{ field['id'] }}" + "_require").addClass('disabled');
+            $("#uniform-logged_payment_address_fields_" + "{{ field['id'] }}" + "_checked").addClass('disabled');
+        }
+    });
+    $("#logged_payment_address_fields_" + "{{ field['id'] }}" + "_display").trigger('change');
+    $("#guest_payment_address_fields_" + "{{ field['id'] }}" + "_display").trigger('change');
+
+{% endfor %} 
+</script>
+<script>
+  $( function() {
+    $('#sortable > tr').tsort({attr:'sort-data'});
+    $( "#sortable" ).sortable({
+        revert: true,
+        cursor: "move",
+        items: "> .ui-state-default",
+        containment: "document",
+        distance: 5 ,
+        opacity: 0.8,
+        stop: function( event, ui ) {
+            $(this).find("tr").each(function(i, el){
+                $(this).find(".sort").val($(el).index())
+                $('.alternate').each(function() {
+                    $('tr:odd',  this).addClass('odd').removeClass('even');
+                    $('tr:even', this).addClass('even').removeClass('odd');
+                });
+            });
+        }
+    });
+    $( "#sortable" ).disableSelection();
+    $('.alternate').each(function() {
+        $('tr:odd',  this).addClass('odd').removeClass('even');
+        $('tr:even', this).addClass('even').removeClass('odd');
+    });
+  });
+</script>
+<div class="wait"><span></span></div>
+<div class="clearfix"></div>
+{{ footer }} 

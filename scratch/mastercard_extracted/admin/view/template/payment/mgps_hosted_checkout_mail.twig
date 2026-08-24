@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xml:lang="en">
+    <head>
+        <title>Order Payment Confirmation</title>
+        <style>
+            /* Add any CSS styles you want to apply to the email here */
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                border: 1px solid black;
+            }
+            th, td {
+                border: 1px solid black;
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #EFEFEF;
+                font-weight: bold;
+            }
+        </style>
+    </head>
+    <body>
+        <p>Dear {{ customer_name }},</p>
+        
+        {% for txn in mgps_hosted_checkout_order.transactions %}
+        <p>Your payment against this order is successfully {{ txn.status|replace({'_': ' '})|title }}. Please find order details below.</p>
+        
+        <table>
+            <caption><strong>Transaction Details</strong></caption>
+            <thead>
+                <tr>
+                    <th colspan="2">Order Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th>Date Added</th>
+                    <td>{{ txn.date_added }}</td>
+                </tr>
+                <tr>
+                    <th>Order ID</th>
+                    <td>{{ txn.order_id }}</td>
+                </tr>
+                <tr>
+                    <th>Transaction ID</th>
+                    <td>{{ txn.transaction_id }}</td>
+                </tr>
+                <tr>
+                    <th>Transaction Status</th>
+                    <td>{{ txn.status|replace({'_': ' '})|title }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ receiver_address }}</td>
+                </tr>
+                <tr>
+                    <th>Captured Amount</th>
+                    <td>{{ currency }}{{ txn.amount | number_format(2, '.', ',') }}</td>
+                </tr>
+                {% if txn.refunded_amount %}
+                <tr>
+                    <th>Refunded Amount</th>
+                    <td>{{ currency }}{{ txn.refunded_amount | number_format(2, '.', ',') }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+        {% endfor %}
+        
+        <p style="margin-top: 0px; margin-bottom: 20px;">Please don't reply to this email.</p>
+    </body>
+</html>

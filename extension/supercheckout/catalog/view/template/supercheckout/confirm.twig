@@ -1,0 +1,174 @@
+<script type="text/javascript">
+    {% if (settings['general']['layout'] == '3-Column') %} 
+    var a = $('#supercheckout-columnleft').height();
+    var d = $('#supercheckout_login_option_box').height();  
+    var e = a-d;
+    $('#columnleft-1').css('min-height', e + 'px');
+  //  $('#columnleft-3').css('min-height', e + 'px');
+    {% endif %} 
+</script>
+ {% if (settings['general']['layout'] == '3-Column') %}
+ {% set layout_name='three-column' %}
+ {% elseif (settings['general']['layout'] == '2-Column') %}
+ {% set layout_name='two-column' %}
+ {% elseif (settings['general']['layout'] == '1-Column') %}
+ {% set layout_name='one-column' %}
+ {% else %} 
+ {% set layout_name='step_checkout' %}
+ {% endif %}
+ 
+ 
+<div class="supercheckout-checkout-content"></div>
+
+{% if (redirect is not defined) %} 
+<table class="supercheckout-summary">
+    <thead>
+        <tr>
+            <th style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['name']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['name']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-name">{{ column_name }}</th>
+            <th style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['model']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['model']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-qty">{{ column_model }}</th>
+            <th style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['quantity']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['quantity']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-qty">{{ column_quantity }}</th>
+            <th style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['price']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['price']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-total" style="text-align:center;">{{ column_price }}</th>
+            <th style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['total']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['total']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-total">{{ column_total }}</th>
+            <th class="supercheckout-qty">{{ column_action }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %} 
+        <tr>
+            <td style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['name']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['name']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-name">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    {% if product['thumb'] %}
+                        <img src="{{ product['thumb'] }}" alt="{{ product['name'] }}" style="width: 80px; height: 80px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; background: #ffffff; padding: 4px; flex-shrink: 0;" />
+                    {% endif %}
+                    <div>
+                        <a href="{{ product['href'] }}" style="font-weight: 600; color: #2d3748;">{{ product['name'] }}</a>
+                        {% for option in product['option'] %} 
+                        <br />
+                        &nbsp;<small> - {{ option['name'] }}: {{ option['value'] }}</small>
+                        {% endfor %} 
+                    </div>
+                </div>
+            </td>
+            <td style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['model']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['model']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-qty">{{ product['model'] }}{% if (product['reward'] and logged) %}{{ '<br><div style="color: #696969 !important;">('~text_rewards_point~product['reward']~')</div>' }}{% endif %}</td> 
+            <td style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['quantity']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['quantity']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-qty">
+                <div style="display: inline-flex; align-items: center; justify-content: center; gap: 3px;">
+                    <button type="button" id="{{ product['key'] }}" class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(this.id,'minus');" style="width: 26px; height: 26px; padding: 0; line-height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;" {% if (product['quantity'] <= 1) %} disabled {% endif %}>
+                        <i class="fa fa-minus" style="font-size: 10px;"></i>
+                    </button>
+                    <input class="form-control text-center quantitybox" type="text" id="quantity_{{ product['key'] }}" name="quantity[{{ product['key'] }}]" value="{{ product['quantity'] }}" style="width: 36px !important; min-width: 36px !important; max-width: 36px !important; height: 26px !important; padding: 0 4px !important; font-size: 13px !important; border: 1px solid #ced4da !important; border-radius: 4px !important; display: inline-block !important;" readonly>
+                    <button type="button" id="{{ product['key'] }}" class="btn btn-outline-secondary btn-sm" onclick="updateQuantity(this.id,'plus');" style="width: 26px; height: 26px; padding: 0; line-height: 24px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center;">
+                        <i class="fa fa-plus" style="font-size: 10px;"></i>
+                    </button>
+                </div>
+            </td>
+            <td style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['price']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['price']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-total">{{ product['price'] }}</td>
+            <td style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['columns']['total']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['columns']['total']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};" class="supercheckout-total">{{ product['total'] }}</td>
+            <td class="supercheckout-qty"><a href="javascript://" id="{{ product['key'] }}" onclick="removeProduct(this.id);" class="removeProduct"><div id="{{ product['key'] }}"  title="Delete"></div></a></td>
+        </tr>
+        {% endfor %} 
+        {% for voucher in vouchers %} 
+        <tr>
+            <td class="supercheckout-name">{{ voucher['description'] }}</td>
+            <td class="supercheckout-qty">1</td>
+            <td class="supercheckout-total">{{ voucher['amount'] }}</td>
+            <td class="supercheckout-total">{{ voucher['amount'] }}</td>
+        </tr>
+        {% endfor %} 
+    </tbody>
+</table>
+<table class="supercheckout-totals">
+    <tbody>
+                                       
+        {% for datatotals in datatotal %} 
+         <tr>
+             <td class="title"><b>{{ datatotals['title'] }}{% if (datatotals['code'] == 'voucher' or datatotals['code'] == 'coupon' or datatotals['code'] == 'reward') %}{{'<a href="javascript://" id="'~datatotals['code']~'" onclick="redeem(this.id);" ><div class="removeProduct"></div></a></td>' }}{% endif %}</b></td>
+             <td class="value"><span class="price">{{ datatotals['text'] }}</span> </td>                                
+         </tr>
+        {% endfor %} 
+        <tr style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['option']['coupon']['display']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['option']['coupon']['display']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};">
+            <td class="title"><b>{{ text_coupon_code }}</b></td>
+            <td class="value"><input  id="coupon_code" name="coupon" type="text" class="voucherText">
+                <input type="hidden" value="coupon" name="next">
+                <input id="button-coupon" type="button" onClick="callCoupon(); " class="orangebuttonapply" value="{{ button_apply }}">
+            </td>
+        </tr>
+        <tr style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['option']['voucher']['display']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% else %}{% if (settings['option']['guest']['cart']['option']['voucher']['display']) %}{{' ' }}{% else %}{{'none' }}{% endif %}{% endif %};">
+            <td class="title"><b>{{ text_voucher_code }}</b></td>
+            <td class="value"><input  id="voucher_code" name="voucher" type="text" class="voucherText">
+                <input type="hidden" value="voucher" name="next">
+                 <input id="button-voucher" type="button" onClick="callVoucher();" class="orangebuttonapply" value="{{ button_apply }}">
+            </td>
+        </tr>
+        <tr style="display:{% if (logged) %}{% if (settings['option']['logged']['cart']['option']['reward']['display'] and customer_available_points and total_product_points) %}{{ 'block' }}{% endif %}{% endif %}{{ 'none' }};">
+            <td class="title"><b>{{ text_rewards_point}}</b>{{ '<br>'~text_available_rewards_point~customer_available_points~'<br>'~text_max_rewards_point~total_product_points~')' }}</td>
+            <td class="value"><input  id="rewards_point" name="rewards" type="text" class="voucherText">
+                <input type="hidden" value="rewards_point" name="next">
+               {# #} <input id="button-reward" type="button" onClick="callReward();" class="orangebuttonapply" value="{{ button_apply }}"> 
+            </td>
+        </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+
+// FOR SUBMITTING ON PRESSING ENTER LIKE LOGIN, COUPON, VOUCHER
+$('#email').keypress(function(event){
+    if(event.keyCode == 13){
+        $('#button-login').click();
+    }
+});
+$('#password').keypress(function(event){    
+    if(event.keyCode == 13){
+        $('#button-login').click();
+    }
+});
+$('#coupon_code').keypress(function(event){
+    if(event.keyCode == 13){
+        $('#button-coupon').click();
+    }
+});
+$('#voucher_code').keypress(function(event){
+    if(event.keyCode == 13){
+        $('#button-voucher').click();
+    }
+});
+$('#rewards_point').keypress(function(event){
+    if(event.keyCode == 13){
+        $('#button-reward').click();
+    }
+});
+    $(document).ready(function(){
+    $('#cart > ul').load('index.php?route=common/cart/info ul li');
+
+    $('#cart > button').html('<span id="cart-total"><i class="fa fa-shopping-cart"></i> {{ default_cart_total }}</span>');
+        
+        
+    {% if (layout_name == 'three-column') %} 
+        var a = $('#supercheckout-columnleft').height();    
+        var d = $('#supercheckout_login_option_box').height();  
+        var e = a-d;
+        $('#columnleft-1').css('min-height', e + 'px');
+      //  $('#columnleft-3').css('min-height', e + 'px');
+
+
+    {% elseif (layout_name == 'two-column') %} 
+        var a = $('#supercheckout-columnleft').height();
+        var d = $('#supercheckout_login_option_box').height();  
+        var e = a-d;    
+        $('#columnleft-1').css('min-height', e + 'px');
+        var b = $('#column-1-inside').height();
+        var c = $('#column-2-inside').height();
+        if(c > b) {
+            $('#column-1-inside').css('min-height', c + 'px');
+        } else {
+            $('#column-2-inside').css('min-height', b + 'px');
+        }
+    {% endif %} 
+    });
+    $('[data-toggle="popover"]').popover();
+</script>
+{% else %} 
+<script type="text/javascript"><!--
+    location = '{{ redirect }}';
+    //--></script>
+{% endif %}
+{# print_r($sessions); #}
