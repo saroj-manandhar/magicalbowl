@@ -1,0 +1,34 @@
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Image directory (as requested)
+image/
+
+# OpenCart Storage / Temporary runtime files
+storage/cache/*
+storage/logs/*
+storage/session/*
+storage/upload/*
+!storage/cache/index.html
+!storage/logs/index.html
+!storage/session/index.html
+!storage/upload/index.html
+
+# Theme source packages and raw files
+So-eMarket-main-files*
+*.zip
+*.tar.gz
+
+# Database backups & SQL dumps
+*.sql
+*.sql.gz
+
+# Local / IDE / Scratch files
+.idea/
+.vscode/
+*.swp
+*~
+scratch/
