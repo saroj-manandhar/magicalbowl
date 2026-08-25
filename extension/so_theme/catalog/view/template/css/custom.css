@@ -1252,8 +1252,8 @@ header#header.typeheader-1 .header-top .shopping_cart .dropdown-menu.shoppingcar
 header#header.typeheader-1 .header-middle {
 	background: #d35400 url('../../../../../../image/catalog/header_banner_mce.jpg') no-repeat center center !important;
 	background-size: cover !important;
-	height: 145px !important;
-	min-height: 145px !important;
+	height: 200px !important;
+	min-height: 200px !important;
 	margin: 0 !important;
 	padding: 0 !important;
 	border: none !important;
@@ -1271,7 +1271,7 @@ header#header.typeheader-1 .header-middle-container {
 }
 
 header#header.typeheader-1 .header-middle-container .row {
-	height: 100% !important;
+	height: 50% !important;
 	position: relative !important;
 	z-index: 2003 !important;
 }
