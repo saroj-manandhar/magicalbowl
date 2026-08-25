@@ -264,6 +264,88 @@ footer.typefooter-2 .box-footer .modcontent ul.menu li a:hover {
     transform: translateX(4px) !important;
 }
 
+/* Middle Footer Columns Proportions & Full Width Alignment */
+footer.typefooter-2 .footer-middle,
+footer .footer-middle {
+    padding: 35px 0 20px 0 !important;
+}
+
+/* Standard Container Alignment for Footer (Matches Site Header & Product Sections) */
+footer.typefooter-2 .so-page-builder,
+footer.typefooter-2 .footer-main,
+footer.typefooter-2 .footer-bottom {
+    width: 100% !important;
+}
+
+footer.typefooter-2 .so-page-builder .container,
+footer.typefooter-2 .footer-main .container,
+footer.typefooter-2 .footer-bottom .container {
+    max-width: 1400px !important;
+    width: 100% !important;
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    overflow: visible !important;
+}
+
+/* Remove nested inner container constraints */
+footer.typefooter-2 .col_34s0,
+footer.typefooter-2 .col_f2b9,
+footer.typefooter-2 .col_news {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+@media (min-width: 992px) {
+    footer.typefooter-2 .footer-middle .row_c2c8,
+    footer.typefooter-2 .footer-middle .row-style {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        gap: 20px !important;
+    }
+
+    /* Column 1: Contact Info (Left) */
+    footer.typefooter-2 .footer-middle .col_4202 {
+        flex: 0 0 30% !important;
+        max-width: 30% !important;
+        width: 30% !important;
+        padding-right: 15px !important;
+    }
+
+    /* Column 2: Customer Service */
+    footer.typefooter-2 .footer-middle .col_bko7 {
+        flex: 0 0 18% !important;
+        max-width: 18% !important;
+        width: 18% !important;
+    }
+
+    /* Column 3: Important Information */
+    footer.typefooter-2 .footer-middle .col_6urb {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+        width: 25% !important;
+    }
+
+    /* Column 4: Courses & Healing (Right) */
+    footer.typefooter-2 .footer-middle .col_3d8g {
+        flex: 0 0 25% !important;
+        max-width: 25% !important;
+        width: 25% !important;
+    }
+}
+
+/* Ensure text flows naturally without truncation */
+footer.typefooter-2 .box-footer .modcontent ul.menu li a,
+footer.typefooter-2 .infos-footer ul li a,
+footer.typefooter-2 .infos-footer ul li span {
+    white-space: normal !important;
+    word-break: normal !important;
+}
+
 /* Newsletter Section */
 footer.typefooter-2 .newsletter-footer1,
 footer .newsletter-footer1 {

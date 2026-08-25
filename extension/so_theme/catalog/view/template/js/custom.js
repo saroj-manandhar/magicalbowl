@@ -141,25 +141,5 @@ jQuery(document).ready(function($) {
         }, 350);
     });
 
-    /* Auto-format Contact Info links (Clickable Phone & Clean Email) */
-    function formatFooterContactInfo() {
-        // Target li.mail, .mail, li.email directly and set single clean link
-        $('footer, .footer-container, .infos-footer, .box-footer, .footer-main').find('li.mail, .mail, li.email').each(function() {
-            $(this).html('<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>');
-        });
-
-        // Target li.phone, .phone directly and set single clean link
-        $('footer, .footer-container, .infos-footer, .box-footer, .footer-main').find('li.phone, .phone').each(function() {
-            var txt = $(this).text();
-            if (txt.indexOf('98510') !== -1 || txt.indexOf('0315') !== -1 || txt.indexOf('Hot Lines') !== -1 || txt.indexOf('+(0214)') !== -1) {
-                $(this).html('Hot Lines: (Also Social Medias) <a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>');
-            }
-        });
-    }
-
-    formatFooterContactInfo();
-    setTimeout(formatFooterContactInfo, 300);
-    setTimeout(formatFooterContactInfo, 1000);
-
     $('body').addClass('so-demos-ready');
 });
