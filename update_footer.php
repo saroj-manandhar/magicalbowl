@@ -30,7 +30,11 @@ $html_logo = '<div class="footer-logo"><a href="index.php?route=common/home" cla
 
 $html_links = '<ul class="footer-links"><li><a href="index.php?route=information/information&information_id=4">About Us</a></li><li><a href="index.php?route=information/information&information_id=6">Delivery Info</a></li><li><a href="index.php?route=account/returns|add">Returns</a></li><li><a href="index.php?route=information/information&information_id=3">Privacy Policy</a></li><li><a href="index.php?route=information/contact">Contact Us</a></li></ul>';
 
-$html_social = '<div class="youtube"><ul class="socials"><li class="facebook"><a href="https://www.facebook.com/CosmicSoundHealingAcademy" target="_blank" title="Facebook"><i class="fab fa-facebook-f fa-facebook"></i></a></li><li class="course"><a href="https://www.magicalsingingbowls.com/Tibetan-singing-bowls-course" target="_blank" title="Singing Bowls Course"><i class="fa fa-graduation-cap"></i></a></li><li class="youtube"><a href="https://www.youtube.com/c/GovindaDhrubaTiwariSound-healing-master/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a></li><li class="instagram"><a href="https://www.instagram.com/govinda.tiwari1/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a></li></ul></div>';
+$html_social = '<div class="youtube"><ul class="socials">'
+    . '<li class="facebook"><a href="https://www.facebook.com/CosmicSoundHealingAcademy" target="_blank" title="Facebook"><i class="fab fa-facebook-f fa-facebook"></i></a></li>'
+    . '<li class="youtube"><a href="https://www.youtube.com/c/GovindaDhrubaTiwariSound-healing-master/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a></li>'
+    . '<li class="instagram"><a href="https://www.instagram.com/govinda.tiwari1/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a></li>'
+    . '</ul></div>';
 
 $html_contact = '<div class="infos-footer box-footer"><div class="module"><h3 class="modtitle">CONTACT INFO</h3><ul class="menu"><li class="adres"><i class="fa fa-map-marker-alt fa-map-marker"></i><a href="index.php?route=information/information&information_id=4">Magical Creation Enterprises Pvt. Ltd.</a></li><li class="phone"><i class="fa fa-phone-alt fa-phone"></i><span>Hot Lines: (Also Social Medias)<br/><a href="tel:+9779851051290" class="contact-link">+977 9851051290</a></span></li><li class="mail"><i class="fa fa-envelope"></i><a href="mailto:sales.magicalsb@gmail.com" class="contact-link">sales.magicalsb@gmail.com</a></li></ul></div></div>';
 
