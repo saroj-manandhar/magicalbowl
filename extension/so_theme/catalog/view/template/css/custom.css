@@ -257,8 +257,9 @@ footer.typefooter-2 .box-footer .modcontent ul.menu {
 
 footer .box-footer .modcontent ul.menu li,
 footer.typefooter-2 .box-footer .modcontent ul.menu li {
-    margin-bottom: 8px !important;
+    margin-bottom: 9px !important;
     line-height: 1.5 !important;
+    list-style: none !important;
 }
 
 footer .box-footer .modcontent ul.menu li a,
@@ -268,21 +269,37 @@ footer.typefooter-2 .box-footer .modcontent ul.menu li a {
     text-decoration: none !important;
     display: inline-flex !important;
     align-items: center !important;
+    position: relative !important;
+    padding: 2px 0 2px 14px !important;
     transition: all 0.2s ease !important;
-    padding: 2px 0 !important;
 }
 
 footer .box-footer .modcontent ul.menu li a:before,
 footer.typefooter-2 .box-footer .modcontent ul.menu li a:before {
-    color: #cbd5e0 !important;
-    margin-right: 8px !important;
-    font-size: 7px !important;
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 5px !important;
+    height: 5px !important;
+    border-radius: 50% !important;
+    background-color: #cbd5e0 !important;
+    margin: 0 !important;
+    transition: all 0.2s ease !important;
 }
 
 footer .box-footer .modcontent ul.menu li a:hover,
 footer.typefooter-2 .box-footer .modcontent ul.menu li a:hover {
     color: #d97706 !important;
     transform: translateX(4px) !important;
+}
+
+footer .box-footer .modcontent ul.menu li a:hover:before,
+footer.typefooter-2 .box-footer .modcontent ul.menu li a:hover:before {
+    background-color: #f1c40f !important;
+    width: 6px !important;
+    height: 6px !important;
 }
 
 /* Middle Footer Columns Proportions & Full Width Alignment */

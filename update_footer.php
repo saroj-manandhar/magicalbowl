@@ -33,7 +33,7 @@ $html_links = '<ul class="footer-links"><li><a href="index.php?route=information
 $html_social = '<div class="youtube"><ul class="socials">'
     . '<li class="facebook"><a href="https://www.facebook.com/CosmicSoundHealingAcademy" target="_blank" title="Facebook"><i class="fab fa-facebook-f fa-facebook"></i></a></li>'
     . '<li class="youtube"><a href="https://www.youtube.com/c/GovindaDhrubaTiwariSound-healing-master/" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a></li>'
-    . '<li class="instagram"><a href="https://www.instagram.com/govinda.tiwari1/" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a></li>'
+    . '<li class="instagram"><a href="https://www.instagram.com/cosmic_sound_healing_academy" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a></li>'
     . '</ul></div>';
 
 $html_contact = '<div class="infos-footer box-footer"><div class="module"><h3 class="modtitle">CONTACT INFO</h3><ul class="menu"><li class="adres"><i class="fa fa-map-marker-alt fa-map-marker"></i><a href="index.php?route=information/information&information_id=4">Magical Creation Enterprises Pvt. Ltd.</a></li><li class="phone"><i class="fa fa-phone-alt fa-phone"></i><span>Hot Lines: (Also Social Medias)<br/><a href="tel:+9779851051290" class="contact-link">+977 9851051290</a></span></li><li class="mail"><i class="fa fa-envelope"></i><a href="mailto:sales.magicalsb@gmail.com" class="contact-link">sales.magicalsb@gmail.com</a></li></ul></div></div>';
