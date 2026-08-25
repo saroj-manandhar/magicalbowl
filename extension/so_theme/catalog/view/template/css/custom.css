@@ -95,9 +95,46 @@ footer .footer-top,
     padding: 12px 0 !important;
 }
 
+footer.typefooter-2 .footer-top a.brand-link,
+footer .footer-top a.brand-link {
+    color: #ffffff !important;
+    font-size: 17px !important;
+    font-weight: 700 !important;
+    text-decoration: none !important;
+    letter-spacing: 0.5px !important;
+    display: inline-block !important;
+}
+
 footer.typefooter-2 .footer-top a,
 footer .footer-top a {
     color: #ffffff !important;
+    font-size: 13.5px !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
+}
+
+footer.typefooter-2 .footer-top .footer-links,
+footer .footer-top .footer-links {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+    gap: 15px !important;
+}
+
+footer.typefooter-2 .footer-top .footer-links li,
+footer .footer-top .footer-links li {
+    display: inline-flex !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+footer.typefooter-2 .footer-top .footer-links li a:hover,
+footer .footer-top .footer-links li a:hover {
+    color: #1e293b !important;
 }
 
 footer.typefooter-2 .footer-top .socials,
@@ -119,44 +156,240 @@ footer .footer-top .socials li {
     margin: 0 !important;
 }
 
+footer.typefooter-2 .footer-top .socials li a,
+footer .footer-top .socials li a {
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    border-radius: 50% !important;
+    background: rgba(0, 0, 0, 0.18) !important;
+    color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s ease !important;
+    font-size: 14px !important;
+    text-decoration: none !important;
+}
+
+footer.typefooter-2 .footer-top .socials li a:hover,
+footer .footer-top .socials li a:hover {
+    background: #ffffff !important;
+    color: #1e293b !important;
+    transform: translateY(-2px) !important;
+}
+
 /* Footer Gold Heading Underline Bars */
 footer .modtitle:after,
 footer .box-footer .modtitle:after {
     background-color: #f1c40f !important;
 }
 
-footer .infos-footer ul li {
+footer .infos-footer ul,
+footer.typefooter-2 .infos-footer ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin-top: 15px !important;
+}
+
+footer .infos-footer ul li,
+footer.typefooter-2 .infos-footer ul li {
+    background: none !important;
+    padding: 0 !important;
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-start !important;
     gap: 12px !important;
     margin-bottom: 14px !important;
-    color: #666666 !important;
-    font-size: 13px !important;
+    color: #4a5568 !important;
+    font-size: 13.5px !important;
+    line-height: 1.5 !important;
 }
 
-footer .infos-footer ul li i {
-    font-size: 20px !important;
-    color: #777777 !important;
-    width: 24px !important;
+footer .infos-footer ul li i,
+footer.typefooter-2 .infos-footer ul li i {
+    font-size: 16px !important;
+    color: #f1c40f !important;
+    width: 20px !important;
     text-align: center !important;
     flex-shrink: 0 !important;
+    margin-top: 3px !important;
 }
 
-footer .infos-footer ul li span {
-    color: #555555 !important;
+footer .infos-footer ul li a,
+footer.typefooter-2 .infos-footer ul li a {
+    color: #4a5568 !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease !important;
 }
 
-footer .newsletter-footer1 button,
-footer .newsletter-footer1 .sub-button,
-footer .newsletter-footer1 input[type="submit"] {
-    background-color: #f1c40f !important;
-    border-color: #f1c40f !important;
-    color: #ffffff !important;
-    font-weight: bold !important;
+footer .infos-footer ul li a:hover,
+footer.typefooter-2 .infos-footer ul li a:hover {
+    color: #d97706 !important;
 }
 
-footer .footer-bottom a {
+footer .box-footer .modcontent ul.menu,
+footer.typefooter-2 .box-footer .modcontent ul.menu {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+footer .box-footer .modcontent ul.menu li,
+footer.typefooter-2 .box-footer .modcontent ul.menu li {
+    margin-bottom: 8px !important;
+    line-height: 1.5 !important;
+}
+
+footer .box-footer .modcontent ul.menu li a,
+footer.typefooter-2 .box-footer .modcontent ul.menu li a {
+    color: #4a5568 !important;
+    font-size: 13.5px !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    transition: all 0.2s ease !important;
+    padding: 2px 0 !important;
+}
+
+footer .box-footer .modcontent ul.menu li a:before,
+footer.typefooter-2 .box-footer .modcontent ul.menu li a:before {
+    color: #cbd5e0 !important;
+    margin-right: 8px !important;
+    font-size: 7px !important;
+}
+
+footer .box-footer .modcontent ul.menu li a:hover,
+footer.typefooter-2 .box-footer .modcontent ul.menu li a:hover {
+    color: #d97706 !important;
+    transform: translateX(4px) !important;
+}
+
+/* Newsletter Section */
+footer.typefooter-2 .newsletter-footer1,
+footer .newsletter-footer1 {
+    border-top: 1px solid #edf2f7 !important;
+    padding: 25px 0 15px 0 !important;
+    margin-top: 20px !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .title-block,
+footer .newsletter-footer1 .newsletter .title-block {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    padding-left: 65px !important;
+    margin-top: 0 !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .title-block:before,
+footer .newsletter-footer1 .newsletter .title-block:before {
     color: #f1c40f !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .title-block .page-heading,
+footer .newsletter-footer1 .newsletter .title-block .page-heading {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: #1a202c !important;
+    line-height: 1.3 !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .title-block .promotext,
+footer .newsletter-footer1 .newsletter .title-block .promotext {
+    font-size: 13px !important;
+    color: #718096 !important;
+    margin-top: 4px !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup,
+footer .newsletter-footer1 .newsletter .block_content form.signup {
+    margin-top: 0 !important;
+    padding-left: 20px !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup .form-group .input-box,
+footer .newsletter-footer1 .newsletter .block_content form.signup .form-group .input-box {
+    border-radius: 25px !important;
+    border: 1px solid #e2e8f0 !important;
+    background: #ffffff !important;
+    padding-right: 130px !important;
+    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup .form-group #txtemail-footer,
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup .form-group input[type="email"],
+footer .newsletter-footer1 .newsletter .block_content form.signup .form-group input[type="email"] {
+    height: 46px !important;
+    line-height: 46px !important;
+    padding: 0 20px !important;
+    font-size: 13.5px !important;
+    border: none !important;
+    background: #ffffff !important;
+    outline: none !important;
+    box-shadow: none !important;
+    color: #2d3748 !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup .subcribe,
+footer .newsletter-footer1 .newsletter .block_content form.signup .subcribe {
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    height: 100% !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup .subcribe button,
+footer .newsletter-footer1 .newsletter .block_content form.signup .subcribe button {
+    background-color: #f1c40f !important;
+    border: none !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+    font-size: 13.5px !important;
+    height: 46px !important;
+    line-height: 46px !important;
+    padding: 0 24px !important;
+    border-radius: 0 25px 25px 0 !important;
+    cursor: pointer !important;
+    transition: background-color 0.2s ease !important;
+}
+
+footer.typefooter-2 .newsletter-footer1 .newsletter .block_content form.signup .subcribe button:hover,
+footer .newsletter-footer1 .newsletter .block_content form.signup .subcribe button:hover {
+    background-color: #d4ac0d !important;
+    color: #000000 !important;
+}
+
+/* Footer Bottom Bar & Payment Icons */
+footer.typefooter-2 .footer-bottom,
+footer .footer-bottom {
+    background-color: #f8fafc !important;
+    border-top: 1px solid #e2e8f0 !important;
+    padding: 16px 0 !important;
+}
+
+footer.typefooter-2 .footer-bottom .copyright,
+footer .footer-bottom .copyright {
+    color: #64748b !important;
+    font-size: 13px !important;
+    line-height: 28px !important;
+}
+
+footer.typefooter-2 .footer-bottom .payment-w,
+footer .footer-bottom .payment-w {
+    text-align: right !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+}
+
+footer.typefooter-2 .footer-bottom .payment-w img,
+footer .footer-bottom .payment-w img {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 30px !important;
+    display: inline-block !important;
+    object-fit: contain !important;
 }
 
 /* Hide Empty Alert Boxes in Sidebar Modules */

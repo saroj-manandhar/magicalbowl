@@ -2,19 +2,7 @@
 	{#======	FOOTER TOP	=======#}  
 	{% if footer_block2 is not empty %}
 	<div class="footer-main desc-collapse showdown" id="collapse-footer">
-		{% set footer_cleaned = footer_block2|replace({
-			'San Luis potosí, centro historico, 78000 san luis potosí, SPL, Mexico': 'Magical Creation Enterprises Pvt. Ltd.',
-			'(+0214)0 315 215 - (+0214)0 315 215': 'Hot Lines: (Also Social Medias) <a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>',
-			'+977 98510 512 90': '<a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>',
-			'+977 9851051290': '<a href="tel:+9779851051290" style="color: inherit; text-decoration: underline;">+977 9851051290</a>',
-			'href="mailto:contact@opencartworks.com"': 'href="mailto:sales.magicalsb@gmail.com"',
-			'contact@opencartworks.com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
-			'Sales .Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
-			'Sales.Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
-			'.Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>',
-			'Magicalsb@Gmail.Com': '<a href="mailto:sales.magicalsb@gmail.com" style="color: inherit; text-decoration: underline;">sales.magicalsb@gmail.com</a>'
-		}) %}
-		{{ footer_cleaned|raw }}
+		{{ footer_block2|raw }}
 	</div>
 	<div class="button-toggle hidden-lg hidden-md">
          <a class="showmore" data-bs-toggle="collapse" href="#" aria-expanded="false" aria-controls="collapse-footer">
@@ -23,6 +11,46 @@
 		</a>        
 	</div>
 	{% endif %}
+
+	<script type="text/javascript">
+	function subscribe_newsletter_footer() {
+		var emailpattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+		var email = $('#txtemail-footer').val();
+		var d = new Date();
+		var createdate = d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+		var status = 0;
+		var dataString = 'email=' + encodeURIComponent(email) + '&createdate=' + createdate + '&status=' + status;
+
+		if (email != "") {
+			if (!emailpattern.test(email)) {
+				$('.show-error-footer').remove();
+				$('#signup-footer2').after('<div class="alert alert-danger show-error-footer" style="margin-top: 10px; font-size: 12px; padding: 6px 12px;" role="alert">Invalid Email Address</div>');
+				return false;
+			} else {
+				$.ajax({
+					url: 'index.php?route=extension/so_theme/module/so_newletter_custom_popup|newsletter',
+					type: 'post',
+					data: dataString,
+					dataType: 'json',
+					success: function(json) {
+						$('.show-error-footer').remove();
+						if (json.error == false) {
+							$('#signup-footer2').after('<div class="alert alert-success show-error-footer" style="margin-top: 10px; font-size: 12px; padding: 6px 12px;" role="alert">' + json.message + '</div>');
+						} else {
+							$('#signup-footer2').after('<div class="alert alert-danger show-error-footer" style="margin-top: 10px; font-size: 12px; padding: 6px 12px;" role="alert">' + json.message + '</div>');
+						}
+						$('#signup-footer2')[0].reset();
+					}
+				});
+				return false;
+			}
+		} else {
+			alert("Email is required");
+			$('#txtemail-footer').focus();
+			return false;
+		}
+	}
+	</script>
 	
 	
 	{#======	FOOTER BOTTOM	=======#} 
