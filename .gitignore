@@ -4,7 +4,7 @@
 .LSOverride
 ._*
 
-# Image directory (as requested)
+# Image directory (keep locally, don't track in Git)
 image/
 
 # OpenCart Storage / Temporary runtime files
