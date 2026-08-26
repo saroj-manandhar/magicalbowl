@@ -10,41 +10,27 @@
 		{% for product in child_items %}
 			{% set i = i + 1 %}
 			{% set k = k + 1 %}
-
-			{# dev custom #}
-			{% set number_product 	= 7 %}	
-
+			
 			{% if type_show == 'slider' and (i % nb_rows == 1 or nb_rows == 1) %}
 				<div class="ltabs-item ">
 			{% endif %}
 			{% if type_show == 'loadmore' %}
 				<div class="ltabs-item new-ltabs-item" >
-			{% endif %}	
-				
-			{# dev custom #}
-			{% if i % number_product  ==  1 %}
-				{% set class_numberProduct = 'first-item' %}
-				{% set display_numberProduct = true %}
-			{% else %} 
-				{% set class_numberProduct = 'nitem' %}
-				{% set display_numberProduct = false %}
-			{% endif %} 	
-			<div class="item-inner ss product-layout transition product-grid {{ class_numberProduct }}">
+			{% endif %}			
+			<div class="item-inner product-layout transition product-grid">
+
 				<div class="product-item-container">
 					<div class="left-block">										
 						{% if product_image %}								
 							<div class="product-image-container {% if product_image_num  == 2 %} {{ 'second_img' }} {% endif %}	">
 								<a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}"  >
-									{% if display_numberProduct == false %}
-										{% if product_image_num ==2 %}
+									
+									{% if product_image_num ==2 %}
 										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-1 lazyload" alt="{{ product.name }}">
 										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-2 lazyload" alt="{{ product.name }}">
 									{% else %}
 										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
 									{% endif %}	
-									{% else %}
-										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.image_large }}" alt="{{ product.name }}" class="lazyload">
-									{% endif %}		
 								</a>						
 							</div>
 						{% endif %}	
@@ -64,7 +50,7 @@
 							{% if display_title %}
 								<h4><a href="{{ product.href }}" title="{{ product.name }}" target="{{ item_link_target }}">{{ product.name }}</a></h4>
 							{% endif %}
-										
+
 							{% if display_rating %}
 								<div class="rating">
 								  	{% for j in 1..5 %}
@@ -76,7 +62,7 @@
 								  	{% endfor %}
 								</div>
 							{% endif %}
-
+							
 							{% if product.price and display_price %}
 								<div class="price">
 								  	{% if product.special is empty %}
@@ -86,7 +72,7 @@
 											{% endif %} 
 										{% else %}   
 											{{ product.price }}
-										{% endif %}
+										{% endif %} 
 								  	{% else %}
 								  		<span class="price-new">{{ product.special }}</span>
 								  		<span class="price-old">{{ product.price }}</span>
@@ -97,7 +83,7 @@
 										{% endif %}	
 								  	{% endif %}
 								</div>
-							{% endif %}
+							{% endif %}		
 						</div>
 						{% endif %}
 
@@ -123,7 +109,6 @@
 
 				</div>
 			</div>
-			
 			{% if type_show == 'slider' and (i % nb_rows == 0 or i == count) %}
 			</div>
 			{% endif %}
@@ -170,7 +155,7 @@
 			mouseDrag: {{ mousedrag }},
 			touchDrag: {{ touchdrag }},
 			navRewind: true,
-			navText: [ '', '' ],
+			navText: [ '<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>' ],
 			responsive: {
 				0: { items: 2,
 					nav: total_product <= nb_column0 ? false : (({{display_nav}}) ? true: false),

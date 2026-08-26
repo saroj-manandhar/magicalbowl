@@ -51,7 +51,7 @@
 				</div>
 			{% endif %}
 			{% if show_key %}
-				<input class="autosearch-input form-control" type="text" value="" size="50" autocomplete="off" placeholder="{{ text_search  }}" name="search">
+				<input class="autosearch-input form-control" type="text" value="" size="50" autocomplete="off" placeholder="{{ text_search == 'Search' ? 'Search your choice in entire store' : text_search }}" name="search">
 			{% endif %}
 			<span class="input-group-btn">
 				<button type="submit" class="button-search btn btn-default btn-lg" name="submit_search"><i class="fa fa-search"></i><span class="hidden">{{ text_btn_search }}</span></button>

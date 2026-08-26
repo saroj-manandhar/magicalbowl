@@ -1,4 +1,4 @@
-
+{% if blogs is not empty and error_no_database is defined and error_no_database == '' %}
 <div class="module so-latest-blog {{ class_suffix }} preset01-{{ nb_column0 }} preset02-{{ nb_column1 }} preset03-{{ nb_column2 }} preset04-{{ nb_column3 }} preset05-{{ nb_column4 }}">
 
 	{% if disp_title_module %}
@@ -8,7 +8,6 @@
 		<div class="form-group">{{ pre_text }}</div>
 	{% endif %}
 	<div class="modcontent clearfix">
-		{% if blogs is not empty and error_no_database is defined and error_no_database == '' %}	
 			{% set count_item = blogs|length %}
 			{% set cls_btn_page = button_page == 'top' ? 'buttom-type1' : 'button-type2' %}
 			{% set btn_type 	= button_page == 'top' ? 'button-type1' : 'button-type2' %}
@@ -76,72 +75,47 @@
 								var $item = $(".owl2-item", $element);
 								$item.css({"opacity": 1, "filter": "alpha(opacity = 100)"});
 							}
-							{% if dots == "true" %}
-								if ($(".owl2-dot", $element).length < 2) {
-									$(".owl2-prev", $element).css("display", "none");
-									$(".owl2-next", $element).css("display", "none");
-									$(".owl2-dot", $element).css("display", "none");
-								}
-							{% endif %}
-
 							{% if button_page == "top" %}
-								$(".owl2-controls", $element).insertBefore($extraslider);
-								$(".owl2-dots", $element).insertAfter($(".owl2-prev", $element));
+								$(".blog-external .owl2-dots", $element).insertAfter($(".blog-external .owl2-prev", $element));
+								$(".blog-external .owl2-controls", $element).insertBefore($extraslider).addClass("featureslider");
 							{% else %}
-								$(".owl2-nav", $element).insertBefore($extraslider);
-								$(".owl2-controls", $element).insertAfter($extraslider);
+								$(".blog-external .owl2-nav", $element).insertBefore($extraslider);
+								$(".blog-external .owl2-controls", $element).insertAfter($extraslider).addClass("featureslider");
 							{% endif %}
 						});
 
 						$extraslider.owlCarousel2({
+							rtl: {{ direction }},
 							margin: {{ margin }},
 							slideBy: {{ slideBy }},
 							autoplay: {{ autoplay }},
-							autoplayHoverPause: {{ pausehover }},
-							autoplayTimeout: {{ autoplay_timeout }},
+							autoplayHoverPause: {{ autoplayHoverPause }},
+							autoplayTimeout: {{ autoplayTimeout }},
 							autoplaySpeed: {{ autoplaySpeed }},
 							startPosition: {{ startPosition }},
 							mouseDrag: {{ mouseDrag }},
 							touchDrag: {{ touchDrag }},
 							autoWidth: false,
-							rtl: {{ direction == 'ltr' ? 'false' : 'true' }},
 							responsive: {
-								0: { items: 2 } ,
+								0: { items: 2 },
 								480: { items: 2 },
 								768: { items: {{ nb_column2 }} },
 								992: { items: {{ nb_column1 }} },
-								1200: { items: 2 }},
+								1200: { items: {{ nb_column0 }} }
 							},
 							dotClass: "owl2-dot",
 							dotsClass: "owl2-dots",
-							dots: {{ dots }},
-							dotsSpeed:{{ dotsSpeed }},
-							nav: {{ nav }},
-							loop: {{ loop }},
-							navSpeed: {{ navSpeed }},
-							navText: ["{{ btn_prev }}", "{{ btn_next }}"],
+							dots: {{ dots }} ,
+							dotsSpeed:{{ dotsSpeed }} ,
+							nav: {{ navs }} ,
+							loop: {{ loop }} ,
+							navSpeed: {{ navSpeed }} ,
+							navText: ["&#171;", "&#187;"],
 							navClass: ["owl2-prev", "owl2-next"]
-						});
 
-						$extraslider.on("translate.owl.carousel2", function (e) {
-							{% if dots == "true" %}
-								if ($(".owl2-dot", $element).length < 2) {
-									$(".owl2-prev", $element).css("display", "none");
-									$(".owl2-next", $element).css("display", "none");
-									$(".owl2-dot", $element).css("display", "none");
-								}
-							{% endif %}
 						});
 
 						$extraslider.on("translated.owl.carousel2", function (e) {
-							{% if dots == "true" %}
-								if ($(".owl2-dot", $element).length < 2) {
-									$(".owl2-prev", $element).css("display", "none");
-									$(".owl2-next", $element).css("display", "none");
-									$(".owl2-dot", $element).css("display", "none");
-								}
-							{% endif %}
-
 							var $item_active = $(".owl2-item.active", $element);
 							var $item = $(".owl2-item", $element);
 
@@ -156,22 +130,13 @@
 
 						function _getAnimate($el) {
 							if (_effect == "none") return;
-							
-							$extraslider.removeClass("extra-animate");
 							$el.each(function (i) {
-								var $_el = $(this);
 								$(this).css({
-									"-webkit-animation": _effect + " " + _duration + "ms ease both",
-									"-moz-animation": _effect + " " + _duration + "ms ease both",
-									"-o-animation": _effect + " " + _duration + "ms ease both",
-									"animation": _effect + " " + _duration + "ms ease both",
-									"-webkit-animation-delay": +i * _delay + "ms",
-									"-moz-animation-delay": +i * _delay + "ms",
-									"-o-animation-delay": +i * _delay + "ms",
-									"animation-delay": +i * _delay + "ms",
+									"-webkit-animation": _effect + " " + _duration + "ms " + i * _delay + "ms both",
+									"-moz-animation": _effect + " " + _duration + "ms " + i * _delay + "ms both",
+									"-o-animation": _effect + " " + _duration + "ms " + i * _delay + "ms both",
+									"animation": _effect + " " + _duration + "ms " + i * _delay + "ms both",
 									"opacity": 1
-								}).animate({
-									opacity: 1
 								});
 
 								if (i == $el.length - 1) {
@@ -195,11 +160,6 @@
 				});
 				
 			</script>
-		{% elseif error_no_database is defined and error_no_database != '' %}
-			<div class="alert alert-info"><i class="fa fa-exclamation-circle"></i>{{ error_no_database }}</div>
-		{% else %}
-    		{{ NoItem }}
-		{% endif %}
 	</div>
 	{% if post_text != '' %}
 		<div class="form-group">
@@ -207,3 +167,4 @@
 		</div>
 	{% endif %}
 </div>
+{% endif %}

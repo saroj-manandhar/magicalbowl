@@ -35,13 +35,6 @@
 						
 					</div>
 					<div class="wap-listing-tabs products-list grid">
-						{% if display_banner_image == 1 %}
-							<div class="item-cat-image">
-								<a href="{{ banner_image_url }}" title="" target="{{ item_link_target }}" >
-									<img class="categories-loadimage" title="" alt="" src="{{ banner_image }}"/>
-								</a>
-							</div>
-						{% endif %}
 						<div class="ltabs-items-container">
 							{% for key, items in list %}
 								{% set child_items = items.child is defined ? items.child : '' %}

@@ -31,42 +31,35 @@
         </div>
 
     <script type="text/javascript">
-      var total_item = {{ count_item }} ;
-      $(".sohomeslider-inner-{{ module}}").owlCarousel2({
-          animateOut: '{{ animateOut}}',
-          animateIn: '{{ animateIn}}',
-          autoplay: {{ autoplay}},
-          autoplayTimeout: {{ autoplayTimeout}},
-          autoplaySpeed:  {{ autoplaySpeed}},
-          smartSpeed: 500,
-          autoplayHoverPause: {{ autoplayHoverPause}},
-          startPosition: {{ startPosition}},
-          mouseDrag:  {{ mouseDrag}},
-          touchDrag: {{ touchDrag}},
-          dots: {{ dots}},
-          autoWidth: false,
-          dotClass: "owl2-dot",
-          dotsClass: "owl2-dots",
-          loop: {{ loop}},
-          navText: ["Next", "Prev"],
-          navClass: ["owl2-prev fas", "owl2-next fas"],
-          responsive: {
-          0: { items: 2 },
-            nav: total_item <= {{ nb_column4 }} ? false : (({{ nav  }} ) ? true: false),
-          },
-          480: { items: 2 },
-            nav: total_item <= {{ nb_column3 }} ? false : (({{ nav  }} ) ? true: false),
-          },
-          768:{ items: {{ nb_column2 }},
-            nav: total_item <= {{ nb_column2 }} ? false : (({{ nav  }} ) ? true: false),
-          },
-          992:{ items: {{ nb_column1 }},
-            nav: total_item <= {{ nb_column1 }} ? false : (({{ nav  }} ) ? true: false),
-          },
-          1200: { items: 2 },
-            nav: total_item <= {{ nb_column0 }} ? false : (({{ nav  }} ) ? true: false),
-          }
-        },
+      jQuery(document).ready(function($){
+        var total_item = {{ count_item }};
+        $(".sohomeslider-inner-{{ module }}").owlCarousel2({
+            animateOut: '{{ animateOut ? animateOut : "fadeOut" }}',
+            animateIn: '{{ animateIn ? animateIn : "fadeIn" }}',
+            autoplay: true,
+            autoplayTimeout: {{ autoplayTimeout ? autoplayTimeout : 5000 }},
+            autoplaySpeed: {{ autoplaySpeed ? autoplaySpeed : 1000 }},
+            smartSpeed: 500,
+            autoplayHoverPause: true,
+            startPosition: 0,
+            mouseDrag: true,
+            touchDrag: true,
+            dots: true,
+            autoWidth: false,
+            dotClass: "owl2-dot",
+            dotsClass: "owl2-dots",
+            loop: true,
+            navText: ["<i class='fa fa-angle-left'></i>", "<i class='fa fa-angle-right'></i>"],
+            navClass: ["owl2-prev", "owl2-next"],
+            items: 1,
+            responsive: {
+                0: { items: 1, nav: false },
+                480: { items: 1, nav: false },
+                768: { items: 1, nav: true },
+                992: { items: 1, nav: true },
+                1200: { items: 1, nav: true }
+            }
+        });
       });
     </script>
     </div>
