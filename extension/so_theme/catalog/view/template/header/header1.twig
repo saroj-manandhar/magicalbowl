@@ -157,28 +157,39 @@
 
 		<script type="text/javascript">
 			jQuery(document).ready(function($){
-				// Open Side Drawer
+				function closeMegamenu() {
+					$('.megamenu-wrapper').removeClass('so-megamenu-active');
+					$('.so-megamenu-backdrop').removeClass('active').css('display', 'none');
+					$('body').removeClass('so-megamenu-open');
+				}
+
+				function openMegamenu() {
+					$('.mobile-header-bottom .megamenu-wrapper').addClass('so-megamenu-active');
+					$('.so-megamenu-backdrop').css('display', 'block').addClass('active');
+					$('body').addClass('so-megamenu-open');
+				}
+
+				// Open / Toggle Side Drawer
 				$(document).on('click', '.mobile-header-bottom .navbar-toggle, .mobile-header-bottom #show-megamenu', function(e){
 					e.preventDefault();
 					e.stopPropagation();
-					$('.mobile-header-bottom .megamenu-wrapper').addClass('so-megamenu-active');
-					$('.so-megamenu-backdrop').addClass('active');
-					$('body').addClass('so-megamenu-open');
+					if ($('.mobile-header-bottom .megamenu-wrapper').hasClass('so-megamenu-active')) {
+						closeMegamenu();
+					} else {
+						openMegamenu();
+					}
 				});
 
 				// Close Side Drawer (via X button, backdrop click, or ESC key)
 				$(document).on('click', '#remove-megamenu, .so-megamenu-backdrop, .close-megamenu-btn', function(e){
 					e.preventDefault();
-					$('.mobile-header-bottom .megamenu-wrapper').removeClass('so-megamenu-active');
-					$('.so-megamenu-backdrop').removeClass('active');
-					$('body').removeClass('so-megamenu-open');
+					e.stopPropagation();
+					closeMegamenu();
 				});
 
 				$(document).keyup(function(e) {
 					if (e.key === "Escape") {
-						$('.mobile-header-bottom .megamenu-wrapper').removeClass('so-megamenu-active');
-						$('.so-megamenu-backdrop').removeClass('active');
-						$('body').removeClass('so-megamenu-open');
+						closeMegamenu();
 					}
 				});
 
