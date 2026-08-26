@@ -154,12 +154,10 @@ jQuery(document).ready(function ($) {
 									navRewind: true,
 									navText: [ '', '' ],
 									responsive: {
-										0: {
-											items: nb_column4,
+										0: { items: 2,
 											nav: (total_product/{{rows }}) >= nb_column4  ? {{ slider_display_navigation }} : false,
 										},
-										480: {
-											items: nb_column3,
+										480: { items: 2,
 											nav: (total_product/{{ rows }}) >= nb_column3 ? {{ slider_display_navigation }} : false,
 										},
 										768: {
@@ -170,8 +168,7 @@ jQuery(document).ready(function ($) {
 											items: nb_column1,
 											nav: (total_product/{{ rows }}) >= nb_column1 ? {{ slider_display_navigation }} : false,
 											},
-										1200: {
-											items: nb_column0,
+										1200: { items: 2,
 											nav: (total_product/{{ rows }}) >= nb_column0  ? {{ slider_display_navigation }} : false,
 										},
 									}
@@ -273,12 +270,10 @@ jQuery(document).ready(function ($) {
 				autoWidth: false,
 	            navClass: [ 'owl2-prev', 'owl2-next' ],
 				responsive: {
-					0: {
-						items: {{ category_column4 }},
+					0: { items: 2 },
 						nav: ({{ category_tree|length }} - 1 > {{ category_column4 }}) ? {{ subcategory_display_navigation }} : false
 					},
-					480: {
-						items: {{ category_column3 }},
+					480: { items: 2 },
 						nav: ({{ category_tree|length }} - 1 > {{ category_column3 }}) ? {{ subcategory_display_navigation }} : false
 					},
 					768: {
@@ -289,8 +284,7 @@ jQuery(document).ready(function ($) {
 						items: {{ nb_column1 }},
 						nav: ({{ category_tree|length }} - 1 > {{ category_column1 }}) ? {{ subcategory_display_navigation }} : false
 					},
-					1200: {
-						items: {{ category_column0 }},
+					1200: { items: 2 },
 						nav: ({{ category_tree|length }} - 1 > {{ category_column0 }}) ? {{ subcategory_display_navigation }} : false
 					}
 				}

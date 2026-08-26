@@ -161,12 +161,10 @@
 				navRewind: true,
 				navText: [ '', '' ],
 				responsive: {
-					0: {
-						items: nb_column4,
+					0: { items: 2,
 						nav: (total_product/{{ rows }}) >= nb_column4  ? {{ slider_display_navigation == 1 ? "true" : "false" }} : false
 					},
-					480: {
-						items: nb_column3,
+					480: { items: 2,
 						nav: (total_product/{{ rows }}) >= nb_column3 ? {{ slider_display_navigation == 1 ? "true" : "false" }} : false
 					},
 					768: {
@@ -177,8 +175,7 @@
 						items: nb_column1,
 						nav: (total_product/{{ rows }}) >= nb_column1 ? {{ slider_display_navigation == 1 ? "true" : "false" }} : false
 					},
-					1200: {
-						items: nb_column0,
+					1200: { items: 2,
 						nav: (total_product/{{ rows }}) >= nb_column0  ? {{ slider_display_navigation == 1 ? "true" : "false" }} : false
 					}
 				}

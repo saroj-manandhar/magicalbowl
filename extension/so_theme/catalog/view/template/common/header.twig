@@ -32,7 +32,6 @@
 {{soconfig.addCss('extension/so_theme/catalog/view/javascript/soconfig/css/lib.css')}}
 {{soconfig.addCss('extension/so_theme/catalog/view/template/css/ie9-and-up.css')}}
 {{soconfig.addCss('extension/so_theme/catalog/view/javascript/icomoon/css/style.css')}}
-{{soconfig.addCss('extension/so_theme/catalog/view/template/css/custom.css')}}
 
 {% for style in styles %}{{ soconfig.addCss(style.href)}}{% endfor %}
 {% if soconfig.get_settings('cssfile_status') %}{% for cssfile in soconfig.get_settings('cssfile_url') %} {{soconfig.addCss(cssfile)}} {% endfor %} {% endif %}
@@ -66,6 +65,7 @@
 {% if soconfig.get_settings('jsExclude') %}
 {{soconfig.js_out(soconfig.get_settings('jsExclude'))}}
 {% endif %}
+<link rel="stylesheet" href="extension/so_theme/catalog/view/template/css/custom.css?v={{ date().timestamp }}" />
 
 
 {# =========== Begin Google Font ==============#}

@@ -106,7 +106,7 @@
 
 								<div class="caption">
 									{% if display_title == 1 %}
-									<h4><a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}" >{{ product.name_maxlength }}</a></h4>
+									<h4><a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}" >{{ product.name }}</a></h4>
 									{% endif %}
 
 									{% if display_description %}
@@ -331,10 +331,10 @@
 					touchDrag: {{ touchDrag }},
 					autoWidth: false,
 					responsive: {
-						0:{	items: {{ nb_column4 }},
+						0: { items: 2 },
 							nav: total_item <= {{ nb_column4 }} ? false : (({{ nav  }}) ? true: false),
 						},
-						480:{ items: {{ nb_column3 }},
+						480: { items: 2 },
 							nav: total_item <= {{ nb_column3 }} ? false : (({{ nav  }}) ? true: false),
 						},
 						768:{ items: {{ nb_column2 }},
@@ -343,7 +343,7 @@
 						992:{ items: {{ nb_column1 }},
 							nav: total_item <= {{ nb_column1 }} ? false : (({{ nav  }}) ? true: false),
 						},
-						1200:{ items: {{ nb_column0 }},
+						1200: { items: 2 },
 							nav: total_item <= {{ nb_column0 }} ? false : (({{ nav  }}) ? true: false),
 						}
 					},
@@ -381,11 +381,11 @@
 					touchDrag: {{ touchDrag }},
 					autoWidth: false,
 					responsive: {
-						0:	{ items: 1	},
-						480:{ items: 1	},
+						0: { items: 2},
+						480: { items: 2},
 						768:{ items: 1	},
 						992:{ items: 1	},
-						1200:{ items: 1 }
+						1200: { items: 2}
 					},
 					nav: false,
 					loop: true,

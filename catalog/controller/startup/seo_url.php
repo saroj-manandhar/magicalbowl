@@ -23,6 +23,19 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 
 			$this->load->model('design/seo_url');
 
+			// If _route_ is not set in $_GET (e.g. under Nginx try_files), extract it from REQUEST_URI
+			if (!isset($this->request->get['_route_']) && isset($this->request->server['REQUEST_URI'])) {
+				$url_path = parse_url($this->request->server['REQUEST_URI'], PHP_URL_PATH);
+				$base_path = parse_url(HTTP_SERVER, PHP_URL_PATH);
+				if ($base_path && $base_path != '/') {
+					$url_path = substr($url_path, strlen($base_path));
+				}
+				$url_path = trim($url_path, '/');
+				if ($url_path && $url_path != 'index.php') {
+					$this->request->get['_route_'] = $url_path;
+				}
+			}
+
 			// Decode URL
 			if (isset($this->request->get['_route_'])) {
 				$parts = explode('/', $this->request->get['_route_']);
@@ -42,7 +55,7 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 					}
 				}
 
-				if (!isset($this->request->get['route'])) {
+				if (!isset($this->request->get['route']) || ($this->request->get['route'] == 'product/product' && !isset($this->request->get['product_id']))) {
 					if (isset($this->request->get['information_id'])) {
 						$this->request->get['route'] = 'information/information';
 					} elseif (isset($this->request->get['product_id'])) {

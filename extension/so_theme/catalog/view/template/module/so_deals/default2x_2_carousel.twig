@@ -43,7 +43,7 @@
 
 					<div class="caption">
 						{% if display_title == 1 %}
-							<h4><a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}" >{{ product.name_maxlength }}</a></h4>
+							<h4><a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}" >{{ product.name }}</a></h4>
 						{% endif %}
 						
 						{% if display_description %}
@@ -127,7 +127,7 @@
 								
 								<div class="caption">
 									{% if display_title == 1 %}
-										<h4><a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}">{{ product.name_maxlength }}</a></h4>
+										<h4><a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}">{{ product.name }}</a></h4>
 									{% endif %}
 									
 									{% if display_rating %}
@@ -246,11 +246,11 @@ jQuery(document).ready(function ($) {  ;
 		touchDrag: {{ touchDrag }},
 		autoWidth: false,
 		responsive: {
-			0: 	{ items: {{ nb_column4 }} } ,
-			480: { items: {{ nb_column3 }} },
+			0: { items: 2 } ,
+			480: { items: 2 },
 			768: { items: {{ nb_column2 }} },
 			992: { items: {{ nb_column1 }} },
-			1200: {items: {{ nb_column0 }} }
+			1200: { items: {{ nb_column0 }} }
 		},
 		dotClass: 'owl2-dot',
 		dotsClass: 'owl2-dots',
@@ -307,11 +307,11 @@ jQuery(document).ready(function ($) {  ;
 		touchDrag: {{ touchDrag }},
 		autoWidth: false,
 		responsive: {
-			0: 	{ items: 1 } ,
-			480: { items: 1 },
+			0: { items: 2} ,
+			480: { items: 2},
 			768: { items: 1 },
 			992: { items: 1 },
-			1200: {items: 1}
+			1200: { items: {{ nb_column0 }}}
 		},
 		dotClass: 'owl2-dot',
 			dotsClass: 'owl2-dots',

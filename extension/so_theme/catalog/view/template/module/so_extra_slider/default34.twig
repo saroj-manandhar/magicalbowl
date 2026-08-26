@@ -48,12 +48,12 @@
 										
 										{% if product_image %}								
 										<div class="product-image-container {% if product_image_num  == 2 %} {{ 'second_img' }} {% endif %}	">
-											<a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name_maxlength }}">									
+											<a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}">									
 												{% if product_image_num ==2 %}
-													<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-1 lazyload" alt="{{ product.name_maxlength }}">
-													<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-2 lazyload" alt="{{ product.name_maxlength }}">
+													<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-1 lazyload" alt="{{ product.name }}">
+													<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-2 lazyload" alt="{{ product.name }}">
 												{% else %}
-													<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name_maxlength }}" class="lazyload img-responsive">
+													<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload img-responsive">
 												{% endif %}	
 											</a>						
 										</div>
@@ -232,11 +232,11 @@
 							autoWidth: false,
 							autoHeight: false,
 							responsive: {
-								0: 	{ items: {{ nb_column4 }} } ,
-								480: { items: {{ nb_column3 }} },
+								0: { items: 2 } ,
+								480: { items: 2 },
 								768: { items: {{ nb_column2 }} },
 								992: { items: {{ nb_column1 }} },
-								1200: {items: {{ nb_column0 }}}
+								1200: { items: {{ nb_column0 }} }}
 							},
 							dotClass: "owl2-dot",
 							dotsClass: "owl2-dots",

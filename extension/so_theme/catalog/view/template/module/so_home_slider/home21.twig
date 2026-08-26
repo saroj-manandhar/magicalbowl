@@ -58,10 +58,10 @@
           navClass: ["owl2-prev", "owl2-next"],
 		  dotsContainer: '#carousel-custom-dots',
           responsive: {
-          0:{ items: {{ nb_column4}},
+          0: { items: 2 },
             nav: total_item <= {{ nb_column4 }} ? false : (({{ nav  }} ) ? true: false),
           },
-          480:{ items: {{ nb_column3 }},
+          480: { items: 2 },
             nav: total_item <= {{ nb_column3 }} ? false : (({{ nav  }} ) ? true: false),
           },
           768:{ items: {{ nb_column2 }},
@@ -70,7 +70,7 @@
           992:{ items: {{ nb_column1 }},
             nav: total_item <= {{ nb_column1 }} ? false : (({{ nav  }} ) ? true: false),
           },
-          1200:{ items: {{ nb_column0 }},
+          1200: { items: 2 },
             nav: total_item <= {{ nb_column0 }} ? false : (({{ nav  }} ) ? true: false),
           }
         },

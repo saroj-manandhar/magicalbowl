@@ -22,7 +22,7 @@
 					<div class="left-block">										
 						{% if product_image %}								
 							<div class="product-image-container {% if product_image_num  == 2 %} {{ 'second_img' }} {% endif %}	">
-								<a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name_maxlength }}"  >									
+								<a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}"  >									
 									{% if product_image_num ==2 %}
 										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-1 lazyload" alt="{{ product.name }}">
 										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-2 lazyload" alt="{{ product.name }}">
@@ -48,7 +48,7 @@
 						{% if display_title or display_description or display_price or display_rating %}
 						<div class="caption">												
 							{% if display_title %}
-								<h4><a href="{{ product.href }}" title="{{ product.name }}" target="{{ item_link_target }}">{{ product.name_maxlength }}</a></h4>
+								<h4><a href="{{ product.href }}" title="{{ product.name }}" target="{{ item_link_target }}">{{ product.name }}</a></h4>
 							{% endif %}
 							{% if display_rating %}
 								<div class="rating">
@@ -168,12 +168,10 @@
 			navRewind: true,
 			navText: [ '', '' ],
 			responsive: {
-				0: {
-					items: nb_column4,
+				0: { items: 2,
 					nav: total_product <= nb_column0 ? false : (({{display_nav}}) ? true: false),
 				},
-				480: {
-					items: nb_column3,
+				480: { items: 2,
 					nav: total_product <= nb_column0 ? false : (({{display_nav}}) ? true: false),
 				},
 				768: {
@@ -184,8 +182,7 @@
 					items: nb_column1,
 					nav: total_product <= nb_column0 ? false : (({{display_nav}}) ? true: false),
 				},
-				1200: {
-					items: nb_column0,
+				1200: { items: nb_column0,
 					
 					nav: total_product <= nb_column0 ? false : (({{display_nav}}) ? true: false),
 				}
