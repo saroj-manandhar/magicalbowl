@@ -32,14 +32,14 @@
 
     <script type="text/javascript">
       jQuery(document).ready(function($){
-        var total_item = {{ count_item }};
-        $(".sohomeslider-inner-{{ module }}").owlCarousel2({
+        var $slider = $(".sohomeslider-inner-{{ module }}");
+        $slider.owlCarousel2({
             animateOut: '{{ animateOut ? animateOut : "fadeOut" }}',
             animateIn: '{{ animateIn ? animateIn : "fadeIn" }}',
             autoplay: true,
             autoplayTimeout: {{ autoplayTimeout ? autoplayTimeout : 5000 }},
             autoplaySpeed: {{ autoplaySpeed ? autoplaySpeed : 1000 }},
-            smartSpeed: 500,
+            smartSpeed: 600,
             autoplayHoverPause: true,
             startPosition: 0,
             mouseDrag: true,
@@ -49,16 +49,30 @@
             dotClass: "owl2-dot",
             dotsClass: "owl2-dots",
             loop: true,
-            navText: ["<i class='fa fa-angle-left'></i>", "<i class='fa fa-angle-right'></i>"],
+            nav: true,
+            navText: ["<i class='fa fa-chevron-left'></i>", "<i class='fa fa-chevron-right'></i>"],
             navClass: ["owl2-prev", "owl2-next"],
             items: 1,
             responsive: {
-                0: { items: 1, nav: false },
-                480: { items: 1, nav: false },
+                0: { items: 1, nav: true },
+                480: { items: 1, nav: true },
                 768: { items: 1, nav: true },
                 992: { items: 1, nav: true },
                 1200: { items: 1, nav: true }
             }
+        });
+
+        // Direct explicit click triggers for prev/next buttons
+        $(document).on('click', '#sohomepage-slider{{ module }} .owl2-prev', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $slider.trigger('prev.owl.carousel2', [600]);
+        });
+
+        $(document).on('click', '#sohomepage-slider{{ module }} .owl2-next', function(e){
+            e.preventDefault();
+            e.stopPropagation();
+            $slider.trigger('next.owl.carousel2', [600]);
         });
       });
     </script>

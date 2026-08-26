@@ -95,19 +95,27 @@
 	  2. MOBILE HEADER (Tailored specifically for Mobile < 992px from Reference)
 	  ========================================================================#}
 	<div class="header-mobile-view d-block d-lg-none hidden-md hidden-lg hidden-xl">
-		{#======	MOBILE TOP BAR (Plum Bar with Language, Quick Links, Currency, and Welcome Msg)	=======#}
+		{#======	MOBILE TOP BAR (Plum Bar with Language, Currency, Wishlist, Login, and Cart)	=======#}
 		<div class="mobile-header-top">
 			<div class="mobile-top-row-1">
-				<div class="mobile-top-lang">
-					{% if language %}{{ language }}{% endif %}
+				<div class="mobile-top-left-group">
+					{% if language %}<div class="mobile-top-lang">{{ language }}</div>{% endif %}
+					{% if currency %}<div class="mobile-top-curr">{{ currency }}</div>{% endif %}
 				</div>
+				
 				<div class="mobile-top-center-links">
-					<a href="{{ wishlist }}" class="mobile-top-link" title="Wish List"><i class="fa fa-heart"></i> <span>Wish List (0)</span></a>
-					<a href="{{ shopping_cart }}" class="mobile-top-link" title="My Cart"><i class="fa fa-shopping-cart"></i> <span>My Cart</span></a>
-					<a href="{{ checkout }}" class="mobile-top-link" title="Checkout"><i class="fa fa-share"></i> <span>Checkout</span></a>
+					<a href="{{ wishlist }}" class="mobile-top-link" title="Wish List"><i class="fa fa-heart"></i></a>
+					{% if logged %}
+						<a href="{{ account }}" class="mobile-top-link" title="Account"><i class="fa fa-user"></i></a>
+					{% else %}
+						<a href="{{ login }}" class="mobile-top-link" title="Login"><i class="fa fa-user"></i></a>
+					{% endif %}
 				</div>
-				<div class="mobile-top-curr">
-					{% if currency %}{{ currency }}{% endif %}
+
+				<div class="mobile-top-cart">
+					<div class="shopping_cart">
+						{{ cart }}
+					</div>
 				</div>
 			</div>
 
@@ -115,19 +123,17 @@
 				<div class="mobile-welcome-bar">
 					{% if logged %}
 						<span class="welcome-txt">Welcome back!</span>
-						<a href="{{ account }}" class="welcome-link"><i class="fa fa-user"></i> Account</a>
 						<a href="{{ logout }}" class="welcome-link"><i class="fa fa-unlock"></i> Logout</a>
 					{% else %}
-						<span class="welcome-txt">Welcome visitor you can</span>
+						<span class="welcome-txt">Welcome visitor!</span>
 						<a href="{{ register }}" class="welcome-link"><i class="fa fa-unlock"></i> Register</a>
-						<a href="{{ login }}" class="welcome-link"><i class="fa fa-user"></i> Login</a>
-						<a href="{{ login }}" class="welcome-link"><i class="fa fa-key"></i> Account</a>
+						<a href="{{ login }}" class="welcome-link"><i class="fa fa-lock"></i> Login</a>
 					{% endif %}
 				</div>
 			</div>
 		</div>
 
-		{#======	MOBILE MIDDLE BANNER (Sunset Artwork, Centered Logo, Search Bar, and Cart Widget)	=======#}
+		{#======	MOBILE MIDDLE BANNER (Sunset Artwork, Centered Logo, Full Width Search Bar)	=======#}
 		<div class="mobile-header-middle">
 			<div class="mobile-logo-wrap">
 				<div class="logo">
@@ -135,16 +141,8 @@
 				</div>
 			</div>
 
-			<div class="mobile-search-cart-container">
-				<div class="mobile-search-wrap">
-					{{ search_block }}
-				</div>
-
-				<div class="mobile-cart-wrap">
-					<div class="shopping_cart">
-						{{ cart }}
-					</div>
-				</div>
+			<div class="mobile-search-full-width">
+				{{ search_block }}
 			</div>
 		</div>
 
@@ -154,6 +152,47 @@
 				{{ content_menu1 }}
 			</div>
 		</div>
+
+		<div class="so-megamenu-backdrop"></div>
+
+		<script type="text/javascript">
+			jQuery(document).ready(function($){
+				// Open Side Drawer
+				$(document).on('click', '.mobile-header-bottom .navbar-toggle, .mobile-header-bottom #show-megamenu', function(e){
+					e.preventDefault();
+					e.stopPropagation();
+					$('.mobile-header-bottom .megamenu-wrapper').addClass('so-megamenu-active');
+					$('.so-megamenu-backdrop').addClass('active');
+					$('body').addClass('so-megamenu-open');
+				});
+
+				// Close Side Drawer (via X button, backdrop click, or ESC key)
+				$(document).on('click', '#remove-megamenu, .so-megamenu-backdrop, .close-megamenu-btn', function(e){
+					e.preventDefault();
+					$('.mobile-header-bottom .megamenu-wrapper').removeClass('so-megamenu-active');
+					$('.so-megamenu-backdrop').removeClass('active');
+					$('body').removeClass('so-megamenu-open');
+				});
+
+				$(document).keyup(function(e) {
+					if (e.key === "Escape") {
+						$('.mobile-header-bottom .megamenu-wrapper').removeClass('so-megamenu-active');
+						$('.so-megamenu-backdrop').removeClass('active');
+						$('body').removeClass('so-megamenu-open');
+					}
+				});
+
+				// Submenu accordion toggle inside side drawer
+				$(document).on('click', '.mobile-header-bottom ul.megamenu > li.with-sub-menu > a, .mobile-header-bottom ul.megamenu > li.click > a', function(e){
+					var $li = $(this).closest('li');
+					if ($li.find('.sub-menu').length) {
+						e.preventDefault();
+						$li.toggleClass('active');
+						$li.find('.sub-menu').first().slideToggle(200);
+					}
+				});
+			});
+		</script>
 	</div>
 		
 </header>
