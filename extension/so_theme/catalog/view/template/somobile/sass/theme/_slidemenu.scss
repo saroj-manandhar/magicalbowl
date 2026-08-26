@@ -136,6 +136,12 @@
     }
 }
 
+#panel-menu{
+    .side-menu-blocker{ background: transparent; }
+    &.panel{ margin: 0; }
+    .content{ min-height: 100%; }
+}
+
 .panel-logo{margin: 15px 0; padding: 0 30px;}
 .panel-search{
     .input-group{background: #ddd; margin: 20px; 

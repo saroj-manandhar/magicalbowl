@@ -13,7 +13,7 @@
     
 		img{width:95px;}
 	}	
-	.menu_custom{ background: $background;}
+	.menu_custom{ background: $background; margin-top: 0 !important; clear: both;}
 	
     #content{ margin: 0; }
    
@@ -24,7 +24,8 @@
     .module.sohomepage-slider {
         margin: 10px 0 10px;
     }
-    .menu-link{ margin-bottom: 5px;
+    .section_mobile_1{ margin-top: 0 !important; padding-top: 0 !important; }
+    .menu-link{ margin: 0 0 5px;
 	 a{ color: #fff; }
     }
     .section_mobile_1 .menu-link{ background: #183543; padding-#{$right}:5px; }

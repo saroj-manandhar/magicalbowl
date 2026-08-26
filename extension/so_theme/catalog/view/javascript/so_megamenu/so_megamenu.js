@@ -35,7 +35,10 @@ $(document).ready(function() {
 	});
 	
 	
-	$("ul.megamenu > li.click").click(function () {
+	$("ul.megamenu > li.click").click(function (event) {
+		if (allowMobileCategoryNavigation($(this), event)) {
+			return true;
+		}
 		if($(this).find(".content").is(':visible')) { return false; }
 		active = $(this);
 		hover = true;
@@ -139,7 +142,10 @@ function removeWidthSubmenu()
 	});
 }
 function clickMegaMenu(){
-	$("ul.megamenu > li.hover").click(function () {
+	$("ul.megamenu > li.hover").click(function (event) {
+		if (allowMobileCategoryNavigation($(this), event)) {
+			return true;
+		}
 		if($(this).find(".content").is(':visible')) { return true; }
 		active = $(this);
 		hover = true;
@@ -179,6 +185,38 @@ function clickMegaMenu(){
 			}
 
 	});	
+}
+
+function allowMobileCategoryNavigation($item, event) {
+	if ($(window).width() > 991 || !$item.closest('#panel-menu').length) {
+		return false;
+	}
+
+	var $link = $(event.target).closest('a');
+	if (!$link.length || !$item.has($link).length) {
+		return false;
+	}
+
+	var href = $link.attr('href');
+	if (!href || href === '#' || href.indexOf('#') === 0 || isMobileSubmenuToggleTap($item, event)) {
+		return false;
+	}
+
+	window.location.href = $link.prop('href');
+	return true;
+}
+
+function isMobileSubmenuToggleTap($item, event) {
+	var offset = $item.offset();
+	var width = $item.outerWidth();
+	var x = event.pageX - offset.left;
+	var toggleWidth = 54;
+
+	if ($("html").css("direction").toLowerCase() == "rtl") {
+		return x <= toggleWidth;
+	}
+
+	return width - x <= toggleWidth;
 }
 
 function hoverMegaMenu(){

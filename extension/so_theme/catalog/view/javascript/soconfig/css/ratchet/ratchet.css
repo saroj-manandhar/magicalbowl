@@ -1225,18 +1225,21 @@ select {
     position: fixed;
     top: 0;
     z-index: -1;
-    width: 260px;
+    width: 80%;
     height: 100%;
 	left:0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 .side-menu-blocker {
     position: fixed;
     top: 0;
     z-index: 999999;
     display: none;
-    width: 100%;
+    left: 80%;
+    width: 20%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: transparent;
 }
 .side-menu-blocker.activeSideMenu {
     display: block;
@@ -1248,7 +1251,7 @@ select {
 }
 .activeSideMenu,
 .inactiveSideMenu {
-    
+    box-shadow: none;
     -webkit-transition: -webkit-transform .4s;
     -moz-transition: -moz-transform .4s;
     transition: transform .4s;
