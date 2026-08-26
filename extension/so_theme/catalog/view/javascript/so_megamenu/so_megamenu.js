@@ -188,7 +188,7 @@ function clickMegaMenu(){
 }
 
 function allowMobileCategoryNavigation($item, event) {
-	if ($(window).width() > 991 || !$item.closest('#panel-menu').length) {
+	if ($(window).width() > 991) {
 		return false;
 	}
 

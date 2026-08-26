@@ -4826,6 +4826,32 @@ span.fa-stack .fa-star.fa-stack-2x:before {
   margin: 0;
   border: none;
 }
+
+.side-menu-blocker {
+  background: transparent !important;
+}
+
+.activeSideMenu,
+.inactiveSideMenu {
+  box-shadow: none !important;
+}
+
+.extension-mobile-home.mobilelayout-2 .menu_custom,
+.extension-so_theme-mobile-home.mobilelayout-2 .menu_custom {
+  clear: both;
+  margin-top: 0 !important;
+}
+
+.extension-mobile-home.mobilelayout-2 .section_mobile_1,
+.extension-so_theme-mobile-home.mobilelayout-2 .section_mobile_1 {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.extension-mobile-home.mobilelayout-2 .menu-link,
+.extension-so_theme-mobile-home.mobilelayout-2 .menu-link {
+  margin: 0 0 5px;
+}
 /*====================update opencart4===================*/
 .mobilelayout-1 .banners img {
   width: 100%;
@@ -4996,6 +5022,34 @@ span.fa-stack .fa-star.fa-stack-2x:before {
 }
 .mobilelayout-2 .banners img {
   width: 100%;
+}
+
+.side-menu-blocker {
+  background: transparent !important;
+}
+
+.activeSideMenu,
+.inactiveSideMenu {
+  box-shadow: none !important;
+}
+
+.extension-mobile-home.mobilelayout-2 .menu_custom,
+.extension-so_theme-mobile-home.mobilelayout-2 .menu_custom,
+.extension-mobile-home.mobilelayout-2 .section_mobile_1,
+.extension-so_theme-mobile-home.mobilelayout-2 .section_mobile_1 {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  clear: both;
+}
+
+.extension-mobile-home.mobilelayout-2 .menu-link,
+.extension-so_theme-mobile-home.mobilelayout-2 .menu-link {
+  margin: 0 0 5px !important;
+}
+
+.extension-mobile-home.mobilelayout-2 .module.sohomepage-slider,
+.extension-so_theme-mobile-home.mobilelayout-2 .module.sohomepage-slider {
+  margin-bottom: 0 !important;
 }
 /*===============================================
 	[SASS DIRECTORY ]
