@@ -53,10 +53,10 @@ class FileManager extends \Opencart\System\Engine\Controller {
 	public function list(): void {
 		$this->load->language('common/filemanager');
 
-		$base = DIR_IMAGE . 'catalog/';
+		$base = DIR_IMAGE;
 
 		// Make sure we have the correct directory
-		if (isset($this->request->get['directory'])) {
+		if (isset($this->request->get['directory']) && $this->request->get['directory'] !== '') {
 			$directory = $base . html_entity_decode($this->request->get['directory'], ENT_QUOTES, 'UTF-8') . '/';
 		} else {
 			$directory = $base;
@@ -87,6 +87,11 @@ class FileManager extends \Opencart\System\Engine\Controller {
 		// Get directories and files
 		$paths = array_diff(scandir($directory), ['..', '.']);
 
+		// Hide cache directory and system files if at root directory
+		if ($directory == $base) {
+			$paths = array_diff($paths, ['cache', 'no_image.png', 'placeholder.png', 'profile.png', 'transparent.png', 'admin.js', 'admins.js']);
+		}
+
 		foreach ($paths as $value) {
 			if ($filter_name && !str_starts_with($value, $filter_name)) {
 				continue;
@@ -103,7 +108,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 			}
 		}
 
-		$total = count($paths);
+		$total = count($directories) + count($files);
 		$limit = 16;
 		$start = ($page - 1) * $limit;
 
@@ -130,7 +135,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 			}
 
 			// Split the array based on current page number and max number of items per page of 10
-			foreach (array_slice($directories + $files, $start, $limit) as $path) {
+			foreach (array_slice(array_merge($directories, $files), $start, $limit) as $path) {
 				if (substr($path, 0, strlen($base)) == $base) {
 					$name = basename($path);
 
@@ -146,7 +151,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 						$data['images'][] = [
 							'name'  => $name,
 							'path'  => oc_substr($path, oc_strlen($base)),
-							'href'  => HTTP_CATALOG . 'image/catalog/' . oc_substr($path, oc_strlen($base)),
+							'href'  => HTTP_CATALOG . 'image/' . oc_substr($path, oc_strlen($base)),
 							'thumb' => $this->model_tool_image->resize(oc_substr($path, oc_strlen(DIR_IMAGE)), $this->config->get('config_image_default_width'), $this->config->get('config_image_default_height'))
 						];
 					}
@@ -263,7 +268,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
-		$base = DIR_IMAGE . 'catalog/';
+		$base = DIR_IMAGE;
 
 		// Check user has permission
 		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
@@ -271,7 +276,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 		}
 
 		// Make sure we have the correct directory
-		if (isset($this->request->get['directory'])) {
+		if (isset($this->request->get['directory']) && $this->request->get['directory'] !== '') {
 			$directory = $base . html_entity_decode($this->request->get['directory'], ENT_QUOTES, 'UTF-8') . '/';
 		} else {
 			$directory = $base;
@@ -354,7 +359,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
-		$base = DIR_IMAGE . 'catalog/';
+		$base = DIR_IMAGE;
 
 		// Check user has permission
 		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
@@ -362,7 +367,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 		}
 
 		// Make sure we have the correct directory
-		if (isset($this->request->get['directory'])) {
+		if (isset($this->request->get['directory']) && $this->request->get['directory'] !== '') {
 			$directory = $base . html_entity_decode($this->request->get['directory'], ENT_QUOTES, 'UTF-8') . '/';
 		} else {
 			$directory = $base;
@@ -411,7 +416,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
-		$base = DIR_IMAGE . 'catalog/';
+		$base = DIR_IMAGE;
 
 		// Check user has permission
 		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
@@ -429,8 +434,8 @@ class FileManager extends \Opencart\System\Engine\Controller {
 			// Convert any html encoded characters.
 			$path = html_entity_decode($path, ENT_QUOTES, 'UTF-8');
 
-			// Check path exists
-			if (($path == $base) || (substr(str_replace('\\', '/', realpath($base . $path)) . '/', 0, strlen($base)) != $base)) {
+			// Check path exists and prevent deleting root, cache or system files
+			if (($path == '') || ($path == $base) || in_array(rtrim($path, '/'), ['cache', 'no_image.png', 'placeholder.png', 'profile.png', 'transparent.png', 'admin.js', 'admins.js']) || (substr(str_replace('\\', '/', realpath($base . $path)) . '/', 0, strlen($base)) != $base)) {
 				$json['error'] = $this->language->get('error_delete');
 
 				break;

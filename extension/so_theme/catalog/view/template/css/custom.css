@@ -4319,3 +4319,132 @@ html, body {
 		font-size: 14px;
 	}
 }
+
+/* ==========================================================================
+   Home slider prev/next arrows - keep them anchored to the slider and clickable
+   --------------------------------------------------------------------------
+   .owl2-nav is absolutely positioned. Because neither .so-homeslider nor
+   .owl2-controls established a containing block, the nav was sizing itself
+   against a far-up ancestor, so the arrows landed at the edges of the whole
+   content row - the right-hand one on top of the product-tabs column, which
+   swallowed the click. Anchoring the nav to .so-homeslider puts the buttons
+   back on the banner and out from under the neighbouring module.
+   ========================================================================== */
+.module.sohomepage-slider,
+.module.sohomepage-slider .modcontent > div[id^="sohomepage-slider"] {
+	position: relative !important;
+}
+
+.module.sohomepage-slider .so-homeslider,
+.module.sohomepage-slider .owl2-carousel {
+	position: relative !important;
+}
+
+/* Must NOT be positioned, otherwise it becomes the containing block instead. */
+.module.sohomepage-slider .owl2-controls {
+	position: static !important;
+}
+
+.module.sohomepage-slider .owl2-nav,
+.module.sohomepage-slider .owl2-controls .owl2-nav,
+.module.sohomepage-slider .so-homeslider .owl2-nav {
+	position: absolute !important;
+	top: 50% !important;
+	left: 0 !important;
+	right: 0 !important;
+	width: 100% !important;
+	height: 0 !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	display: block !important;
+	pointer-events: none !important;
+	z-index: 200 !important;
+}
+
+.module.sohomepage-slider .owl2-nav .owl2-prev,
+.module.sohomepage-slider .owl2-nav .owl2-next,
+.module.sohomepage-slider .owl2-controls .owl2-nav .owl2-prev,
+.module.sohomepage-slider .owl2-controls .owl2-nav .owl2-next {
+	pointer-events: auto !important;
+	cursor: pointer !important;
+	z-index: 201 !important;
+	display: inline-flex !important;
+	visibility: visible !important;
+	opacity: 1 !important;
+}
+
+/* Icons inside the buttons must never become the click target. */
+.module.sohomepage-slider .owl2-nav .owl2-prev > *,
+.module.sohomepage-slider .owl2-nav .owl2-next > * {
+	pointer-events: none !important;
+}
+
+/* The stage clips overflow; the arrows sit inside the slider box so they are
+   safe, but be explicit so a theme update cannot hide them again. */
+.module.sohomepage-slider .owl2-stage-outer {
+	overflow: hidden !important;
+}
+
+/* ==========================================================================
+   Mobile menu drawer - stop it overlapping the content below the bar
+   --------------------------------------------------------------------------
+   The offcanvas drawer (.megamenu-wrapper, navy #151d28) was only pulled
+   off-canvas by rules scoped to `.container-megamenu.horizontal`. If the
+   mobile menu container is not tagged `.horizontal`, position:fixed never
+   applied, so the navy drawer stayed in normal flow and painted a tall block
+   directly under the "ALL CATEGORIES & MENU" bar - overlapping the content
+   beneath it (and sitting above the bar's yellow bottom rule). Re-anchor the
+   drawer by its guaranteed ancestor (.mobile-header-bottom) so it is always
+   fixed + off-canvas when closed, regardless of the container class. Scoped
+   to mobile and last in the cascade so it wins.
+   ========================================================================== */
+@media (max-width: 991px) {
+
+	/* Closed state: a proper off-canvas, out-of-flow, invisible drawer. */
+	.header-mobile-view .mobile-header-bottom .megamenu-wrapper {
+		position: fixed !important;
+		top: 0 !important;
+		left: 0 !important;
+		bottom: 0 !important;
+		width: 320px !important;
+		max-width: 85vw !important;
+		height: 100vh !important;
+		background: #151d28 !important;
+		z-index: 9999999 !important;
+		box-shadow: 10px 0 35px rgba(0, 0, 0, 0.6) !important;
+		transform: translate3d(-100%, 0, 0) !important;
+		-webkit-transform: translate3d(-100%, 0, 0) !important;
+		transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+		            -webkit-transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+		            visibility 0s linear 0.3s !important;
+		overflow-y: auto !important;
+		-webkit-overflow-scrolling: touch !important;
+		display: block !important;
+		margin: 0 !important;
+		padding: 0 0 40px 0 !important;
+		border: none !important;
+		visibility: hidden !important;      /* never paints while in flow */
+		pointer-events: none !important;
+	}
+
+	/* Open state (JS adds .so-megamenu-active): slide in and become live. */
+	.header-mobile-view .mobile-header-bottom .megamenu-wrapper.so-megamenu-active {
+		transform: translate3d(0, 0, 0) !important;
+		-webkit-transform: translate3d(0, 0, 0) !important;
+		transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+		            -webkit-transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1),
+		            visibility 0s !important;
+		visibility: visible !important;
+		pointer-events: auto !important;
+	}
+
+	/* With the drawer out of flow, the bar wrapper is only the 48px bar; keep
+	   its inner containers from reserving any extra height so the yellow rule
+	   and 16px margin sit cleanly under the bar and the next section follows. */
+	.header-mobile-view .mobile-header-bottom .mobile-menu-inner,
+	.header-mobile-view .mobile-header-bottom .container-megamenu {
+		position: relative !important;
+		overflow: visible !important;
+		min-height: 0 !important;
+	}
+}

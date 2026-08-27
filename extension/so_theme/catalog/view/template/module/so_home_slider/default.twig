@@ -33,6 +33,16 @@
     <script type="text/javascript">
       jQuery(document).ready(function($){
         var $slider = $(".sohomeslider-inner-{{ module }}");
+
+        if (typeof $.fn.owlCarousel2 !== 'function') {
+            // owl.carousel.js never loaded - bail out loudly instead of dying
+            // silently half way through and leaving the arrows inert.
+            if (window.console) {
+                console.warn('so_home_slider: owlCarousel2 is not available, slider not initialised.');
+            }
+            return;
+        }
+
         $slider.owlCarousel2({
             animateOut: '{{ animateOut ? animateOut : "fadeOut" }}',
             animateIn: '{{ animateIn ? animateIn : "fadeIn" }}',
@@ -62,17 +72,53 @@
             }
         });
 
-        // Direct explicit click triggers for prev/next buttons
-        $(document).on('click', '#sohomepage-slider{{ module }} .owl2-prev', function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            $slider.trigger('prev.owl.carousel2', [600]);
-        });
+        // --- Prev / next arrow navigation ------------------------------------
+        // Owl builds .owl2-prev / .owl2-next inside .owl2-controls and binds its
+        // own click handlers to them. Those buttons are rebuilt whenever the nav
+        // re-renders (responsive refresh, lazyload, visibility check), which is
+        // what left the arrows inert. Bind directly on the buttons instead, and
+        // drop Owl's handler first so a click never advances two slides.
+        var $wrapper = $('#sohomepage-slider{{ module }}');
 
-        $(document).on('click', '#sohomepage-slider{{ module }} .owl2-next', function(e){
-            e.preventDefault();
-            e.stopPropagation();
-            $slider.trigger('next.owl.carousel2', [600]);
+        function bindHomeSliderNav() {
+            var $prev = $wrapper.find('.owl2-prev'),
+                $next = $wrapper.find('.owl2-next');
+
+            if (!$prev.length && !$next.length) {
+                return false;
+            }
+
+            // CSS sets pointer-events:none on .owl2-nav; make sure the buttons
+            // themselves stay clickable and sit above neighbouring modules.
+            $prev.add($next).css({ 'pointer-events': 'auto', 'cursor': 'pointer' });
+
+            $prev.off('click').on('click', function (e) {
+                e.preventDefault();
+                $slider.trigger('prev.owl.carousel2', [600]);
+            });
+
+            $next.off('click').on('click', function (e) {
+                e.preventDefault();
+                $slider.trigger('next.owl.carousel2', [600]);
+            });
+
+            return true;
+        }
+
+        // Bind straight away, and keep retrying briefly in case Owl injects the
+        // nav a tick later (it does when the slider starts out hidden).
+        if (!bindHomeSliderNav()) {
+            var navTries = 0,
+                navTimer = window.setInterval(function () {
+                    if (bindHomeSliderNav() || ++navTries > 20) {
+                        window.clearInterval(navTimer);
+                    }
+                }, 100);
+        }
+
+        // Owl rebuilds the controls on refresh/resize - rebind so clicks survive.
+        $slider.on('refreshed.owl.carousel2 resized.owl.carousel2', function () {
+            bindHomeSliderNav();
         });
       });
     </script>
