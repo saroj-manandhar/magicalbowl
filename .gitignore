@@ -32,3 +32,8 @@ So-eMarket-main-files*
 *.swp
 *~
 scratch/
+
+# Configuration files (environment specific)
+config.php
+admin/config.php
+msbadmin/config.php
