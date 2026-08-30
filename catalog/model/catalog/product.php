@@ -200,8 +200,93 @@ class Product extends \Opencart\System\Engine\Model {
 
 		/* Custom Filter */
 		if (!empty($data['size'])) {
-			$escaped_size = $this->db->escape((string)$data['size']);
-			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_size . "%' OR `pd`.`diameter` LIKE '%" . $escaped_size . "%')";
+			$size_val = strtolower(trim((string)$data['size']));
+			$sizes_map = [
+				'xs' => [
+					'include' => [
+						'Extra Small Size', 'Extra Small', 'Extra  Small', 'Extra-Small',
+						'X Small Size', 'X Small', 'X-Small',
+						'XX Small Size', 'XX Small', 'XX-Small', 'XX- Small',
+						'Mini Size', 'Mini (XX Small)', '- Mini', 'Mini -',
+						'XS Size', '(XS)', '(XXS)', 'Product size: Extra Small', 'Product size: XX Small', 'Product size: Mini'
+					],
+					'exclude' => []
+				],
+				'small' => [
+					'include' => [
+						'Small Size', 'Small  Size', 'Product size: Small', '- Small Size', 'Small', 'Small (i)'
+					],
+					'exclude' => [
+						'Extra Small', 'Extra  Small', 'Extra-Small',
+						'X Small', 'X-Small', 'XX Small', 'XX-Small',
+						'Mini', 'Mini Size'
+					]
+				],
+				'medium' => [
+					'include' => [
+						'Medium Size', 'Medium  Size', 'Product size: Medium', '- Medium Size', 'Medium'
+					],
+					'exclude' => []
+				],
+				'large' => [
+					'include' => [
+						'Large Size', 'Large  Size', 'Product size: Large', '- Large Size', 'Large'
+					],
+					'exclude' => [
+						'Extra Large', 'Extra  Large', 'Extra-Large',
+						'X Large', 'X-Large', 'Xlarge',
+						'XX Large', 'XX-Large', 'XXlarge', 'XXL'
+					]
+				],
+				'xlarge' => [
+					'include' => [
+						'Extra Large', 'Extra  Large', 'Extra-Large',
+						'X Large', 'X-Large', 'Xlarge', 'XL Size',
+						'Product size: Extra Large', 'Product size: XL'
+					],
+					'exclude' => [
+						'XX Large', 'XX-Large', 'XXlarge', 'XXL'
+					]
+				],
+				'xxlarge' => [
+					'include' => [
+						'XX Large', 'XX-Large', 'XXlarge', 'XXL', '2X Large',
+						'Product size: XX Large', 'Product size: XXL'
+					],
+					'exclude' => []
+				],
+				'huge' => [
+					'include' => [
+						'Huge', 'Giant', 'Jumbo', 'Product size: Huge', 'Product size: Jumbo'
+					],
+					'exclude' => []
+				]
+			];
+
+			if (isset($sizes_map[$size_val])) {
+				$inc = $sizes_map[$size_val]['include'];
+				$exc = $sizes_map[$size_val]['exclude'];
+				
+				$inc_clauses = [];
+				foreach ($inc as $p) {
+					$esc = $this->db->escape($p);
+					$inc_clauses[] = "`pd`.`name` LIKE '%" . $esc . "%'";
+					$inc_clauses[] = "`pd`.`diameter` LIKE '%" . $esc . "%'";
+				}
+				$sql .= " AND (" . implode(" OR ", $inc_clauses) . ")";
+				
+				if (!empty($exc)) {
+					$exc_clauses = [];
+					foreach ($exc as $p) {
+						$esc = $this->db->escape($p);
+						$exc_clauses[] = "(`pd`.`name` NOT LIKE '%" . $esc . "%' AND `pd`.`diameter` NOT LIKE '%" . $esc . "%')";
+					}
+					$sql .= " AND (" . implode(" AND ", $exc_clauses) . ")";
+				}
+			} else {
+				$escaped_size = $this->db->escape($size_val);
+				$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_size . "%' OR `pd`.`diameter` LIKE '%" . $escaped_size . "%')";
+			}
 		}
 		if (!empty($data['type'])) {
 			$escaped_type = $this->db->escape((string)$data['type']);
@@ -417,8 +502,93 @@ class Product extends \Opencart\System\Engine\Model {
 
 		/* Custom Filter */
 		if (!empty($data['size'])) {
-			$escaped_size = $this->db->escape((string)$data['size']);
-			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_size . "%' OR `pd`.`diameter` LIKE '%" . $escaped_size . "%')";
+			$size_val = strtolower(trim((string)$data['size']));
+			$sizes_map = [
+				'xs' => [
+					'include' => [
+						'Extra Small Size', 'Extra Small', 'Extra  Small', 'Extra-Small',
+						'X Small Size', 'X Small', 'X-Small',
+						'XX Small Size', 'XX Small', 'XX-Small', 'XX- Small',
+						'Mini Size', 'Mini (XX Small)', '- Mini', 'Mini -',
+						'XS Size', '(XS)', '(XXS)', 'Product size: Extra Small', 'Product size: XX Small', 'Product size: Mini'
+					],
+					'exclude' => []
+				],
+				'small' => [
+					'include' => [
+						'Small Size', 'Small  Size', 'Product size: Small', '- Small Size', 'Small', 'Small (i)'
+					],
+					'exclude' => [
+						'Extra Small', 'Extra  Small', 'Extra-Small',
+						'X Small', 'X-Small', 'XX Small', 'XX-Small',
+						'Mini', 'Mini Size'
+					]
+				],
+				'medium' => [
+					'include' => [
+						'Medium Size', 'Medium  Size', 'Product size: Medium', '- Medium Size', 'Medium'
+					],
+					'exclude' => []
+				],
+				'large' => [
+					'include' => [
+						'Large Size', 'Large  Size', 'Product size: Large', '- Large Size', 'Large'
+					],
+					'exclude' => [
+						'Extra Large', 'Extra  Large', 'Extra-Large',
+						'X Large', 'X-Large', 'Xlarge',
+						'XX Large', 'XX-Large', 'XXlarge', 'XXL'
+					]
+				],
+				'xlarge' => [
+					'include' => [
+						'Extra Large', 'Extra  Large', 'Extra-Large',
+						'X Large', 'X-Large', 'Xlarge', 'XL Size',
+						'Product size: Extra Large', 'Product size: XL'
+					],
+					'exclude' => [
+						'XX Large', 'XX-Large', 'XXlarge', 'XXL'
+					]
+				],
+				'xxlarge' => [
+					'include' => [
+						'XX Large', 'XX-Large', 'XXlarge', 'XXL', '2X Large',
+						'Product size: XX Large', 'Product size: XXL'
+					],
+					'exclude' => []
+				],
+				'huge' => [
+					'include' => [
+						'Huge', 'Giant', 'Jumbo', 'Product size: Huge', 'Product size: Jumbo'
+					],
+					'exclude' => []
+				]
+			];
+
+			if (isset($sizes_map[$size_val])) {
+				$inc = $sizes_map[$size_val]['include'];
+				$exc = $sizes_map[$size_val]['exclude'];
+				
+				$inc_clauses = [];
+				foreach ($inc as $p) {
+					$esc = $this->db->escape($p);
+					$inc_clauses[] = "`pd`.`name` LIKE '%" . $esc . "%'";
+					$inc_clauses[] = "`pd`.`diameter` LIKE '%" . $esc . "%'";
+				}
+				$sql .= " AND (" . implode(" OR ", $inc_clauses) . ")";
+				
+				if (!empty($exc)) {
+					$exc_clauses = [];
+					foreach ($exc as $p) {
+						$esc = $this->db->escape($p);
+						$exc_clauses[] = "(`pd`.`name` NOT LIKE '%" . $esc . "%' AND `pd`.`diameter` NOT LIKE '%" . $esc . "%')";
+					}
+					$sql .= " AND (" . implode(" AND ", $exc_clauses) . ")";
+				}
+			} else {
+				$escaped_size = $this->db->escape($size_val);
+				$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_size . "%' OR `pd`.`diameter` LIKE '%" . $escaped_size . "%')";
+			}
 		}
 		if (!empty($data['type'])) {
 			$escaped_type = $this->db->escape((string)$data['type']);
