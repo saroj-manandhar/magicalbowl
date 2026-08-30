@@ -26,10 +26,10 @@
 								<a href="{{ product.href }}" target="{{ item_link_target }}" title="{{ product.name }}"  >
 									
 									{% if product_image_num ==2 %}
-										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-thumb1 lazyload" alt="{{ product.name }}">
-										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-thumb2 lazyload" alt="{{ product.name }}">
+										<img src="{{ product.thumb }}" class="img-thumb1 img-responsive" alt="{{ product.name }}">
+										<img src="{{ product.thumb2 }}" class="img-thumb2 img-responsive" alt="{{ product.name }}">
 									{% else %}
-										<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
+										<img src="{{ product.thumb }}" alt="{{ product.name }}" class="img-responsive">
 									{% endif %}	
 								</a>						
 							</div>
@@ -45,7 +45,7 @@
 
 					
 					</div>
-					<div class="right-block" style="flex:1;">
+					<div class="right-block">
 						
 						{% if display_title or display_description or display_price or display_rating %}
 						<div class="caption">
@@ -92,23 +92,11 @@
 								</div>
 							{% endif %}			
 							
-					
-						
 							{% if display_description %} 
 								<div class="item-des">
 									{{ product.description_maxlength }} 
 								</div>
 							{% endif %}
-							
-							<div class="item-available">
-								<div class="row">
-									<span class="col-sm-7 text-left">{{ objlang.get('text_available') }} <b>{{product.avail_number}}</b> </span>
-									<span class="col-sm-5 text-right">{{ objlang.get('text_sold') }} <b>{{product.sold_number}}</b>  </span>
-								</div>
-								<div class="available">
-									<span class="color_width" data-title="{{product.sold_width}}%" data-bs-toggle='tooltip' style="width: {{product.sold_width}}%"></span>
-								</div>
-							</div>
 
 						</div>
 						{% endif %}
@@ -117,6 +105,7 @@
 							<div class="button-group so-quickview ">
 								 {% if display_add_to_cart  %} 
 									<button type="button" class="addToCart btn-button" title="{{ objlang.get('button_cart') }}" onclick="cart.add('{{ product.product_id }} ');">
+										<i class="fa fa-shopping-basket"></i>
 										<span>{{ objlang.get('button_cart') }} </span>						
 									</button>
 								{% endif %}

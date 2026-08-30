@@ -200,13 +200,16 @@ class Product extends \Opencart\System\Engine\Model {
 
 		/* Custom Filter */
 		if (!empty($data['size'])) {
-			$sql .= " AND `pd`.`name` LIKE '%" . $this->db->escape((string)$data['size']) . "%'";
+			$escaped_size = $this->db->escape((string)$data['size']);
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_size . "%' OR `pd`.`diameter` LIKE '%" . $escaped_size . "%')";
 		}
 		if (!empty($data['type'])) {
-			$sql .= " AND `pd`.`description` LIKE '%" . $this->db->escape((string)$data['type']) . "%'";
+			$escaped_type = $this->db->escape((string)$data['type']);
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%' OR `pd`.`description` LIKE '%" . $escaped_type . "%')";
 		}
 		if (!empty($data['note'])) {
-			$sql .= " AND `pd`.`name` LIKE '%" . $this->db->escape((string)$data['note']) . "%'";
+			$escaped_note = $this->db->escape((string)$data['note']);
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_note . "%' OR `pd`.`diameter` LIKE '%" . $escaped_note . "%')";
 		}
 		if (isset($data['minPrice']) && $data['minPrice'] !== '' && isset($data['maxPrice']) && $data['maxPrice'] !== '') {
 			$sql .= " AND `p`.`price` >= '" . (float)$data['minPrice'] . "' AND `p`.`price` <= '" . (float)$data['maxPrice'] . "'";
@@ -388,13 +391,16 @@ class Product extends \Opencart\System\Engine\Model {
 
 		/* Custom Filter */
 		if (!empty($data['size'])) {
-			$sql .= " AND `pd`.`name` LIKE '%" . $this->db->escape((string)$data['size']) . "%'";
+			$escaped_size = $this->db->escape((string)$data['size']);
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_size . "%' OR `pd`.`diameter` LIKE '%" . $escaped_size . "%')";
 		}
 		if (!empty($data['type'])) {
-			$sql .= " AND `pd`.`description` LIKE '%" . $this->db->escape((string)$data['type']) . "%'";
+			$escaped_type = $this->db->escape((string)$data['type']);
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%' OR `pd`.`description` LIKE '%" . $escaped_type . "%')";
 		}
 		if (!empty($data['note'])) {
-			$sql .= " AND `pd`.`name` LIKE '%" . $this->db->escape((string)$data['note']) . "%'";
+			$escaped_note = $this->db->escape((string)$data['note']);
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_note . "%' OR `pd`.`diameter` LIKE '%" . $escaped_note . "%')";
 		}
 		if (isset($data['minPrice']) && $data['minPrice'] !== '' && isset($data['maxPrice']) && $data['maxPrice'] !== '') {
 			$sql .= " AND `p`.`price` >= '" . (float)$data['minPrice'] . "' AND `p`.`price` <= '" . (float)$data['maxPrice'] . "'";
