@@ -208,8 +208,34 @@ class Product extends \Opencart\System\Engine\Model {
 			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%' OR `pd`.`description` LIKE '%" . $escaped_type . "%')";
 		}
 		if (!empty($data['note'])) {
-			$escaped_note = $this->db->escape((string)$data['note']);
-			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_note . "%' OR `pd`.`diameter` LIKE '%" . $escaped_note . "%')";
+			$note_val = trim((string)$data['note']);
+			$musical_notes_map = [
+				'A'  => ['A (LA)', 'A (La)', 'A(LA)', 'A(La)', '(LA)', '(La)', 'Musical Note: A ', 'Musical note: A ', 'Musical Note: A<', 'Musical note: A<', 'A - Musical', 'A- Musical'],
+				'A#' => ['A# (LA#)', 'A# (La#)', 'A#(LA#)', 'A#(La#)', '(LA#)', '(La#)', 'Musical Note: A#', 'Musical note: A#', 'A# (LA#) - Musical', 'A#(LA#) - Musical', 'A# - Musical', 'A#- Musical'],
+				'B'  => ['B (SI)', 'B (Si)', 'B(SI)', 'B(Si)', '(SI)', '(Si)', 'Musical Note: B ', 'Musical note: B ', 'Musical Note: B<', 'Musical note: B<', 'B - Musical', 'B- Musical'],
+				'C'  => ['C (DO)', 'C (Do)', 'C(DO)', 'C(Do)', '(DO)', '(Do)', 'Musical Note: C ', 'Musical note: C ', 'Musical Note: C<', 'Musical note: C<', 'C - Musical', 'C- Musical'],
+				'C#' => ['C# (DO#)', 'C# (Do#)', 'C#(DO#)', 'C#(Do#)', '(DO#)', '(Do#)', 'Musical Note: C#', 'Musical note: C#', 'C# (DO#) - Musical', 'C#(DO#) - Musical', 'C# - Musical', 'C#- Musical'],
+				'D'  => ['D (RE)', 'D (Re)', 'D(RE)', 'D(Re)', '(RE)', '(Re)', 'Musical Note: D ', 'Musical note: D ', 'Musical Note: D<', 'Musical note: D<', 'D - Musical', 'D- Musical'],
+				'D#' => ['D# (RE#)', 'D# (Re#)', 'D#(RE#)', 'D#(Re#)', '(RE#)', '(Re#)', 'Musical Note: D#', 'Musical note: D#', 'D# (RE#) - Musical', 'D#(RE#) - Musical', 'D# - Musical', 'D#- Musical'],
+				'E'  => ['E (MI)', 'E (Mi)', 'E(MI)', 'E(Mi)', '(MI)', '(Mi)', 'Musical Note: E ', 'Musical note: E ', 'Musical Note: E<', 'Musical note: E<', 'E - Musical', 'E- Musical'],
+				'F'  => ['F (FA)', 'F (Fa)', 'F(FA)', 'F(Fa)', '(FA)', '(Fa)', 'Musical Note: F ', 'Musical note: F ', 'Musical Note: F<', 'Musical note: F<', 'F - Musical', 'F- Musical'],
+				'F#' => ['F# (FA#)', 'F# (Fa#)', 'F#(FA#)', 'F#(Fa#)', '(FA#)', '(Fa#)', 'Musical Note: F#', 'Musical note: F#', 'F# (FA#) - Musical', 'F#(FA#) - Musical', 'F# - Musical', 'F#- Musical'],
+				'G'  => ['G (SOL)', 'G (Sol)', 'G(SOL)', 'G(Sol)', '(SOL)', '(Sol)', 'Musical Note: G ', 'Musical note: G ', 'Musical Note: G<', 'Musical note: G<', 'G - Musical', 'G- Musical'],
+				'G#' => ['G# (SOL#)', 'G# (Sol#)', 'G#(SOL#)', 'G#(Sol#)', '(SOL#)', '(Sol#)', 'Musical Note: G#', 'Musical note: G#', 'G# (SOL#) - Musical', 'G#(SOL#) - Musical', 'G# - Musical', 'G#- Musical'],
+			];
+
+			if (isset($musical_notes_map[$note_val])) {
+				$note_clauses = [];
+				foreach ($musical_notes_map[$note_val] as $note_pat) {
+					$escaped_pat = $this->db->escape($note_pat);
+					$note_clauses[] = "`pd`.`name` LIKE '%" . $escaped_pat . "%'";
+					$note_clauses[] = "`pd`.`diameter` LIKE '%" . $escaped_pat . "%'";
+				}
+				$sql .= " AND (" . implode(" OR ", $note_clauses) . ")";
+			} else {
+				$escaped_note = $this->db->escape($note_val);
+				$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_note . "%' OR `pd`.`diameter` LIKE '%" . $escaped_note . "%')";
+			}
 		}
 		if (isset($data['minPrice']) && $data['minPrice'] !== '' && isset($data['maxPrice']) && $data['maxPrice'] !== '') {
 			$sql .= " AND `p`.`price` >= '" . (float)$data['minPrice'] . "' AND `p`.`price` <= '" . (float)$data['maxPrice'] . "'";
@@ -399,8 +425,34 @@ class Product extends \Opencart\System\Engine\Model {
 			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%' OR `pd`.`description` LIKE '%" . $escaped_type . "%')";
 		}
 		if (!empty($data['note'])) {
-			$escaped_note = $this->db->escape((string)$data['note']);
-			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_note . "%' OR `pd`.`diameter` LIKE '%" . $escaped_note . "%')";
+			$note_val = trim((string)$data['note']);
+			$musical_notes_map = [
+				'A'  => ['A (LA)', 'A (La)', 'A(LA)', 'A(La)', '(LA)', '(La)', 'Musical Note: A ', 'Musical note: A ', 'Musical Note: A<', 'Musical note: A<', 'A - Musical', 'A- Musical'],
+				'A#' => ['A# (LA#)', 'A# (La#)', 'A#(LA#)', 'A#(La#)', '(LA#)', '(La#)', 'Musical Note: A#', 'Musical note: A#', 'A# (LA#) - Musical', 'A#(LA#) - Musical', 'A# - Musical', 'A#- Musical'],
+				'B'  => ['B (SI)', 'B (Si)', 'B(SI)', 'B(Si)', '(SI)', '(Si)', 'Musical Note: B ', 'Musical note: B ', 'Musical Note: B<', 'Musical note: B<', 'B - Musical', 'B- Musical'],
+				'C'  => ['C (DO)', 'C (Do)', 'C(DO)', 'C(Do)', '(DO)', '(Do)', 'Musical Note: C ', 'Musical note: C ', 'Musical Note: C<', 'Musical note: C<', 'C - Musical', 'C- Musical'],
+				'C#' => ['C# (DO#)', 'C# (Do#)', 'C#(DO#)', 'C#(Do#)', '(DO#)', '(Do#)', 'Musical Note: C#', 'Musical note: C#', 'C# (DO#) - Musical', 'C#(DO#) - Musical', 'C# - Musical', 'C#- Musical'],
+				'D'  => ['D (RE)', 'D (Re)', 'D(RE)', 'D(Re)', '(RE)', '(Re)', 'Musical Note: D ', 'Musical note: D ', 'Musical Note: D<', 'Musical note: D<', 'D - Musical', 'D- Musical'],
+				'D#' => ['D# (RE#)', 'D# (Re#)', 'D#(RE#)', 'D#(Re#)', '(RE#)', '(Re#)', 'Musical Note: D#', 'Musical note: D#', 'D# (RE#) - Musical', 'D#(RE#) - Musical', 'D# - Musical', 'D#- Musical'],
+				'E'  => ['E (MI)', 'E (Mi)', 'E(MI)', 'E(Mi)', '(MI)', '(Mi)', 'Musical Note: E ', 'Musical note: E ', 'Musical Note: E<', 'Musical note: E<', 'E - Musical', 'E- Musical'],
+				'F'  => ['F (FA)', 'F (Fa)', 'F(FA)', 'F(Fa)', '(FA)', '(Fa)', 'Musical Note: F ', 'Musical note: F ', 'Musical Note: F<', 'Musical note: F<', 'F - Musical', 'F- Musical'],
+				'F#' => ['F# (FA#)', 'F# (Fa#)', 'F#(FA#)', 'F#(Fa#)', '(FA#)', '(Fa#)', 'Musical Note: F#', 'Musical note: F#', 'F# (FA#) - Musical', 'F#(FA#) - Musical', 'F# - Musical', 'F#- Musical'],
+				'G'  => ['G (SOL)', 'G (Sol)', 'G(SOL)', 'G(Sol)', '(SOL)', '(Sol)', 'Musical Note: G ', 'Musical note: G ', 'Musical Note: G<', 'Musical note: G<', 'G - Musical', 'G- Musical'],
+				'G#' => ['G# (SOL#)', 'G# (Sol#)', 'G#(SOL#)', 'G#(Sol#)', '(SOL#)', '(Sol#)', 'Musical Note: G#', 'Musical note: G#', 'G# (SOL#) - Musical', 'G#(SOL#) - Musical', 'G# - Musical', 'G#- Musical'],
+			];
+
+			if (isset($musical_notes_map[$note_val])) {
+				$note_clauses = [];
+				foreach ($musical_notes_map[$note_val] as $note_pat) {
+					$escaped_pat = $this->db->escape($note_pat);
+					$note_clauses[] = "`pd`.`name` LIKE '%" . $escaped_pat . "%'";
+					$note_clauses[] = "`pd`.`diameter` LIKE '%" . $escaped_pat . "%'";
+				}
+				$sql .= " AND (" . implode(" OR ", $note_clauses) . ")";
+			} else {
+				$escaped_note = $this->db->escape($note_val);
+				$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_note . "%' OR `pd`.`diameter` LIKE '%" . $escaped_note . "%')";
+			}
 		}
 		if (isset($data['minPrice']) && $data['minPrice'] !== '' && isset($data['maxPrice']) && $data['maxPrice'] !== '') {
 			$sql .= " AND `p`.`price` >= '" . (float)$data['minPrice'] . "' AND `p`.`price` <= '" . (float)$data['maxPrice'] . "'";
