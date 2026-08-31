@@ -6,6 +6,29 @@ namespace Opencart\Admin\Model\Extension\Tmd\Other;
  */
 class Import extends \Opencart\System\Engine\Model {
 
+	private ?bool $has_special_table = null;
+	private ?string $recommended_table = null;
+
+	public function hasSpecialTable(): bool {
+		if ($this->has_special_table === null) {
+			$this->has_special_table = ($this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_special'")->num_rows > 0);
+		}
+		return $this->has_special_table;
+	}
+
+	public function getRecommendedTable(): ?string {
+		if ($this->recommended_table === null) {
+			if ($this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_recomended'")->num_rows > 0) {
+				$this->recommended_table = 'product_recomended';
+			} elseif ($this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_recommended'")->num_rows > 0) {
+				$this->recommended_table = 'product_recommended';
+			} else {
+				$this->recommended_table = '';
+			}
+		}
+		return $this->recommended_table ?: null;
+	}
+
 	public function getProductByModel(string $model): int {
 		$query = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `model` = '" . $this->db->escape(trim($model)) . "' LIMIT 1");
 		if ($query->num_rows) {
@@ -140,8 +163,10 @@ class Import extends \Opencart\System\Engine\Model {
 		$specials_str   = isset($row[43]) ? trim((string)$row[43]) : '';
 		$tax_class_id   = isset($row[44]) && is_numeric($row[44]) ? (int)$row[44] : 0;
 		$filter_names_str=isset($row[46]) ? trim((string)$row[46]) : '';
+		$discounts_str  = isset($row[48]) ? trim((string)$row[48]) : '';
 		$meta_title     = isset($row[50]) && !empty($row[50]) ? trim((string)$row[50]) : $name;
 		$diameter       = isset($row[54]) ? trim((string)$row[54]) : '';
+		$rec_models_str = isset($row[56]) ? trim((string)$row[56]) : '';
 
 		if (!$manufacturer_id && !empty($manufacturer_str)) {
 			$manufacturer_id = $this->getManufacturer($manufacturer_str, $default_store_id);
@@ -302,21 +327,107 @@ class Import extends \Opencart\System\Engine\Model {
 		}
 
 		if (!empty($specials_str)) {
-			$this->db->query("DELETE FROM `" . DB_PREFIX . "product_special` WHERE product_id = '" . (int)$product_id . "'");
-			foreach (explode(';', $specials_str) as $sp_item) {
-				$sp_parts = explode(':', trim($sp_item));
-				if (count($sp_parts) >= 4) {
-					$cust_grp_id = (int)$sp_parts[0];
-					$sp_start    = $sp_parts[1];
-					$sp_end      = $sp_parts[2];
-					$sp_price    = (float)$sp_parts[3];
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "product_special` SET 
-									  product_id = '" . (int)$product_id . "', 
-									  customer_group_id = '" . (int)$cust_grp_id . "', 
-									  priority = 1, 
-									  price = '" . (float)$sp_price . "', 
-									  date_start = '" . $this->db->escape($sp_start) . "', 
-									  date_end = '" . $this->db->escape($sp_end) . "'");
+			if ($this->hasSpecialTable()) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_special` WHERE product_id = '" . (int)$product_id . "'");
+				foreach (explode(';', $specials_str) as $sp_item) {
+					$sp_parts = explode(':', trim($sp_item));
+					if (count($sp_parts) >= 4) {
+						$cust_grp_id = (int)$sp_parts[0];
+						$sp_start    = trim($sp_parts[1]);
+						$sp_end      = trim($sp_parts[2]);
+						$sp_price    = (float)$sp_parts[3];
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_special` SET 
+										  product_id = '" . (int)$product_id . "', 
+										  customer_group_id = '" . (int)$cust_grp_id . "', 
+										  priority = 1, 
+										  price = '" . (float)$sp_price . "', 
+										  date_start = '" . $this->db->escape($sp_start) . "', 
+										  date_end = '" . $this->db->escape($sp_end) . "'");
+					}
+				}
+			} else {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_discount` WHERE product_id = '" . (int)$product_id . "' AND `special` = '1'");
+				foreach (explode(';', $specials_str) as $sp_item) {
+					$sp_parts = explode(':', trim($sp_item));
+					if (count($sp_parts) >= 4) {
+						$cust_grp_id = (int)$sp_parts[0];
+						$sp_start    = trim($sp_parts[1]);
+						$sp_end      = trim($sp_parts[2]);
+						$sp_price    = (float)$sp_parts[3];
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_discount` SET 
+										  product_id = '" . (int)$product_id . "', 
+										  customer_group_id = '" . (int)$cust_grp_id . "', 
+										  quantity = 1, 
+										  priority = 1, 
+										  price = '" . (float)$sp_price . "', 
+										  type = 'F', 
+										  special = 1, 
+										  date_start = '" . $this->db->escape($sp_start) . "', 
+										  date_end = '" . $this->db->escape($sp_end) . "'");
+					}
+				}
+			}
+		}
+
+		if (!empty($discounts_str)) {
+			if ($this->hasSpecialTable()) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_discount` WHERE product_id = '" . (int)$product_id . "'");
+			} else {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_discount` WHERE product_id = '" . (int)$product_id . "' AND `special` = '0'");
+			}
+			foreach (explode(';', $discounts_str) as $disc_item) {
+				$disc_item = trim($disc_item);
+				if (empty($disc_item)) continue;
+				$d_parts = explode(':', $disc_item);
+				if (count($d_parts) >= 4) {
+					$cust_grp_id = (int)$d_parts[0];
+					$qty         = (int)$d_parts[1];
+					$priority    = (int)$d_parts[2];
+					$rest        = $d_parts[3];
+					$d_price     = 0.0;
+					$d_start     = '0000-00-00';
+					$d_end       = '0000-00-00';
+
+					if (preg_match('/^([\d.]+)-(\d{4}-\d{2}-\d{2})-(\d{4}-\d{2}-\d{2})$/', $rest, $m)) {
+						$d_price = (float)$m[1];
+						$d_start = $m[2];
+						$d_end   = $m[3];
+					} else {
+						$sub_parts = explode('-', $rest);
+						if (count($sub_parts) >= 7) {
+							$d_price = (float)$sub_parts[0];
+							$d_start = $sub_parts[1] . '-' . $sub_parts[2] . '-' . $sub_parts[3];
+							$d_end   = $sub_parts[4] . '-' . $sub_parts[5] . '-' . $sub_parts[6];
+						} elseif (count($sub_parts) >= 3) {
+							$d_price = (float)$sub_parts[0];
+							$d_start = $sub_parts[1];
+							$d_end   = $sub_parts[2];
+						} else {
+							$d_price = (float)($sub_parts[0] ?? 0);
+						}
+					}
+
+					if ($this->hasSpecialTable()) {
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_discount` SET 
+										  product_id = '" . (int)$product_id . "', 
+										  customer_group_id = '" . (int)$cust_grp_id . "', 
+										  quantity = '" . (int)$qty . "', 
+										  priority = '" . (int)$priority . "', 
+										  price = '" . (float)$d_price . "', 
+										  date_start = '" . $this->db->escape($d_start) . "', 
+										  date_end = '" . $this->db->escape($d_end) . "'");
+					} else {
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_discount` SET 
+										  product_id = '" . (int)$product_id . "', 
+										  customer_group_id = '" . (int)$cust_grp_id . "', 
+										  quantity = '" . (int)$qty . "', 
+										  priority = '" . (int)$priority . "', 
+										  price = '" . (float)$d_price . "', 
+										  type = 'F', 
+										  special = 0, 
+										  date_start = '" . $this->db->escape($d_start) . "', 
+										  date_end = '" . $this->db->escape($d_end) . "'");
+					}
 				}
 			}
 		}
@@ -339,6 +450,23 @@ class Import extends \Opencart\System\Engine\Model {
 					$rel_id = $this->getProductByModel($rel_model);
 					if ($rel_id > 0 && $rel_id != $product_id) {
 						$this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "product_related` SET product_id = '" . (int)$product_id . "', related_id = '" . (int)$rel_id . "'");
+					}
+				}
+			}
+		}
+
+		if (!empty($rec_models_str)) {
+			$rec_table = $this->getRecommendedTable();
+			if ($rec_table) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . $rec_table . "` WHERE product_id = '" . (int)$product_id . "'");
+				$rec_col = ($rec_table == 'product_recomended') ? 'recomended_id' : 'recommended_id';
+				foreach (explode(';', $rec_models_str) as $rec_model) {
+					$rec_model = trim($rec_model);
+					if (!empty($rec_model)) {
+						$rec_id = $this->getProductByModel($rec_model);
+						if ($rec_id > 0 && $rec_id != $product_id) {
+							$this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . $rec_table . "` SET product_id = '" . (int)$product_id . "', `" . $rec_col . "` = '" . (int)$rec_id . "'");
+						}
 					}
 				}
 			}

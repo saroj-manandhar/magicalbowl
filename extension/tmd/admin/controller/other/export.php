@@ -24,8 +24,9 @@ class Export extends \Opencart\System\Engine\Controller {
 			'href' => $this->url->link('extension/tmd/other/export', 'user_token=' . $this->session->data['user_token'])
 		];
 
-		$data['export_xls'] = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token'] . '&format=xls');
-		$data['export_csv'] = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token'] . '&format=csv');
+		$data['export_xlsx'] = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token'] . '&format=xlsx');
+		$data['export_xls']  = $data['export_xlsx'];
+		$data['export_csv']  = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token'] . '&format=csv');
 
 		$data['user_token'] = $this->session->data['user_token'];
 
@@ -51,7 +52,11 @@ class Export extends \Opencart\System\Engine\Controller {
 			return;
 		}
 
-		$format = isset($this->request->get['format']) && $this->request->get['format'] == 'csv' ? 'csv' : 'xls';
+		$format = strtolower($this->request->get['format'] ?? 'xlsx');
+		if ($format !== 'csv') {
+			$format = 'xlsx';
+		}
+
 		$language_id = (int)$this->config->get('config_language_id');
 
 		$this->load->model('localisation/language');
@@ -123,7 +128,7 @@ class Export extends \Opencart\System\Engine\Controller {
 		$has_rec2 = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_recommended'")->num_rows;
 		$has_special_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_special'")->num_rows;
 
-		$sql = "SELECT p.*, pd.name, pd.meta_description, pd.meta_keyword, pd.description, pd.tag, pd.meta_title 
+		$sql = "SELECT p.*, pd.name, pd.meta_description, pd.meta_keyword, pd.description, pd.tag, pd.meta_title, pd.diameter 
 				FROM `" . DB_PREFIX . "product` p 
 				LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$language_id . "') 
 				ORDER BY p.product_id ASC";
@@ -415,37 +420,9 @@ class Export extends \Opencart\System\Engine\Controller {
 
 			$content_type = 'text/csv; charset=UTF-8';
 		} else {
-			$filename = 'Product_' . date('Y-m-d') . '.xls';
-
-			$output = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-			$output .= '<head>';
-			$output .= '<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>';
-			$output .= '<style>';
-			$output .= 'th { background-color: #02057D; color: #FFFFFF; font-family: Verdana, sans-serif; font-size: 9pt; font-weight: bold; border: 0.5pt solid #cccccc; padding: 6px 10px; text-align: left; }';
-			$output .= 'td { font-family: Verdana, sans-serif; font-size: 9pt; border: 0.5pt solid #cccccc; vertical-align: top; mso-number-format:"\@"; }';
-			$output .= '</style>';
-			$output .= '</head>';
-			$output .= '<body>';
-			$output .= '<table border="1" cellpadding="4" cellspacing="0">';
-			$output .= '<tr style="background-color:#02057D; color:#FFFFFF; font-weight:bold; height:40px;">';
-
-			foreach ($headers as $header) {
-				$output .= '<th>' . htmlspecialchars($header, ENT_QUOTES, 'UTF-8') . '</th>';
-			}
-
-			$output .= '</tr>';
-
-			foreach ($rows_data as $data_row) {
-				$output .= '<tr>';
-				foreach ($data_row as $cell) {
-					$cell_str = (string)$cell;
-					$output .= '<td>' . htmlspecialchars($cell_str, ENT_QUOTES, 'UTF-8') . '</td>';
-				}
-				$output .= '</tr>';
-			}
-
-			$output .= '</table></body></html>';
-			$content_type = 'application/vnd.ms-excel; charset=UTF-8';
+			$filename = 'Product_' . date('Y-m-d') . '.xlsx';
+			$output = $this->generateXlsx($headers, $rows_data);
+			$content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 		}
 
 		if (function_exists('session_write_close')) {
@@ -467,5 +444,124 @@ class Export extends \Opencart\System\Engine\Controller {
 
 		echo $output;
 		exit(0);
+	}
+
+	private function numToCol(int $n): string {
+		$col = '';
+		while ($n >= 0) {
+			$col = chr(($n % 26) + 65) . $col;
+			$n = intdiv($n, 26) - 1;
+		}
+		return $col;
+	}
+
+	private function generateXlsx(array $headers, array $rows): string {
+		$zipFile = tempnam(sys_get_temp_dir(), 'xlsx_');
+		$zip = new \ZipArchive();
+		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+			throw new \Exception('Failed to create ZIP archive for XLSX export.');
+		}
+
+		$contentTypes = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>';
+		$zip->addFromString('[Content_Types].xml', $contentTypes);
+
+		$rels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>';
+		$zip->addFromString('_rels/.rels', $rels);
+
+		$wbRels = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>';
+		$zip->addFromString('xl/_rels/workbook.xml.rels', $wbRels);
+
+		$workbook = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="Product" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>';
+		$zip->addFromString('xl/workbook.xml', $workbook);
+
+		$styles = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="2">
+    <font><sz val="11"/><name val="Calibri"/></font>
+    <font><b/><sz val="11"/><color rgb="FF000000"/><name val="Calibri"/></font>
+  </fonts>
+  <fills count="3">
+    <fill><patternFill fillType="none"/></fill>
+    <fill><patternFill fillType="gray125"/></fill>
+    <fill><patternFill fillType="solid"><fgColor rgb="FFE2E8F0"/><bgColor indexed="64"/></patternFill></fill>
+  </fills>
+  <borders count="2">
+    <border><left/><right/><top/><bottom/><diagonal/></border>
+    <border>
+      <left style="thin"><color rgb="FFCBD5E1"/></left>
+      <right style="thin"><color rgb="FFCBD5E1"/></right>
+      <top style="thin"><color rgb="FFCBD5E1"/></top>
+      <bottom style="thin"><color rgb="FFCBD5E1"/></bottom>
+      <diagonal/>
+    </border>
+  </borders>
+  <cellStyleXfs count="1">
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+  </cellStyleXfs>
+  <cellXfs count="2">
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+    <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
+  </cellXfs>
+</styleSheet>';
+		$zip->addFromString('xl/styles.xml', $styles);
+
+		$sheetXmlFile = tempnam(sys_get_temp_dir(), 'sxml_');
+		$sfp = fopen($sheetXmlFile, 'w');
+		fwrite($sfp, '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n");
+		fwrite($sfp, '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>' . "\n");
+
+		$rowNum = 1;
+		fwrite($sfp, '<row r="1">' . "\n");
+		foreach ($headers as $cIdx => $hText) {
+			$ref = $this->numToCol($cIdx) . $rowNum;
+			$escaped = htmlspecialchars((string)$hText, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+			fwrite($sfp, '<c r="' . $ref . '" t="inlineStr" s="1"><is><t>' . $escaped . '</t></is></c>');
+		}
+		fwrite($sfp, "\n" . '</row>' . "\n");
+
+		foreach ($rows as $rData) {
+			$rowNum++;
+			fwrite($sfp, '<row r="' . $rowNum . '">' . "\n");
+			foreach ($rData as $cIdx => $val) {
+				$ref = $this->numToCol($cIdx) . $rowNum;
+				$valStr = (string)$val;
+				// Clean invalid XML 1.0 control characters
+				$valStr = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F]/', '', $valStr);
+
+				$escaped = htmlspecialchars($valStr, ENT_XML1 | ENT_QUOTES, 'UTF-8');
+				fwrite($sfp, '<c r="' . $ref . '" t="inlineStr"><is><t>' . $escaped . '</t></is></c>');
+			}
+			fwrite($sfp, "\n" . '</row>' . "\n");
+		}
+
+		fwrite($sfp, '</sheetData></worksheet>');
+		fclose($sfp);
+
+		$zip->addFile($sheetXmlFile, 'xl/worksheets/sheet1.xml');
+		$zip->close();
+		@unlink($sheetXmlFile);
+
+		$content = file_get_contents($zipFile);
+		@unlink($zipFile);
+		return $content;
 	}
 }

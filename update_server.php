@@ -272,8 +272,9 @@ class Export extends \Opencart\System\Engine\Controller {
 			\'href\' => $this->url->link(\'extension/tmd/other/export\', \'user_token=\' . $this->session->data[\'user_token\'])
 		];
 
-		$data[\'export_xls\'] = $this->url->link(\'extension/tmd/other/export.download\', \'user_token=\' . $this->session->data[\'user_token\'] . \'&format=xls\');
-		$data[\'export_csv\'] = $this->url->link(\'extension/tmd/other/export.download\', \'user_token=\' . $this->session->data[\'user_token\'] . \'&format=csv\');
+		$data[\'export_xlsx\'] = $this->url->link(\'extension/tmd/other/export.download\', \'user_token=\' . $this->session->data[\'user_token\'] . \'&format=xlsx\');
+		$data[\'export_xls\']  = $data[\'export_xlsx\'];
+		$data[\'export_csv\']  = $this->url->link(\'extension/tmd/other/export.download\', \'user_token=\' . $this->session->data[\'user_token\'] . \'&format=csv\');
 
 		$data[\'user_token\'] = $this->session->data[\'user_token\'];
 
@@ -288,6 +289,9 @@ class Export extends \Opencart\System\Engine\Controller {
 	}
 
 	public function download(): void {
+		@set_time_limit(0);
+		@ini_set(\'memory_limit\', \'2048M\');
+
 		$this->load->language(\'extension/tmd/other/export\');
 
 		if (!$this->user->hasPermission(\'modify\', \'extension/tmd/other/export\')) {
@@ -296,44 +300,366 @@ class Export extends \Opencart\System\Engine\Controller {
 			return;
 		}
 
-		$format = isset($this->request->get[\'format\']) && $this->request->get[\'format\'] == \'csv\' ? \'csv\' : \'xls\';
+		$format = strtolower($this->request->get[\'format\'] ?? \'xlsx\');
+		if ($format !== \'csv\') {
+			$format = \'xlsx\';
+		}
+
 		$language_id = (int)$this->config->get(\'config_language_id\');
 
-		$sql = "SELECT p.product_id, pd.name, p.model, p.sku, p.upc, p.quantity, p.price, p.weight, p.status, p.date_added,
-					   m.name AS manufacturer_name,
-					   (SELECT GROUP_CONCAT(DISTINCT cd.name SEPARATOR \' > \') 
-					    FROM `" . DB_PREFIX . "product_to_category` p2c 
-					    LEFT JOIN `" . DB_PREFIX . "category_description` cd ON (p2c.category_id = cd.category_id AND cd.language_id = \'" . (int)$language_id . "\') 
-					    WHERE p2c.product_id = p.product_id) AS categories
-				FROM `" . DB_PREFIX . "product` p
-				LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.product_id = pd.product_id AND pd.language_id = \'" . (int)$language_id . "\')
-				LEFT JOIN `" . DB_PREFIX . "manufacturer` m ON (p.manufacturer_id = m.manufacturer_id)
+		$this->load->model(\'localisation/language\');
+		$language_info = $this->model_localisation_language->getLanguage($language_id);
+		$language_code = $language_info[\'code\'] ?? \'en-gb\';
+
+		// Exact 57 TMD Header Columns
+		$headers = [
+			\'Product ID\',
+			\'Language\',
+			\'Stores\',
+			\'Stores id (0=Store;1=next if presemt) (1=2)\',
+			\'Model\',
+			\'SKU\',
+			\'UPC\',
+			\'EAN\',
+			\'JAN\',
+			\'ISBN\',
+			\'MPN\',
+			\'Location\',
+			\'Product Name\',
+			\'Meta Tag Description\',
+			\'Meta Tag Keywords\',
+			\'Description\',
+			\'Product Tags\',
+			\'Price\',
+			\'Quantity\',
+			\'Minimum Quantity\',
+			\'Subtract Stock  (1=YES 0= NO)\',
+			\'Out Of Stock Status  (5=Out Of Stock , 8=Pre-Order , In Stock=7, 6=2 - 3 Days)\',
+			\'Requires Shipping (1=YES 0= NO)\',
+			\'SEO Keyword  (Must Unquie)\',
+			\'Image(Main image)\',
+			\'Date Available (Y-m-d)\',
+			\'Length Class (1=Centimeter, 3=Inch, 2=Millimeter)\',
+			\'Length\',
+			\'Width\',
+			\'height\',
+			\'Weight\',
+			\'Weight Class  (1=Kilogram,2=Gram,6=Ounce,Pound=5)\',
+			\'Status (1=Enabled, 0= Disabled)\',
+			\'Sort Order\',
+			\'Manufacturer ID\',
+			\'Manufacturer\',
+			\'Categories id\',
+			\'Categories (category>subcategory; category1>subcategory1 )\',
+			\'Related Product ID(productid,productid)\',
+			\'Related Product (model,model)\',
+			\'Option (name and type) size:select;color:radio\',
+			\'option:value1-qty-Subtract Stock-Price-Points-Weight;option:value1-qty-Subtract Stock-Price-Points-Weight\',
+			\'(image1;image2;image3)\',
+			\'Product Special price:(customer_group_id:start date:end date: special price )\',
+			\'Tax Class (None=0,Taxable Goods=9,Downloadable Products=10) Rest you can make and put that ID\',
+			\'Filter Group Name      (Group Name: Sort order;Group Name: Sort order)\',
+			\'Filter names (group name=name:sort order;group name=name:sort order)\',
+			\'Attributes (Attribute group name:sort order=atrribute name-value-sort order;Attribute group name:sort order=atrribute name-value-sort order;)\',
+			\'Discount (customer_group_id:qty:Priority:Price-Date Start-Date End;customer_group_id:qty:Priority:Price-Date Start-Date End;)\',
+			\'Reward Points\',
+			\'Meta Title\',
+			\'Viewed\',
+			\'Download id\',
+			\'Reviews(Customer ID::author::text::ratting::status::date_added::date_modified|Customer ID::author::text::ratting::status::date_added::date_modified)\',
+			\'Diameter\',
+			\'Recomended Product ID(productid,productid)\',
+			\'Recomended Product (model,model)\'
+		];
+
+		$has_rec1 = $this->db->query("SHOW TABLES LIKE \'" . DB_PREFIX . "product_recomended\'")->num_rows;
+		$has_rec2 = $this->db->query("SHOW TABLES LIKE \'" . DB_PREFIX . "product_recommended\'")->num_rows;
+		$has_special_table = $this->db->query("SHOW TABLES LIKE \'" . DB_PREFIX . "product_special\'")->num_rows;
+
+		$sql = "SELECT p.*, pd.name, pd.meta_description, pd.meta_keyword, pd.description, pd.tag, pd.meta_title, pd.diameter 
+				FROM `" . DB_PREFIX . "product` p 
+				LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.product_id = pd.product_id AND pd.language_id = \'" . (int)$language_id . "\') 
 				ORDER BY p.product_id ASC";
 
 		$query = $this->db->query($sql);
 
+		$rows_data = [];
+
+		foreach ($query->rows as $row) {
+			$product_id = (int)$row[\'product_id\'];
+
+			// 1. Stores
+			$stores = \'\';
+			$storeids = \'\';
+			$store_query = $this->db->query("SELECT store_id FROM `" . DB_PREFIX . "product_to_store` WHERE product_id = \'" . $product_id . "\'");
+			if ($store_query->rows) {
+				foreach ($store_query->rows as $s_row) {
+					if ($s_row[\'store_id\'] == 0) {
+						$stores .= \'default;\';
+						$storeids .= \'0;\';
+					} else {
+						$st_query = $this->db->query("SELECT name FROM `" . DB_PREFIX . "store` WHERE store_id = \'" . (int)$s_row[\'store_id\'] . "\'");
+						if ($st_query->row) {
+							$stores .= $st_query->row[\'name\'] . \';\';
+							$storeids .= $s_row[\'store_id\'] . \';\';
+						}
+					}
+				}
+			} else {
+				$stores = \'default;\';
+				$storeids = \'0;\';
+			}
+
+			// 2. SEO Keyword
+			$seo_keyword = \'\';
+			$seo_query = $this->db->query("SELECT keyword FROM `" . DB_PREFIX . "seo_url` WHERE `key` = \'product_id\' AND `value` = \'" . $product_id . "\' AND `language_id` = \'" . (int)$language_id . "\' LIMIT 1");
+			if ($seo_query->row) {
+				$seo_keyword = $seo_query->row[\'keyword\'];
+			} else {
+				$seo_query2 = $this->db->query("SELECT keyword FROM `" . DB_PREFIX . "seo_url` WHERE `key` = \'product_id\' AND `value` = \'" . $product_id . "\' LIMIT 1");
+				if ($seo_query2->row) {
+					$seo_keyword = $seo_query2->row[\'keyword\'];
+				}
+			}
+
+			// 3. Manufacturer
+			$manufacturer = \'\';
+			$manufacturerid = \'\';
+			if (!empty($row[\'manufacturer_id\'])) {
+				$m_query = $this->db->query("SELECT manufacturer_id, name FROM `" . DB_PREFIX . "manufacturer` WHERE manufacturer_id = \'" . (int)$row[\'manufacturer_id\'] . "\'");
+				if ($m_query->row) {
+					$manufacturerid = $m_query->row[\'manufacturer_id\'];
+					$manufacturer = $m_query->row[\'name\'];
+				}
+			}
+
+			// 4. Categories & Category IDs
+			$categories = \'\';
+			$categoriesid = \'\';
+			$cat_query = $this->db->query("SELECT category_id FROM `" . DB_PREFIX . "product_to_category` WHERE product_id = \'" . $product_id . "\'");
+			foreach ($cat_query->rows as $cat_row) {
+				$categoriesid .= $cat_row[\'category_id\'] . \';\';
+				$path_query = $this->db->query("SELECT GROUP_CONCAT(cd1.name ORDER BY cp.level SEPARATOR \' > \') AS name 
+												FROM `" . DB_PREFIX . "category_path` cp 
+												LEFT JOIN `" . DB_PREFIX . "category_description` cd1 ON (cp.path_id = cd1.category_id AND cd1.language_id = \'" . (int)$language_id . "\') 
+												WHERE cp.category_id = \'" . (int)$cat_row[\'category_id\'] . "\' 
+												GROUP BY cp.category_id");
+				if ($path_query->row && !empty($path_query->row[\'name\'])) {
+					$categories .= $path_query->row[\'name\'] . \';\';
+				}
+			}
+
+			// 5. Related Products
+			$related = \'\';
+			$relatedid = \'\';
+			$rel_query = $this->db->query("SELECT pn.model, pn.product_id FROM `" . DB_PREFIX . "product_related` pr LEFT JOIN `" . DB_PREFIX . "product` pn ON (pn.product_id = pr.related_id) WHERE pr.product_id = \'" . $product_id . "\'");
+			foreach ($rel_query->rows as $rp) {
+				if ($rp[\'product_id\']) {
+					$relatedid .= $rp[\'product_id\'] . \';\';
+					$related .= ($rp[\'model\'] ?? \'\') . \';\';
+				}
+			}
+
+			// 6. Recommended Products
+			$recomended = \'\';
+			$recomendedid = \'\';
+			if ($has_rec1) {
+				$rec_query = $this->db->query("SELECT pn.model, pn.product_id FROM `" . DB_PREFIX . "product_recomended` pr LEFT JOIN `" . DB_PREFIX . "product` pn ON (pn.product_id = pr.recomended_id) WHERE pr.product_id = \'" . $product_id . "\'");
+				foreach ($rec_query->rows as $rp) {
+					if ($rp[\'product_id\']) {
+						$recomendedid .= $rp[\'product_id\'] . \';\';
+						$recomended .= ($rp[\'model\'] ?? \'\') . \';\';
+					}
+				}
+			} elseif ($has_rec2) {
+				$rec_query = $this->db->query("SELECT pn.model, pn.product_id FROM `" . DB_PREFIX . "product_recommended` pr LEFT JOIN `" . DB_PREFIX . "product` pn ON (pn.product_id = pr.recommended_id) WHERE pr.product_id = \'" . $product_id . "\'");
+				foreach ($rec_query->rows as $rp) {
+					if ($rp[\'product_id\']) {
+						$recomendedid .= $rp[\'product_id\'] . \';\';
+						$recomended .= ($rp[\'model\'] ?? \'\') . \';\';
+					}
+				}
+			}
+
+			// 7. Options & Option Values
+			$options = \'\';
+			$optionvalue = \'\';
+			$opt_query = $this->db->query("SELECT po.option_id, po.product_option_id, od.name, o.type 
+										   FROM `" . DB_PREFIX . "product_option` po 
+										   LEFT JOIN `" . DB_PREFIX . "option_description` od ON (od.option_id = po.option_id AND od.language_id = \'" . (int)$language_id . "\') 
+										   LEFT JOIN `" . DB_PREFIX . "option` o ON (o.option_id = po.option_id) 
+										   WHERE po.product_id = \'" . $product_id . "\'");
+			foreach ($opt_query->rows as $option) {
+				$opt_name = str_replace(\'-\', \'/\', $option[\'name\'] ?? \'\');
+				$options .= str_replace(\'&amp;\', \'&\', $opt_name) . \':\' . ($option[\'type\'] ?? \'\') . \';\';
+
+				$opt_val_query = $this->db->query("SELECT pov.*, ovd.name AS val_name 
+												   FROM `" . DB_PREFIX . "product_option_value` pov 
+												   LEFT JOIN `" . DB_PREFIX . "option_value_description` ovd ON (ovd.option_value_id = pov.option_value_id AND ovd.language_id = \'" . (int)$language_id . "\') 
+												   WHERE pov.product_option_id = \'" . (int)$option[\'product_option_id\'] . "\'");
+				foreach ($opt_val_query->rows as $pov) {
+					$val_name = str_replace(\'-\', \'/\', $pov[\'val_name\'] ?? \'\');
+					$optionvalue .= str_replace(\'&amp;\', \'&\', $opt_name) . \':\' . str_replace(\'&amp;\', \'&\', $val_name) . \'-\' . $pov[\'quantity\'] . \'-\' . $pov[\'subtract\'] . \'-\' . round((float)$pov[\'price\'], 2) . \'-\' . $pov[\'points\'] . \'-\' . round((float)$pov[\'weight\'], 2) . \';\';
+				}
+			}
+
+			// 8. Additional Images
+			$images = \'\';
+			$img_query = $this->db->query("SELECT image FROM `" . DB_PREFIX . "product_image` WHERE product_id = \'" . $product_id . "\' ORDER BY sort_order ASC");
+			foreach ($img_query->rows as $img_row) {
+				$images .= $img_row[\'image\'] . \';\';
+			}
+
+			// 9. Special Price
+			$product_sp = \'\';
+			if ($has_special_table) {
+				$sp_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_special` WHERE product_id = \'" . $product_id . "\' ORDER BY product_special_id DESC");
+			} else {
+				$sp_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_discount` WHERE product_id = \'" . $product_id . "\' AND `special` = \'1\' ORDER BY product_discount_id DESC");
+			}
+			foreach ($sp_query->rows as $sp) {
+				$product_sp .= $sp[\'customer_group_id\'] . \':\' . $sp[\'date_start\'] . \':\' . $sp[\'date_end\'] . \':\' . $sp[\'price\'] . \';\';
+			}
+
+			// 10. Filters
+			$filter_group = \'\';
+			$filter_name = \'\';
+			$fg_query = $this->db->query("SELECT DISTINCT fgd.name, fg.sort_order 
+										  FROM `" . DB_PREFIX . "product_filter` pf 
+										  LEFT JOIN `" . DB_PREFIX . "filter` f ON (f.filter_id = pf.filter_id) 
+										  LEFT JOIN `" . DB_PREFIX . "filter_group_description` fgd ON (fgd.filter_group_id = f.filter_group_id AND fgd.language_id = \'" . (int)$language_id . "\') 
+										  LEFT JOIN `" . DB_PREFIX . "filter_group` fg ON (fg.filter_group_id = f.filter_group_id) 
+										  WHERE pf.product_id = \'" . $product_id . "\'");
+			foreach ($fg_query->rows as $fg_row) {
+				if (!empty($fg_row[\'name\'])) {
+					$filter_group .= $fg_row[\'name\'] . \':\' . ($fg_row[\'sort_order\'] ?? \'0\') . \';\';
+				}
+			}
+
+			$fn_query = $this->db->query("SELECT fgd.name AS groupname, fd.name AS name, f.sort_order 
+										  FROM `" . DB_PREFIX . "product_filter` pf 
+										  LEFT JOIN `" . DB_PREFIX . "filter` f ON (f.filter_id = pf.filter_id) 
+										  LEFT JOIN `" . DB_PREFIX . "filter_description` fd ON (fd.filter_id = pf.filter_id AND fd.language_id = \'" . (int)$language_id . "\') 
+										  LEFT JOIN `" . DB_PREFIX . "filter_group_description` fgd ON (fgd.filter_group_id = f.filter_group_id AND fgd.language_id = \'" . (int)$language_id . "\') 
+										  WHERE pf.product_id = \'" . $product_id . "\'");
+			foreach ($fn_query->rows as $fn_row) {
+				if (!empty($fn_row[\'groupname\']) && !empty($fn_row[\'name\'])) {
+					$filter_name .= $fn_row[\'groupname\'] . \'=\' . $fn_row[\'name\'] . \':\' . ($fn_row[\'sort_order\'] ?? \'0\') . \';\';
+				}
+			}
+
+			// 11. Attributes
+			$atts = \'\';
+			$att_query = $this->db->query("SELECT agd.name AS groupname, ag.sort_order AS groupsort, ad.name AS attname, a.sort_order AS attsort, pa.text 
+										   FROM `" . DB_PREFIX . "product_attribute` pa 
+										   LEFT JOIN `" . DB_PREFIX . "attribute` a ON (a.attribute_id = pa.attribute_id) 
+										   LEFT JOIN `" . DB_PREFIX . "attribute_description` ad ON (ad.attribute_id = pa.attribute_id AND ad.language_id = \'" . (int)$language_id . "\') 
+										   LEFT JOIN `" . DB_PREFIX . "attribute_group` ag ON (ag.attribute_group_id = a.attribute_group_id) 
+										   LEFT JOIN `" . DB_PREFIX . "attribute_group_description` agd ON (agd.attribute_group_id = ag.attribute_group_id AND agd.language_id = \'" . (int)$language_id . "\') 
+										   WHERE pa.product_id = \'" . $product_id . "\' AND pa.language_id = \'" . (int)$language_id . "\'");
+			foreach ($att_query->rows as $att_row) {
+				$atts .= ($att_row[\'groupname\'] ?? \'\') . \':\' . ($att_row[\'groupsort\'] ?? \'0\') . \'=\' . ($att_row[\'attname\'] ?? \'\') . \'-\' . ($att_row[\'text\'] ?? \'\') . \'-\' . ($att_row[\'attsort\'] ?? \'0\') . \';\';
+			}
+
+			// 12. Discounts
+			$discounts = \'\';
+			if ($has_special_table) {
+				$disc_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_discount` WHERE product_id = \'" . $product_id . "\'");
+			} else {
+				$disc_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_discount` WHERE product_id = \'" . $product_id . "\' AND `special` = \'0\'");
+			}
+			foreach ($disc_query->rows as $disc_row) {
+				$discounts .= $disc_row[\'customer_group_id\'] . \':\' . $disc_row[\'quantity\'] . \':\' . $disc_row[\'priority\'] . \':\' . $disc_row[\'price\'] . \'-\' . $disc_row[\'date_start\'] . \'-\' . $disc_row[\'date_end\'] . \';\';
+			}
+
+			// 13. Downloads
+			$downloadids = \'\';
+			$dl_query = $this->db->query("SELECT download_id FROM `" . DB_PREFIX . "product_to_download` WHERE product_id = \'" . $product_id . "\'");
+			foreach ($dl_query->rows as $dl_row) {
+				$downloadids .= $dl_row[\'download_id\'] . \';\';
+			}
+
+			// 14. Reviews
+			$reviews = \'\';
+			$rev_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "review` WHERE product_id = \'" . $product_id . "\'");
+			foreach ($rev_query->rows as $rev_row) {
+				$reviews .= $rev_row[\'customer_id\'] . \'::\' . $rev_row[\'author\'] . \'::\' . $rev_row[\'text\'] . \'::\' . $rev_row[\'rating\'] . \'::\' . $rev_row[\'status\'] . \'::\' . $rev_row[\'date_added\'] . \'::\' . $rev_row[\'date_modified\'] . \'|\';
+			}
+
+			// 15. Diameter
+			$diameter = $row[\'diameter\'] ?? \'\';
+
+			$rows_data[] = [
+				$product_id,                                           // Product ID
+				$language_code,                                        // Language
+				$stores,                                               // Stores
+				$storeids,                                             // Stores id
+				$row[\'model\'] ?? \'\',                                   // Model
+				$row[\'sku\'] ?? \'\',                                     // SKU
+				$row[\'upc\'] ?? \'\',                                     // UPC
+				$row[\'ean\'] ?? \'\',                                     // EAN
+				$row[\'jan\'] ?? \'\',                                     // JAN
+				$row[\'isbn\'] ?? \'\',                                    // ISBN
+				$row[\'mpn\'] ?? \'\',                                     // MPN
+				$row[\'location\'] ?? \'\',                                // Location
+				$row[\'name\'] ?? \'\',                                    // Product Name
+				$row[\'meta_description\'] ?? \'\',                         // Meta Tag Description
+				$row[\'meta_keyword\'] ?? \'\',                             // Meta Tag Keywords
+				html_entity_decode((string)($row[\'description\'] ?? \'\'), ENT_QUOTES, \'UTF-8\'), // Description
+				$row[\'tag\'] ?? \'\',                                     // Product Tags
+				$row[\'price\'] ?? 0,                                    // Price
+				$row[\'quantity\'] ?? 0,                                 // Quantity
+				$row[\'minimum\'] ?? 1,                                  // Minimum Quantity
+				$row[\'subtract\'] ?? 1,                                 // Subtract Stock
+				$row[\'stock_status_id\'] ?? 7,                          // Out Of Stock Status
+				$row[\'shipping\'] ?? 1,                                 // Requires Shipping
+				$seo_keyword,                                          // SEO Keyword
+				$row[\'image\'] ?? \'\',                                   // Image(Main image)
+				$row[\'date_available\'] ?? \'\',                          // Date Available
+				$row[\'length_class_id\'] ?? 1,                          // Length Class
+				$row[\'length\'] ?? 0,                                   // Length
+				$row[\'width\'] ?? 0,                                    // Width
+				$row[\'height\'] ?? 0,                                   // height
+				$row[\'weight\'] ?? 0,                                   // Weight
+				$row[\'weight_class_id\'] ?? 1,                          // Weight Class
+				$row[\'status\'] ?? 1,                                   // Status
+				$row[\'sort_order\'] ?? 0,                               // Sort Order
+				$manufacturerid,                                       // Manufacturer ID
+				$manufacturer,                                         // Manufacturer
+				$categoriesid,                                         // Categories id
+				$categories,                                           // Categories
+				$relatedid,                                            // Related Product ID
+				$related,                                              // Related Product (model,model)
+				$options,                                              // Option (name and type)
+				$optionvalue,                                          // option:value1-qty...
+				$images,                                               // (image1;image2;image3)
+				$product_sp,                                           // Product Special price
+				$row[\'tax_class_id\'] ?? 0,                             // Tax Class
+				$filter_group,                                         // Filter Group Name
+				$filter_name,                                          // Filter names
+				$atts,                                                 // Attributes
+				$discounts,                                            // Discount
+				$row[\'points\'] ?? 0,                                   // Reward Points
+				$row[\'meta_title\'] ?? \'\',                              // Meta Title
+				$row[\'viewed\'] ?? 0,                                   // Viewed
+				$downloadids,                                          // Download id
+				$reviews,                                              // Reviews
+				$diameter,                                             // Diameter
+				$recomendedid,                                         // Recomended Product ID
+				$recomended                                            // Recomended Product (model,model)
+			];
+		}
+
 		if ($format == \'csv\') {
-			$filename = \'tmd_product_export_\' . date(\'Y-m-d_H-i-s\') . \'.csv\';
+			$filename = \'Product_\' . date(\'Y-m-d\') . \'.csv\';
 
 			$fp = fopen(\'php://temp\', \'r+\');
-			fputcsv($fp, [\'Product ID\', \'Name\', \'Categories\', \'Model\', \'SKU\', \'UPC\', \'Quantity\', \'Price\', \'Weight\', \'Manufacturer\', \'Status\', \'Date Added\']);
+			// Write UTF-8 BOM for Excel compatibility
+			fputs($fp, "\xEF\xBB\xBF");
+			fputcsv($fp, $headers);
 
-			foreach ($query->rows as $row) {
-				$status_text = $row[\'status\'] ? \'Enabled\' : \'Disabled\';
-				fputcsv($fp, [
-					$row[\'product_id\'],
-					$row[\'name\'] ?? \'\',
-					$row[\'categories\'] ?? \'\',
-					$row[\'model\'] ?? \'\',
-					$row[\'sku\'] ?? \'\',
-					$row[\'upc\'] ?? \'\',
-					$row[\'quantity\'] ?? 0,
-					number_format((float)($row[\'price\'] ?? 0), 2, \'.\', \'\'),
-					number_format((float)($row[\'weight\'] ?? 0), 2, \'.\', \'\'),
-					$row[\'manufacturer_name\'] ?? \'\',
-					$status_text,
-					$row[\'date_added\'] ?? \'\'
-				]);
+			foreach ($rows_data as $data_row) {
+				fputcsv($fp, $data_row);
 			}
 
 			rewind($fp);
@@ -342,35 +668,9 @@ class Export extends \Opencart\System\Engine\Controller {
 
 			$content_type = \'text/csv; charset=UTF-8\';
 		} else {
-			$filename = \'tmd_product_export_\' . date(\'Y-m-d_H-i-s\') . \'.xls\';
-
-			$output = \'<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">\';
-			$output .= \'<head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>Products Export</title></head>\';
-			$output .= \'<body><table border="1">\';
-			$output .= \'<tr style="background-color:#1e91cf; color:#ffffff; font-weight:bold; height:30px;">\';
-			$output .= \'<th>Product ID</th><th>Name</th><th>Categories</th><th>Model</th><th>SKU</th><th>UPC</th><th>Quantity</th><th>Price</th><th>Weight</th><th>Manufacturer</th><th>Status</th><th>Date Added</th>\';
-			$output .= \'</tr>\';
-
-			foreach ($query->rows as $row) {
-				$status_text = $row[\'status\'] ? \'Enabled\' : \'Disabled\';
-				$output .= \'<tr>\';
-				$output .= \'<td>\' . (int)$row[\'product_id\'] . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'name\'] ?? \'\')) . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'categories\'] ?? \'\')) . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'model\'] ?? \'\')) . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'sku\'] ?? \'\')) . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'upc\'] ?? \'\')) . \'</td>\';
-				$output .= \'<td>\' . (int)$row[\'quantity\'] . \'</td>\';
-				$output .= \'<td>\' . number_format((float)($row[\'price\'] ?? 0), 2, \'.\', \'\') . \'</td>\';
-				$output .= \'<td>\' . number_format((float)($row[\'weight\'] ?? 0), 2, \'.\', \'\') . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'manufacturer_name\'] ?? \'\')) . \'</td>\';
-				$output .= \'<td>\' . $status_text . \'</td>\';
-				$output .= \'<td>\' . htmlspecialchars((string)($row[\'date_added\'] ?? \'\')) . \'</td>\';
-				$output .= \'</tr>\';
-			}
-
-			$output .= \'</table></body></html>\';
-			$content_type = \'application/vnd.ms-excel; charset=UTF-8\';
+			$filename = \'Product_\' . date(\'Y-m-d\') . \'.xlsx\';
+			$output = $this->generateXlsx($headers, $rows_data);
+			$content_type = \'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet\';
 		}
 
 		if (function_exists(\'session_write_close\')) {
@@ -393,6 +693,125 @@ class Export extends \Opencart\System\Engine\Controller {
 		echo $output;
 		exit(0);
 	}
+
+	private function numToCol(int $n): string {
+		$col = \'\';
+		while ($n >= 0) {
+			$col = chr(($n % 26) + 65) . $col;
+			$n = intdiv($n, 26) - 1;
+		}
+		return $col;
+	}
+
+	private function generateXlsx(array $headers, array $rows): string {
+		$zipFile = tempnam(sys_get_temp_dir(), \'xlsx_\');
+		$zip = new \ZipArchive();
+		if ($zip->open($zipFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+			throw new \Exception(\'Failed to create ZIP archive for XLSX export.\');
+		}
+
+		$contentTypes = \'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="xml" ContentType="application/xml"/>
+  <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+  <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+  <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+</Types>\';
+		$zip->addFromString(\'[Content_Types].xml\', $contentTypes);
+
+		$rels = \'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+</Relationships>\';
+		$zip->addFromString(\'_rels/.rels\', $rels);
+
+		$wbRels = \'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+  <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>\';
+		$zip->addFromString(\'xl/_rels/workbook.xml.rels\', $wbRels);
+
+		$workbook = \'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+  <sheets>
+    <sheet name="Product" sheetId="1" r:id="rId1"/>
+  </sheets>
+</workbook>\';
+		$zip->addFromString(\'xl/workbook.xml\', $workbook);
+
+		$styles = \'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+  <fonts count="2">
+    <font><sz val="11"/><name val="Calibri"/></font>
+    <font><b/><sz val="11"/><color rgb="FF000000"/><name val="Calibri"/></font>
+  </fonts>
+  <fills count="3">
+    <fill><patternFill fillType="none"/></fill>
+    <fill><patternFill fillType="gray125"/></fill>
+    <fill><patternFill fillType="solid"><fgColor rgb="FFE2E8F0"/><bgColor indexed="64"/></patternFill></fill>
+  </fills>
+  <borders count="2">
+    <border><left/><right/><top/><bottom/><diagonal/></border>
+    <border>
+      <left style="thin"><color rgb="FFCBD5E1"/></left>
+      <right style="thin"><color rgb="FFCBD5E1"/></right>
+      <top style="thin"><color rgb="FFCBD5E1"/></top>
+      <bottom style="thin"><color rgb="FFCBD5E1"/></bottom>
+      <diagonal/>
+    </border>
+  </borders>
+  <cellStyleXfs count="1">
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+  </cellStyleXfs>
+  <cellXfs count="2">
+    <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+    <xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1"/>
+  </cellXfs>
+</styleSheet>\';
+		$zip->addFromString(\'xl/styles.xml\', $styles);
+
+		$sheetXmlFile = tempnam(sys_get_temp_dir(), \'sxml_\');
+		$sfp = fopen($sheetXmlFile, \'w\');
+		fwrite($sfp, \'<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\' . "\n");
+		fwrite($sfp, \'<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>\' . "\n");
+
+		$rowNum = 1;
+		fwrite($sfp, \'<row r="1">\' . "\n");
+		foreach ($headers as $cIdx => $hText) {
+			$ref = $this->numToCol($cIdx) . $rowNum;
+			$escaped = htmlspecialchars((string)$hText, ENT_XML1 | ENT_QUOTES, \'UTF-8\');
+			fwrite($sfp, \'<c r="\' . $ref . \'" t="inlineStr" s="1"><is><t>\' . $escaped . \'</t></is></c>\');
+		}
+		fwrite($sfp, "\n" . \'</row>\' . "\n");
+
+		foreach ($rows as $rData) {
+			$rowNum++;
+			fwrite($sfp, \'<row r="\' . $rowNum . \'">\' . "\n");
+			foreach ($rData as $cIdx => $val) {
+				$ref = $this->numToCol($cIdx) . $rowNum;
+				$valStr = (string)$val;
+				// Clean invalid XML 1.0 control characters
+				$valStr = preg_replace(\'/[\x00-\x08\x0B\x0C\x0E-\x1F]/\', \'\', $valStr);
+
+				$escaped = htmlspecialchars($valStr, ENT_XML1 | ENT_QUOTES, \'UTF-8\');
+				fwrite($sfp, \'<c r="\' . $ref . \'" t="inlineStr"><is><t>\' . $escaped . \'</t></is></c>\');
+			}
+			fwrite($sfp, "\n" . \'</row>\' . "\n");
+		}
+
+		fwrite($sfp, \'</sheetData></worksheet>\');
+		fclose($sfp);
+
+		$zip->addFile($sheetXmlFile, \'xl/worksheets/sheet1.xml\');
+		$zip->close();
+		@unlink($sheetXmlFile);
+
+		$content = file_get_contents($zipFile);
+		@unlink($zipFile);
+		return $content;
+	}
 }');
 
 // TMD Import Model
@@ -403,6 +822,29 @@ namespace Opencart\Admin\Model\Extension\Tmd\Other;
  * TMD Import Model for OpenCart 4
  */
 class Import extends \Opencart\System\Engine\Model {
+
+	private ?bool $has_special_table = null;
+	private ?string $recommended_table = null;
+
+	public function hasSpecialTable(): bool {
+		if ($this->has_special_table === null) {
+			$this->has_special_table = ($this->db->query("SHOW TABLES LIKE \'" . DB_PREFIX . "product_special\'")->num_rows > 0);
+		}
+		return $this->has_special_table;
+	}
+
+	public function getRecommendedTable(): ?string {
+		if ($this->recommended_table === null) {
+			if ($this->db->query("SHOW TABLES LIKE \'" . DB_PREFIX . "product_recomended\'")->num_rows > 0) {
+				$this->recommended_table = \'product_recomended\';
+			} elseif ($this->db->query("SHOW TABLES LIKE \'" . DB_PREFIX . "product_recommended\'")->num_rows > 0) {
+				$this->recommended_table = \'product_recommended\';
+			} else {
+				$this->recommended_table = \'\';
+			}
+		}
+		return $this->recommended_table ?: null;
+	}
 
 	public function getProductByModel(string $model): int {
 		$query = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product` WHERE `model` = \'" . $this->db->escape(trim($model)) . "\' LIMIT 1");
@@ -538,8 +980,10 @@ class Import extends \Opencart\System\Engine\Model {
 		$specials_str   = isset($row[43]) ? trim((string)$row[43]) : \'\';
 		$tax_class_id   = isset($row[44]) && is_numeric($row[44]) ? (int)$row[44] : 0;
 		$filter_names_str=isset($row[46]) ? trim((string)$row[46]) : \'\';
+		$discounts_str  = isset($row[48]) ? trim((string)$row[48]) : \'\';
 		$meta_title     = isset($row[50]) && !empty($row[50]) ? trim((string)$row[50]) : $name;
 		$diameter       = isset($row[54]) ? trim((string)$row[54]) : \'\';
+		$rec_models_str = isset($row[56]) ? trim((string)$row[56]) : \'\';
 
 		if (!$manufacturer_id && !empty($manufacturer_str)) {
 			$manufacturer_id = $this->getManufacturer($manufacturer_str, $default_store_id);
@@ -700,21 +1144,107 @@ class Import extends \Opencart\System\Engine\Model {
 		}
 
 		if (!empty($specials_str)) {
-			$this->db->query("DELETE FROM `" . DB_PREFIX . "product_special` WHERE product_id = \'" . (int)$product_id . "\'");
-			foreach (explode(\';\', $specials_str) as $sp_item) {
-				$sp_parts = explode(\':\', trim($sp_item));
-				if (count($sp_parts) >= 4) {
-					$cust_grp_id = (int)$sp_parts[0];
-					$sp_start    = $sp_parts[1];
-					$sp_end      = $sp_parts[2];
-					$sp_price    = (float)$sp_parts[3];
-					$this->db->query("INSERT INTO `" . DB_PREFIX . "product_special` SET 
-									  product_id = \'" . (int)$product_id . "\', 
-									  customer_group_id = \'" . (int)$cust_grp_id . "\', 
-									  priority = 1, 
-									  price = \'" . (float)$sp_price . "\', 
-									  date_start = \'" . $this->db->escape($sp_start) . "\', 
-									  date_end = \'" . $this->db->escape($sp_end) . "\'");
+			if ($this->hasSpecialTable()) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_special` WHERE product_id = \'" . (int)$product_id . "\'");
+				foreach (explode(\';\', $specials_str) as $sp_item) {
+					$sp_parts = explode(\':\', trim($sp_item));
+					if (count($sp_parts) >= 4) {
+						$cust_grp_id = (int)$sp_parts[0];
+						$sp_start    = trim($sp_parts[1]);
+						$sp_end      = trim($sp_parts[2]);
+						$sp_price    = (float)$sp_parts[3];
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_special` SET 
+										  product_id = \'" . (int)$product_id . "\', 
+										  customer_group_id = \'" . (int)$cust_grp_id . "\', 
+										  priority = 1, 
+										  price = \'" . (float)$sp_price . "\', 
+										  date_start = \'" . $this->db->escape($sp_start) . "\', 
+										  date_end = \'" . $this->db->escape($sp_end) . "\'");
+					}
+				}
+			} else {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_discount` WHERE product_id = \'" . (int)$product_id . "\' AND `special` = \'1\'");
+				foreach (explode(\';\', $specials_str) as $sp_item) {
+					$sp_parts = explode(\':\', trim($sp_item));
+					if (count($sp_parts) >= 4) {
+						$cust_grp_id = (int)$sp_parts[0];
+						$sp_start    = trim($sp_parts[1]);
+						$sp_end      = trim($sp_parts[2]);
+						$sp_price    = (float)$sp_parts[3];
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_discount` SET 
+										  product_id = \'" . (int)$product_id . "\', 
+										  customer_group_id = \'" . (int)$cust_grp_id . "\', 
+										  quantity = 1, 
+										  priority = 1, 
+										  price = \'" . (float)$sp_price . "\', 
+										  type = \'F\', 
+										  special = 1, 
+										  date_start = \'" . $this->db->escape($sp_start) . "\', 
+										  date_end = \'" . $this->db->escape($sp_end) . "\'");
+					}
+				}
+			}
+		}
+
+		if (!empty($discounts_str)) {
+			if ($this->hasSpecialTable()) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_discount` WHERE product_id = \'" . (int)$product_id . "\'");
+			} else {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_discount` WHERE product_id = \'" . (int)$product_id . "\' AND `special` = \'0\'");
+			}
+			foreach (explode(\';\', $discounts_str) as $disc_item) {
+				$disc_item = trim($disc_item);
+				if (empty($disc_item)) continue;
+				$d_parts = explode(\':\', trim($disc_item));
+				if (count($d_parts) >= 4) {
+					$cust_grp_id = (int)$d_parts[0];
+					$qty         = (int)$d_parts[1];
+					$priority    = (int)$d_parts[2];
+					$rest        = $d_parts[3];
+					$d_price     = 0.0;
+					$d_start     = \'0000-00-00\';
+					$d_end       = \'0000-00-00\';
+
+					if (preg_match(\'/^([\\d.]+)-(\\d{4}-\\d{2}-\\d{2})-(\\d{4}-\\d{2}-\\d{2})$/\', $rest, $m)) {
+						$d_price = (float)$m[1];
+						$d_start = $m[2];
+						$d_end   = $m[3];
+					} else {
+						$sub_parts = explode(\'-\', $rest);
+						if (count($sub_parts) >= 7) {
+							$d_price = (float)$sub_parts[0];
+							$d_start = $sub_parts[1] . \'-\' . $sub_parts[2] . \'-\' . $sub_parts[3];
+							$d_end   = $sub_parts[4] . \'-\' . $sub_parts[5] . \'-\' . $sub_parts[6];
+						} elseif (count($sub_parts) >= 3) {
+							$d_price = (float)$sub_parts[0];
+							$d_start = $sub_parts[1];
+							$d_end   = $sub_parts[2];
+						} else {
+							$d_price = (float)($sub_parts[0] ?? 0);
+						}
+					}
+
+					if ($this->hasSpecialTable()) {
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_discount` SET 
+										  product_id = \'" . (int)$product_id . "\', 
+										  customer_group_id = \'" . (int)$cust_grp_id . "\', 
+										  quantity = \'" . (int)$qty . "\', 
+										  priority = \'" . (int)$priority . "\', 
+										  price = \'" . (float)$d_price . "\', 
+										  date_start = \'" . $this->db->escape($d_start) . "\', 
+										  date_end = \'" . $this->db->escape($d_end) . "\'");
+					} else {
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "product_discount` SET 
+										  product_id = \'" . (int)$product_id . "\', 
+										  customer_group_id = \'" . (int)$cust_grp_id . "\', 
+										  quantity = \'" . (int)$qty . "\', 
+										  priority = \'" . (int)$priority . "\', 
+										  price = \'" . (float)$d_price . "\', 
+										  type = \'F\', 
+										  special = 0, 
+										  date_start = \'" . $this->db->escape($d_start) . "\', 
+										  date_end = \'" . $this->db->escape($d_end) . "\'");
+					}
 				}
 			}
 		}
@@ -737,6 +1267,23 @@ class Import extends \Opencart\System\Engine\Model {
 					$rel_id = $this->getProductByModel($rel_model);
 					if ($rel_id > 0 && $rel_id != $product_id) {
 						$this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "product_related` SET product_id = \'" . (int)$product_id . "\', related_id = \'" . (int)$rel_id . "\'");
+					}
+				}
+			}
+		}
+
+		if (!empty($rec_models_str)) {
+			$rec_table = $this->getRecommendedTable();
+			if ($rec_table) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . $rec_table . "` WHERE product_id = \'" . (int)$product_id . "\'");
+				$rec_col = ($rec_table == \'product_recomended\') ? \'recomended_id\' : \'recommended_id\';
+				foreach (explode(\';\', $rec_models_str) as $rec_model) {
+					$rec_model = trim($rec_model);
+					if (!empty($rec_model)) {
+						$rec_id = $this->getProductByModel($rec_model);
+						if ($rec_id > 0 && $rec_id != $product_id) {
+							$this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . $rec_table . "` SET product_id = \'" . (int)$product_id . "\', `" . $rec_col . "` = \'" . (int)$rec_id . "\'");
+						}
 					}
 				}
 			}
@@ -1071,9 +1618,9 @@ ensure_file_written(__DIR__ . '/extension/tmd/admin/view/template/other/export.t
         <div class="row g-3">
           <div class="col-md-6">
             <div class="p-3 border rounded bg-light text-center">
-              <h5><i class="fa-solid fa-file-excel text-success"></i> Microsoft Excel (.xls)</h5>
+              <h5><i class="fa-solid fa-file-excel text-success"></i> Microsoft Excel (.xlsx)</h5>
               <p class="text-muted">Export full catalog with formatted tables, categories, prices, and status.</p>
-              <a href="index.php?route=extension/tmd/other/export.download&user_token={{ user_token }}&format=xls" class="btn btn-success"><i class="fa-solid fa-download"></i> Export to Excel (.xls)</a>
+              <a href="index.php?route=extension/tmd/other/export.download&user_token={{ user_token }}&format=xlsx" class="btn btn-success"><i class="fa-solid fa-download"></i> Export to Excel (.xlsx)</a>
             </div>
           </div>
           <div class="col-md-6">
