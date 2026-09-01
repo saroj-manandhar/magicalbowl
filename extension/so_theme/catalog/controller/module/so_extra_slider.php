@@ -413,7 +413,11 @@ class SoExtraSlider extends \Opencart\System\Engine\Controller {
 		if (isset($setting['module_description'][$this->config->get('config_language_id')])) {
 			$data['custom_url'] = isset($setting['module_description'][$this->config->get('config_language_id')]['custom_url']) ? $setting['module_description'][$this->config->get('config_language_id')]['custom_url'] : '';
 		}else{
-			$data['custom_url']  = $setting['custom_url'];
+			$data['custom_url']  = $setting['custom_url'] ?? '';
+		}
+
+		if ($data['custom_url'] != '' && (str_contains($data['custom_url'], 'custom/') || $data['custom_url'] === '#' || $data['custom_url'] === 'javascript:void(0);')) {
+			$data['custom_url'] = '';
 		}
 		
 		if ($data['custom_url'] != '' && substr($data['custom_url'], 0, 7) != 'http://' && substr($data['custom_url'], 0, 8) != 'https://') {
@@ -422,7 +426,7 @@ class SoExtraSlider extends \Opencart\System\Engine\Controller {
 			} else {
 				$base = $this->config->get('config_url');
 			}
-			$data['custom_url'] = $base.'/'.$data['custom_url'];
+			$data['custom_url'] = rtrim($base, '/') . '/' . ltrim($data['custom_url'], '/');
 		}
 
 		$data['moduleid']  = $setting['moduleid'];

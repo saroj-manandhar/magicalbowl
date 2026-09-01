@@ -2960,6 +2960,34 @@ if ($row_m33 = mysqli_fetch_assoc($res_m33)) {
     echo "✔ Page Builder Home 1 (Module 33) layout updated (Latest products positioned at top).<br/>";
 }
 
+// Clean broken custom_url demo links from SO modules (e.g. 42, 69, 70, 105)
+$res_custom_mods = mysqli_query($link, "SELECT module_id, setting FROM {$prefix}module WHERE setting LIKE '%custom%'");
+$cleaned_count = 0;
+while ($r_mod = mysqli_fetch_assoc($res_custom_mods)) {
+    $s_mod = json_decode($r_mod['setting'], true);
+    if (is_array($s_mod)) {
+        $changed_mod = false;
+        if (!empty($s_mod['custom_url']) && strpos($s_mod['custom_url'], 'custom') !== false) {
+            $s_mod['custom_url'] = '';
+            $changed_mod = true;
+        }
+        if (isset($s_mod['module_description']) && is_array($s_mod['module_description'])) {
+            foreach ($s_mod['module_description'] as $lid => $mdesc) {
+                if (!empty($mdesc['custom_url']) && strpos($mdesc['custom_url'], 'custom') !== false) {
+                    $s_mod['module_description'][$lid]['custom_url'] = '';
+                    $changed_mod = true;
+                }
+            }
+        }
+        if ($changed_mod) {
+            $new_setting_mod = mysqli_real_escape_string($link, json_encode($s_mod));
+            mysqli_query($link, "UPDATE {$prefix}module SET setting = '{$new_setting_mod}' WHERE module_id = " . (int)$r_mod['module_id']);
+            $cleaned_count++;
+        }
+    }
+}
+echo "✔ Cleaned broken custom_url links from {$cleaned_count} modules.<br/>";
+
 // Clear template cache
 $cache_dir = __DIR__ . '/system/storage/cache/template/';
 if (is_dir($cache_dir)) {

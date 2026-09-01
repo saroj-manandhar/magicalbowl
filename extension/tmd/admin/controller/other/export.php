@@ -94,13 +94,6 @@ class Export extends \Opencart\System\Engine\Controller {
 			}
 		}
 
-		// License card display information (matching client screenshot)
-		$data['license_key']      = '95a1c5d945e058e871f50e1f595695a2';
-		$data['register_domain']  = 'newsite.singingbowlgongtherapy.eu/';
-		$data['staging_domain']   = '';
-		$data['email_id']         = 'dipenghale@gmail.com';
-		$data['purchase_date']    = '27/03/2016';
-
 		$data['header']      = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer']      = $this->load->controller('common/footer');
