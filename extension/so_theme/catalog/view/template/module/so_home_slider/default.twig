@@ -12,6 +12,23 @@
 {% endif %}
 
 
+<style>
+.sohomepage-slider .so-homeslider .owl2-nav div:after {
+    font-family: 'FontAwesome', 'Font Awesome 5 Free' !important;
+    font-weight: 900 !important;
+    line-height: 1 !important;
+}
+.sohomepage-slider .so-homeslider .owl2-prev:after {
+    content: "\f053" !important;
+}
+.sohomepage-slider .so-homeslider .owl2-next:after {
+    content: "\f054" !important;
+}
+.sohomepage-slider .so-homeslider .owl2-nav div i {
+    display: none !important;
+}
+</style>
+
 <div class="modcontent">
     {% if list %} 
     <div id="sohomepage-slider{{ module}}">

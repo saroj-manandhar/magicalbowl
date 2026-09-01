@@ -4828,3 +4828,26 @@ html, body {
 	border-radius: 4px !important;
 }
 
+/* Slider Navigation Arrow Icons Fix for Mobile & Desktop */
+.owl2-nav div:after,
+.owl-nav div:after,
+.owl2-prev:after,
+.owl2-next:after,
+.owl-prev:after,
+.owl-next:after,
+.sohomepage-slider .so-homeslider .owl2-nav div:after {
+	font-family: 'FontAwesome', 'Font Awesome 5 Free' !important;
+	font-weight: 900 !important;
+	line-height: 1 !important;
+}
+.owl2-prev:after, .owl-prev:after, .sohomepage-slider .so-homeslider .owl2-prev:after {
+	content: "\f053" !important;
+}
+.owl2-next:after, .owl-next:after, .sohomepage-slider .so-homeslider .owl2-next:after {
+	content: "\f054" !important;
+}
+.owl2-nav div i, .owl-nav div i {
+	display: none !important;
+}
+
+
