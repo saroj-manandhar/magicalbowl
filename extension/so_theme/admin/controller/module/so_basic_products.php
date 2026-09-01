@@ -279,56 +279,61 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		if ((strlen($this->request->post['name']) < 3) || (strlen($this->request->post['name']) > 64)) {
+		if (!isset($this->request->post['name']) || (strlen(trim($this->request->post['name'])) < 3) || (strlen(trim($this->request->post['name'])) > 64)) {
 			$this->error['name'] = $this->language->get('error_name');
 		}
 
+		// Ensure defaults for numeric inputs if empty or invalid
+		if (!isset($this->request->post['limitation']) || !is_numeric($this->request->post['limitation'])) {
+			$this->request->post['limitation'] = '6';
+		}
+		if (!isset($this->request->post['title_maxlength']) || !is_numeric($this->request->post['title_maxlength'])) {
+			$this->request->post['title_maxlength'] = '50';
+		}
+		if (!isset($this->request->post['description_maxlength']) || !is_numeric($this->request->post['description_maxlength'])) {
+			$this->request->post['description_maxlength'] = '100';
+		}
+		if (!isset($this->request->post['width']) || !is_numeric($this->request->post['width']) || (float)$this->request->post['width'] <= 0) {
+			$this->request->post['width'] = '200';
+		}
+		if (!isset($this->request->post['height']) || !is_numeric($this->request->post['height']) || (float)$this->request->post['height'] <= 0) {
+			$this->request->post['height'] = '200';
+		}
+		if (!isset($this->request->post['product_placeholder_path']) || empty(trim($this->request->post['product_placeholder_path']))) {
+			$this->request->post['product_placeholder_path'] = 'catalog/demo/product.png';
+		}
+		if (!isset($this->request->post['date_day']) || !is_numeric($this->request->post['date_day']) || (int)$this->request->post['date_day'] <= 0) {
+			$this->request->post['date_day'] = '7';
+		}
+
+		// Handle language head_name fallbacks for secondary/hidden languages
 		$this->load->model('localisation/language');
 		$languages = $this->model_localisation_language->getLanguages();
 
-		foreach($languages as $language){
-			$module_description = $this->request->post['module_description'];
-			if ((strlen($module_description[$language['language_id']]['head_name']) < 3) || (strlen($module_description[$language['language_id']]['head_name']) > 64)) {
-				$this->error['head_name'] = $this->language->get('error_head_name');
+		$primary_head_name = isset($this->request->post['name']) ? $this->request->post['name'] : 'Featured Products';
+		foreach ($languages as $language) {
+			$lang_id = $language['language_id'];
+			if (!isset($this->request->post['module_description'][$lang_id]['head_name']) || strlen(trim($this->request->post['module_description'][$lang_id]['head_name'])) < 1) {
+				$this->request->post['module_description'][$lang_id]['head_name'] = $primary_head_name;
 			}
 		}
-		
-		if ($this->request->post['category'] == null) {
-			$this->error['category'] = $this->language->get('error_category');
+
+		// Validate category selection (Source Options tab)
+		if (!isset($this->request->post['category']) || empty($this->request->post['category'])) {
+			$this->error['category'] = 'Please select at least one Category in the "Source Options" tab!';
 		}
-		/*
-		if (!filter_var($this->request->post['category_depth'],FILTER_VALIDATE_FLOAT) || $this->request->post['category_depth'] < 0) {
-			$this->error['category_depth'] = $this->language->get('error_category_depth');
-		}*/
-		if ($this->request->post['limitation'] != '0' && !filter_var($this->request->post['limitation'],FILTER_VALIDATE_FLOAT) || $this->request->post['limitation'] < 0) {
-			$this->error['limitation'] = $this->language->get('error_limitation');
+
+		if ($this->error) {
+			$error_msgs = array();
+			if (isset($this->error['name'])) $error_msgs[] = 'Module Name must be between 3 and 64 characters';
+			if (isset($this->error['head_name'])) $error_msgs[] = 'Header Title must be between 3 and 64 characters';
+			if (isset($this->error['category'])) $error_msgs[] = $this->error['category'];
+			if (isset($this->error['width'])) $error_msgs[] = 'Width must be a positive number';
+			if (isset($this->error['height'])) $error_msgs[] = 'Height must be a positive number';
+
+			$this->error['warning'] = 'Validation Error: ' . implode(' | ', $error_msgs);
 		}
-		
-		if ($this->request->post['title_maxlength'] != '0' && !filter_var($this->request->post['title_maxlength'],FILTER_VALIDATE_FLOAT) || $this->request->post['title_maxlength'] < 0) {
-			
-			$this->error['title_maxlength'] = $this->language->get('error_title_maxlength');
-		}
-		
-		if ($this->request->post['description_maxlength'] != '0' && !filter_var($this->request->post['description_maxlength'],FILTER_VALIDATE_FLOAT) || $this->request->post['description_maxlength'] < 0) {
-			$this->error['description_maxlength'] = $this->language->get('error_description_maxlength');
-		}
-		if (!filter_var($this->request->post['width'],FILTER_VALIDATE_FLOAT) || $this->request->post['width'] < 0) {
-			$this->error['width'] = $this->language->get('error_width');
-		}
-		if (!filter_var($this->request->post['height'],FILTER_VALIDATE_FLOAT) || $this->request->post['height'] < 0) {
-			$this->error['height'] = $this->language->get('error_height');
-		}
-		if ($this->request->post['product_placeholder_path'] == null ) {
-			$this->error['product_placeholder_path'] = $this->language->get('error_product_placeholder_path');
-		}
-		
-		if (!filter_var($this->request->post['date_day'],FILTER_VALIDATE_INT) || $this->request->post['date_day'] <= 0) {
-			$this->error['date_day'] = $this->language->get('error_date_day');
-		}
-		
-		if ($this->error && !isset($this->error['warning'])) {
-			$this->error['warning'] = $this->language->get('error_warning');
-		}
+
 		return !$this->error;
 	}
 
