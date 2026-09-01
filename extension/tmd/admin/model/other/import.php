@@ -259,6 +259,14 @@ class Import extends \Opencart\System\Engine\Model {
 			$this->db->query($sql);
 		}
 
+		if (isset($row[57])) {
+			$sound_embed = trim((string)$row[57]);
+			$has_sound = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product` LIKE 'sound_embed'")->num_rows;
+			if ($has_sound) {
+				$this->db->query("UPDATE `" . DB_PREFIX . "product` SET `sound_embed` = '" . $this->db->escape($sound_embed) . "' WHERE `product_id` = '" . (int)$product_id . "'");
+			}
+		}
+
 		$this->db->query("DELETE FROM `" . DB_PREFIX . "product_description` WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$default_language_id . "'");
 		$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET 
 						  product_id = '" . (int)$product_id . "', 

@@ -24,18 +24,86 @@ class Export extends \Opencart\System\Engine\Controller {
 			'href' => $this->url->link('extension/tmd/other/export', 'user_token=' . $this->session->data['user_token'])
 		];
 
-		$data['export_xlsx'] = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token'] . '&format=xlsx');
-		$data['export_xls']  = $data['export_xlsx'];
-		$data['export_csv']  = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token'] . '&format=csv');
-
 		$data['user_token'] = $this->session->data['user_token'];
+		$data['action']     = $this->url->link('extension/tmd/other/export.download', 'user_token=' . $this->session->data['user_token']);
 
+		// Notifications
+		if (isset($this->session->data['error'])) {
+			$data['error_warning'] = $this->session->data['error'];
+			unset($this->session->data['error']);
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->session->data['success'])) {
+			$data['success'] = $this->session->data['success'];
+			unset($this->session->data['success']);
+		} else {
+			$data['success'] = '';
+		}
+
+		// Total products
 		$count_query = $this->db->query("SELECT COUNT(*) AS total FROM `" . DB_PREFIX . "product`");
-		$data['total_products'] = (int)$count_query->row['total'];
+		$total_products = (int)$count_query->row['total'];
+		$data['total_products'] = $total_products;
+		$data['number'] = '0';
+		$data['end']    = (string)$total_products;
 
-		$data['header'] = $this->load->controller('common/header');
+		// 1. Categories
+		$this->load->model('catalog/category');
+		$data['categories'] = [];
+		$cat_results = $this->model_catalog_category->getCategories([]);
+		foreach ($cat_results as $cat) {
+			$data['categories'][] = [
+				'category_id' => $cat['category_id'],
+				'name'        => $cat['name']
+			];
+		}
+
+		// 2. Manufacturers
+		$this->load->model('catalog/manufacturer');
+		$data['manufacturers'] = $this->model_catalog_manufacturer->getManufacturers([]);
+
+		// 3. Stores
+		$this->load->model('setting/store');
+		$data['stores'] = $this->model_setting_store->getStores([]);
+
+		// 4. Stock Statuses
+		$this->load->model('localisation/stock_status');
+		$data['stock_statuses'] = $this->model_localisation_stock_status->getStockStatuses([]);
+
+		// 5. Languages
+		$this->load->model('localisation/language');
+		$data['languages'] = $this->model_localisation_language->getLanguages([]);
+		$data['config_language_id'] = (int)$this->config->get('config_language_id');
+
+		// 6. Custom extra fields from oc_product
+		$default_fields = [
+			'product_id', 'model', 'sku', 'upc', 'ean', 'jan', 'isbn', 'mpn', 'location', 
+			'quantity', 'stock_status_id', 'image', 'manufacturer_id', 'shipping', 'price', 
+			'points', 'tax_class_id', 'date_available', 'weight', 'weight_class_id', 'length', 
+			'width', 'height', 'length_class_id', 'subtract', 'minimum', 'sort_order', 'status', 
+			'viewed', 'date_added', 'date_modified', 'master_id', 'rating'
+		];
+
+		$col_query = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product`");
+		$data['cfiled'] = [];
+		foreach ($col_query->rows as $row) {
+			if (!in_array($row['Field'], $default_fields, true)) {
+				$data['cfiled'][] = $row['Field'];
+			}
+		}
+
+		// License card display information (matching client screenshot)
+		$data['license_key']      = '95a1c5d945e058e871f50e1f595695a2';
+		$data['register_domain']  = 'newsite.singingbowlgongtherapy.eu/';
+		$data['staging_domain']   = '';
+		$data['email_id']         = 'dipenghale@gmail.com';
+		$data['purchase_date']    = '27/03/2016';
+
+		$data['header']      = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
-		$data['footer'] = $this->load->controller('common/footer');
+		$data['footer']      = $this->load->controller('common/footer');
 
 		$this->response->setOutput($this->load->view('extension/tmd/other/export', $data));
 	}
@@ -52,16 +120,41 @@ class Export extends \Opencart\System\Engine\Controller {
 			return;
 		}
 
-		$format = strtolower($this->request->get['format'] ?? 'xlsx');
-		if ($format !== 'csv') {
+		// Gather inputs from POST or GET
+		$params = array_merge($this->request->get, $this->request->post);
+
+		$format = strtolower($params['format'] ?? 'xlsx');
+		if ($format !== 'csv' && $format !== 'xls') {
 			$format = 'xlsx';
 		}
 
-		$language_id = (int)$this->config->get('config_language_id');
+		$language_id = !empty($params['language_id']) ? (int)$params['language_id'] : (int)$this->config->get('config_language_id');
 
 		$this->load->model('localisation/language');
 		$language_info = $this->model_localisation_language->getLanguage($language_id);
 		$language_code = $language_info['code'] ?? 'en-gb';
+
+		$productimage  = isset($params['productimage']) ? (int)$params['productimage'] : 0;
+		$productreview = isset($params['productreview']) ? (int)$params['productreview'] : 0;
+
+		$start = isset($params['number']) ? max(0, (int)$params['number']) : 0;
+		$limit = isset($params['end']) && (int)$params['end'] > 0 ? (int)$params['end'] : 0;
+
+		// Custom extra fields
+		$selected_cfiled = [];
+		if (!empty($params['cfiled']) && is_array($params['cfiled'])) {
+			$col_query = $this->db->query("SHOW COLUMNS FROM `" . DB_PREFIX . "product`");
+			$valid_cols = [];
+			foreach ($col_query->rows as $c_row) {
+				$valid_cols[] = $c_row['Field'];
+			}
+			foreach ($params['cfiled'] as $fld) {
+				$fld = trim((string)$fld);
+				if (in_array($fld, $valid_cols, true)) {
+					$selected_cfiled[] = $fld;
+				}
+			}
+		}
 
 		// Exact 57 TMD Header Columns
 		$headers = [
@@ -124,14 +217,83 @@ class Export extends \Opencart\System\Engine\Controller {
 			'Recomended Product (model,model)'
 		];
 
+		// Append selected custom extra fields to headers
+		foreach ($selected_cfiled as $fld) {
+			$headers[] = $fld;
+		}
+
 		$has_rec1 = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_recomended'")->num_rows;
 		$has_rec2 = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_recommended'")->num_rows;
 		$has_special_table = $this->db->query("SHOW TABLES LIKE '" . DB_PREFIX . "product_special'")->num_rows;
 
+		// Build SQL Query with Filters
 		$sql = "SELECT p.*, pd.name, pd.meta_description, pd.meta_keyword, pd.description, pd.tag, pd.meta_title, pd.diameter 
 				FROM `" . DB_PREFIX . "product` p 
-				LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$language_id . "') 
-				ORDER BY p.product_id ASC";
+				LEFT JOIN `" . DB_PREFIX . "product_description` pd ON (p.product_id = pd.product_id AND pd.language_id = '" . (int)$language_id . "') ";
+
+		if (!empty($params['category'])) {
+			$sql .= " LEFT JOIN `" . DB_PREFIX . "product_to_category` pc ON (pc.product_id = p.product_id) ";
+		}
+
+		if (isset($params['store_id']) && $params['store_id'] !== '') {
+			$sql .= " LEFT JOIN `" . DB_PREFIX . "product_to_store` pts ON (pts.product_id = p.product_id) ";
+		}
+
+		$wheres = [];
+
+		if (!empty($params['category'])) {
+			$wheres[] = "pc.category_id = '" . (int)$params['category'] . "'";
+		}
+
+		if (!empty($params['manufacturer_id'])) {
+			$wheres[] = "p.manufacturer_id = '" . (int)$params['manufacturer_id'] . "'";
+		}
+
+		if (isset($params['store_id']) && $params['store_id'] !== '') {
+			$wheres[] = "pts.store_id = '" . (int)$params['store_id'] . "'";
+		}
+
+		if (!empty($params['stock_status_id'])) {
+			$wheres[] = "p.stock_status_id = '" . (int)$params['stock_status_id'] . "'";
+		}
+
+		if (isset($params['status']) && $params['status'] !== '') {
+			$st = (int)$params['status'];
+			if ($st === 2) {
+				$st = 0;
+			}
+			$wheres[] = "p.status = '" . (int)$st . "'";
+		}
+
+		if (!empty($params['productname'])) {
+			$wheres[] = "pd.name LIKE '" . $this->db->escape(trim($params['productname'])) . "%'";
+		}
+
+		if (!empty($params['model'])) {
+			$wheres[] = "p.model LIKE '" . $this->db->escape(trim($params['model'])) . "%'";
+		}
+
+		if (isset($params['price']) && $params['price'] !== '') {
+			$wheres[] = "p.price >= '" . (float)$params['price'] . "'";
+		}
+
+		if (isset($params['price1']) && $params['price1'] !== '') {
+			$wheres[] = "p.price <= '" . (float)$params['price1'] . "'";
+		}
+
+		if (isset($params['quantity']) && $params['quantity'] !== '') {
+			$wheres[] = "p.quantity = '" . (int)$params['quantity'] . "'";
+		}
+
+		if ($wheres) {
+			$sql .= " WHERE " . implode(" AND ", $wheres);
+		}
+
+		$sql .= " GROUP BY p.product_id ORDER BY p.product_id ASC";
+
+		if ($limit > 0) {
+			$sql .= " LIMIT " . (int)$start . ", " . (int)$limit;
+		}
 
 		$query = $this->db->query($sql);
 
@@ -259,7 +421,13 @@ class Export extends \Opencart\System\Engine\Controller {
 			$images = '';
 			$img_query = $this->db->query("SELECT image FROM `" . DB_PREFIX . "product_image` WHERE product_id = '" . $product_id . "' ORDER BY sort_order ASC");
 			foreach ($img_query->rows as $img_row) {
-				$images .= $img_row['image'] . ';';
+				if (!empty($img_row['image'])) {
+					if ($productimage == 1) {
+						$images .= HTTP_CATALOG . 'image/' . $img_row['image'] . ';';
+					} else {
+						$images .= $img_row['image'] . ';';
+					}
+				}
 			}
 
 			// 9. Special Price
@@ -333,15 +501,23 @@ class Export extends \Opencart\System\Engine\Controller {
 
 			// 14. Reviews
 			$reviews = '';
-			$rev_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "review` WHERE product_id = '" . $product_id . "'");
-			foreach ($rev_query->rows as $rev_row) {
-				$reviews .= $rev_row['customer_id'] . '::' . $rev_row['author'] . '::' . $rev_row['text'] . '::' . $rev_row['rating'] . '::' . $rev_row['status'] . '::' . $rev_row['date_added'] . '::' . $rev_row['date_modified'] . '|';
+			if ($productreview == 1) {
+				$rev_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "review` WHERE product_id = '" . $product_id . "'");
+				foreach ($rev_query->rows as $rev_row) {
+					$reviews .= $rev_row['customer_id'] . '::' . $rev_row['author'] . '::' . $rev_row['text'] . '::' . $rev_row['rating'] . '::' . $rev_row['status'] . '::' . $rev_row['date_added'] . '::' . $rev_row['date_modified'] . '|';
+				}
 			}
 
 			// 15. Diameter
 			$diameter = $row['diameter'] ?? '';
 
-			$rows_data[] = [
+			// Main Image URL or relative
+			$main_image = (string)($row['image'] ?? '');
+			if ($productimage == 1 && !empty($main_image)) {
+				$main_image = HTTP_CATALOG . 'image/' . $main_image;
+			}
+
+			$product_row = [
 				$product_id,                                           // Product ID
 				$language_code,                                        // Language
 				$stores,                                               // Stores
@@ -366,7 +542,7 @@ class Export extends \Opencart\System\Engine\Controller {
 				$row['stock_status_id'] ?? 7,                          // Out Of Stock Status
 				$row['shipping'] ?? 1,                                 // Requires Shipping
 				$seo_keyword,                                          // SEO Keyword
-				$row['image'] ?? '',                                   // Image(Main image)
+				$main_image,                                           // Image(Main image)
 				$row['date_available'] ?? '',                          // Date Available
 				$row['length_class_id'] ?? 1,                          // Length Class
 				$row['length'] ?? 0,                                   // Length
@@ -400,6 +576,12 @@ class Export extends \Opencart\System\Engine\Controller {
 				$recomendedid,                                         // Recomended Product ID
 				$recomended                                            // Recomended Product (model,model)
 			];
+
+			foreach ($selected_cfiled as $fld) {
+				$product_row[] = $row[$fld] ?? '';
+			}
+
+			$rows_data[] = $product_row;
 		}
 
 		if ($format == 'csv') {
@@ -420,7 +602,8 @@ class Export extends \Opencart\System\Engine\Controller {
 
 			$content_type = 'text/csv; charset=UTF-8';
 		} else {
-			$filename = 'Product_' . date('Y-m-d') . '.xlsx';
+			$ext = ($format === 'xls') ? 'xls' : 'xlsx';
+			$filename = 'Product_' . date('Y-m-d') . '.' . $ext;
 			$output = $this->generateXlsx($headers, $rows_data);
 			$content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 		}

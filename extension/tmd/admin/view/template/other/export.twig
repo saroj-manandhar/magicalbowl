@@ -11,30 +11,327 @@
     </div>
   </div>
   <div class="container-fluid">
+    {% if error_warning %}
+      <div class="alert alert-danger alert-dismissible"><i class="fa-solid fa-circle-exclamation"></i> {{ error_warning }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endif %}
+    {% if success %}
+      <div class="alert alert-success alert-dismissible"><i class="fa-solid fa-circle-check"></i> {{ success }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endif %}
+
+    <!-- License Information Block -->
+    <div class="card mb-3" style="border: 1px solid #bce8f1;">
+      <div class="card-header" style="background-color: #00bdf2; color: #fff; font-weight: bold;">
+        <i class="fa-solid fa-list-ul"></i> {{ text_license_info }}
+      </div>
+      <div class="table-responsive">
+        <table class="table table-bordered mb-0" style="background-color: #eaf8fc;">
+          <tbody>
+            <tr>
+              <td style="width: 25%; font-weight: bold; background-color: #d8f3fb;">{{ text_license_key }}</td>
+              <td>{{ license_key }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; background-color: #d8f3fb;">{{ text_register_domain }}</td>
+              <td>{{ register_domain }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; background-color: #d8f3fb;">{{ text_staging_domain }}</td>
+              <td>{{ staging_domain }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; background-color: #d8f3fb;">{{ text_email_id }}</td>
+              <td>{{ email_id }}</td>
+            </tr>
+            <tr>
+              <td style="font-weight: bold; background-color: #d8f3fb;">{{ text_purchase_date }}</td>
+              <td>{{ purchase_date }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Upgrade License Notice Box -->
+    <div class="card mb-4" style="border: 1px solid #faebcc;">
+      <div class="row g-0 align-items-center">
+        <div class="col-auto bg-warning text-white p-4 d-flex align-items-center justify-content-center" style="min-width: 120px;">
+          <i class="fa-solid fa-triangle-exclamation fa-3x"></i>
+        </div>
+        <div class="col p-3 text-center">
+          <h5 class="fw-bold mb-2">{{ text_upgrade_license }}</h5>
+          <p class="text-muted mb-2">{{ text_renew_notice }}</p>
+          <a href="http://opencartextensions.in/" target="_blank" class="btn btn-danger btn-sm px-4 fw-bold">{{ button_renew }}</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Export Filters Card -->
     <div class="card">
-      <div class="card-header"><i class="fa-solid fa-download"></i> {{ text_edit }}</div>
+      <div class="card-header"><i class="fa-solid fa-pen-to-square"></i> {{ heading_title }}</div>
       <div class="card-body">
-        <div class="alert alert-info">
-          <i class="fa-solid fa-circle-info"></i> Your store currently has <strong>{{ total_products }}</strong> products ready for export.
-        </div>
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="p-3 border rounded bg-light text-center">
-              <h5><i class="fa-solid fa-file-excel text-success"></i> Microsoft Excel (.xlsx)</h5>
-              <p class="text-muted">Export full catalog with formatted tables, categories, prices, and status.</p>
-              <a href="index.php?route=extension/tmd/other/export.download&user_token={{ user_token }}&format=xlsx" class="btn btn-success"><i class="fa-solid fa-download"></i> Export to Excel (.xlsx)</a>
+        <form action="{{ action }}" method="post" id="form-export">
+          <div class="row">
+            <!-- Left Column -->
+            <div class="col-md-6">
+              <!-- Category -->
+              <div class="row mb-3">
+                <label for="input-category" class="col-sm-4 col-form-label">{{ entry_category }}</label>
+                <div class="col-sm-8">
+                  <select name="category" id="input-category" class="form-select">
+                    <option value="" selected="selected">{{ text_all_category }}</option>
+                    {% for cat in categories %}
+                      <option value="{{ cat.category_id }}">{{ cat.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Manufacturer -->
+              <div class="row mb-3">
+                <label for="input-manufacturer" class="col-sm-4 col-form-label">{{ entry_manufature }}</label>
+                <div class="col-sm-8">
+                  <select name="manufacturer_id" id="input-manufacturer" class="form-select">
+                    <option value="" selected="selected">{{ text_all_manufacturer }}</option>
+                    {% for m in manufacturers %}
+                      <option value="{{ m.manufacturer_id }}">{{ m.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Stores -->
+              <div class="row mb-3">
+                <label for="input-store" class="col-sm-4 col-form-label">{{ entry_stores }}</label>
+                <div class="col-sm-8">
+                  <select name="store_id" id="input-store" class="form-select">
+                    <option value="" selected="selected">{{ text_all_stores }}</option>
+                    {% for st in stores %}
+                      <option value="{{ st.store_id }}">{{ st.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Stock Status -->
+              <div class="row mb-3">
+                <label for="input-stock-status" class="col-sm-4 col-form-label">{{ entry_stock_status }}</label>
+                <div class="col-sm-8">
+                  <select name="stock_status_id" id="input-stock-status" class="form-select">
+                    <option value="" selected="selected">{{ text_all_stockstatus }}</option>
+                    {% for ss in stock_statuses %}
+                      <option value="{{ ss.stock_status_id }}">{{ ss.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Status -->
+              <div class="row mb-3">
+                <label for="input-status" class="col-sm-4 col-form-label">{{ entry_status }}</label>
+                <div class="col-sm-8">
+                  <select name="status" id="input-status" class="form-select">
+                    <option value="" selected="selected">{{ text_all_status }}</option>
+                    <option value="1">{{ text_enabled }}</option>
+                    <option value="2">{{ text_disabled }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Language -->
+              <div class="row mb-3">
+                <label for="input-language" class="col-sm-4 col-form-label">{{ entry_language }}</label>
+                <div class="col-sm-8">
+                  <select name="language_id" id="input-language" class="form-select">
+                    {% for lang in languages %}
+                      <option value="{{ lang.language_id }}"{% if lang.language_id == config_language_id %} selected="selected"{% endif %}>{{ lang.name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Product Review -->
+              <div class="row mb-3">
+                <label for="input-review" class="col-sm-4 col-form-label">
+                  {{ entry_review }} <i class="fa-solid fa-circle-question text-info" data-bs-toggle="tooltip" title="{{ help_review }}"></i>
+                </label>
+                <div class="col-sm-8">
+                  <select name="productreview" id="input-review" class="form-select">
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    <option value="1">{{ text_yes }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Custom Extra Filed (sound_embed, etc.) -->
+              <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">{{ entry_extrafiled }}</label>
+                <div class="col-sm-8 pt-2">
+                  {% if cfiled %}
+                    <div class="row">
+                      {% for filed in cfiled %}
+                        <div class="col-sm-6 mb-2">
+                          <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="cfiled[]" value="{{ filed }}" id="cfiled-{{ filed }}">
+                            <label class="form-check-label" for="cfiled-{{ filed }}">{{ filed }}</label>
+                          </div>
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% else %}
+                    <span class="text-muted">{{ text_no_custom_field }}</span>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="col-md-6">
+              <!-- Product Image -->
+              <div class="row mb-3">
+                <label for="input-productimage" class="col-sm-4 col-form-label">
+                  {{ entry_producturl }} <i class="fa-solid fa-circle-question text-info" data-bs-toggle="tooltip" title="{{ help_producturl }}"></i>
+                </label>
+                <div class="col-sm-8">
+                  <select name="productimage" id="input-productimage" class="form-select">
+                    <option value="0" selected="selected">{{ text_no }}</option>
+                    <option value="1">{{ text_yes }}</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Quantity -->
+              <div class="row mb-3">
+                <label for="input-quantity" class="col-sm-4 col-form-label">{{ entry_quantity }}</label>
+                <div class="col-sm-8">
+                  <input type="text" name="quantity" value="" id="input-quantity" placeholder="{{ entry_quantity }}" class="form-control">
+                </div>
+              </div>
+
+              <!-- Product Name -->
+              <div class="row mb-3">
+                <label for="input-productname" class="col-sm-4 col-form-label">{{ entry_productname }}</label>
+                <div class="col-sm-8">
+                  <input type="text" name="productname" value="" id="input-productname" data-oc-target="autocomplete-productname" placeholder="{{ entry_productname }}" class="form-control" autocomplete="off">
+                  <ul id="autocomplete-productname" class="dropdown-menu"></ul>
+                </div>
+              </div>
+
+              <!-- Model -->
+              <div class="row mb-3">
+                <label for="input-model" class="col-sm-4 col-form-label">{{ entry_model }}</label>
+                <div class="col-sm-8">
+                  <input type="text" name="model" value="" id="input-model" data-oc-target="autocomplete-model" placeholder="{{ entry_model }}" class="form-control" autocomplete="off">
+                  <ul id="autocomplete-model" class="dropdown-menu"></ul>
+                </div>
+              </div>
+
+              <!-- Number of Products -->
+              <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">
+                  {{ entry_number }} <i class="fa-solid fa-circle-question text-info" data-bs-toggle="tooltip" title="{{ help_number }}"></i>
+                </label>
+                <div class="col-sm-8">
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <input type="text" name="number" value="{{ number }}" placeholder="0" class="form-control">
+                    </div>
+                    <div class="col-6">
+                      <input type="text" name="end" value="{{ end }}" placeholder="{{ total_products }}" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price -->
+              <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">
+                  {{ entry_price }} <i class="fa-solid fa-circle-question text-info" data-bs-toggle="tooltip" title="{{ help_price }}"></i>
+                </label>
+                <div class="col-sm-8">
+                  <div class="row g-2">
+                    <div class="col-6">
+                      <input type="text" name="price" value="" placeholder="Min Price" class="form-control">
+                    </div>
+                    <div class="col-6">
+                      <input type="text" name="price1" value="" placeholder="Max Price" class="form-control">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Select Format -->
+              <div class="row mb-3">
+                <label for="input-format" class="col-sm-4 col-form-label">{{ entry_type }}</label>
+                <div class="col-sm-8">
+                  <select name="format" id="input-format" class="form-select">
+                    <option value="xlsx" selected="selected">xlsx</option>
+                    <option value="csv">csv</option>
+                    <option value="xls">xls</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Export Button -->
+              <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">{{ entry_exportxls }}</label>
+                <div class="col-sm-8">
+                  <button type="submit" class="btn btn-primary px-4">
+                    <i class="fa-solid fa-download"></i> {{ button_export }}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="col-md-6">
-            <div class="p-3 border rounded bg-light text-center">
-              <h5><i class="fa-solid fa-file-csv text-primary"></i> CSV Spreadsheet (.csv)</h5>
-              <p class="text-muted">Export standard comma-separated file compatible with all spreadsheet apps.</p>
-              <a href="index.php?route=extension/tmd/other/export.download&user_token={{ user_token }}&format=csv" class="btn btn-primary"><i class="fa-solid fa-download"></i> Export to CSV (.csv)</a>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
   </div>
 </div>
+<script type="text/javascript"><!--
+$('#input-productname').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=catalog/product.autocomplete&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return {
+                        label: item['name'],
+                        value: item['product_id']
+                    }
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        var label = (typeof decodeHTMLEntities === 'function') ? decodeHTMLEntities(item['label']) : item['label'];
+        $('#input-productname').val(label);
+    }
+});
+
+$('#input-model').autocomplete({
+    'source': function(request, response) {
+        $.ajax({
+            url: 'index.php?route=catalog/product.autocomplete&user_token={{ user_token }}&filter_model=' + encodeURIComponent(request),
+            dataType: 'json',
+            success: function(json) {
+                response($.map(json, function(item) {
+                    return {
+                        label: item['model'],
+                        value: item['product_id']
+                    }
+                }));
+            }
+        });
+    },
+    'select': function(item) {
+        var label = (typeof decodeHTMLEntities === 'function') ? decodeHTMLEntities(item['label']) : item['label'];
+        $('#input-model').val(label);
+    }
+});
+//--></script>
 {{ footer }}
