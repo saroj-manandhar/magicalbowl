@@ -36,6 +36,58 @@ if (file_exists($target_file)) {
     echo "❌ category.php not found at $target_file.<br/>";
 }
 
+echo "<h2>1.1. Patching so_soconfig.php File (Discount Percentage Calculation)...</h2>";
+$so_target = __DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php';
+if (file_exists($so_target)) {
+    $so_content = file_get_contents($so_target);
+    $old_discount_code = '$special = str_replace($results_currencies[\'symbol_left\'],\'\',$data[\'special\']);';
+    if (strpos($so_content, $old_discount_code) !== false) {
+        $old_block = '		$this->load->model(\'localisation/currency\');
+		$results_currencies = $this->model_localisation_currency->getCurrencyByCode($this->session->data[\'currency\']);
+		
+		$special = str_replace($results_currencies[\'symbol_left\'],\'\',$data[\'special\']);
+	    $special = str_replace($results_currencies[\'symbol_right\'],\'\',$special);
+		$price = str_replace($results_currencies[\'symbol_left\'],\'\',$data[\'price\']);
+	    $price = str_replace($results_currencies[\'symbol_right\'],\'\',$price);
+
+		if ((float)$special) $data[\'discount\'] = \'-\'.round((((float)$price - (float)$special)/(float)$price)*100, 0).\'%\'; 
+        else  $data[\'discount\'] = false;';
+
+        $new_block = '		$this->load->model(\'catalog/product\');
+		$product_info = $this->model_catalog_product->getProduct($data[\'product_id\']);
+
+		if (isset($product_info[\'special\']) && (float)$product_info[\'special\'] > 0 && (float)$product_info[\'price\'] > 0) {
+			$data[\'discount\'] = \'-\' . round((((float)$product_info[\'price\'] - (float)$product_info[\'special\']) / (float)$product_info[\'price\']) * 100, 0) . \'%\';
+		} elseif (!empty($data[\'special\']) && !empty($data[\'price\'])) {
+			$this->load->model(\'localisation/currency\');
+			$results_currencies = $this->model_localisation_currency->getCurrencyByCode($this->session->data[\'currency\']);
+			$thousand_point = $this->language->get(\'thousand_point\') ?: \',\';
+			$decimal_point = $this->language->get(\'decimal_point\') ?: \'.\';
+
+			$special = str_replace([$results_currencies[\'symbol_left\'] ?? \'\', $results_currencies[\'symbol_right\'] ?? \'\', $thousand_point, \' \'], \'\', $data[\'special\']);
+			$special = str_replace($decimal_point, \'.\', $special);
+			$price = str_replace([$results_currencies[\'symbol_left\'] ?? \'\', $results_currencies[\'symbol_right\'] ?? \'\', $thousand_point, \' \'], \'\', $data[\'price\']);
+			$price = str_replace($decimal_point, \'.\', $price);
+
+			if ((float)$price > 0 && (float)$special > 0) {
+				$data[\'discount\'] = \'-\' . round((((float)$price - (float)$special) / (float)$price) * 100, 0) . \'%\';
+			} else {
+				$data[\'discount\'] = false;
+			}
+		} else {
+			$data[\'discount\'] = false;
+		}';
+        $so_content = str_replace($old_block, $new_block, $so_content);
+        $so_content = str_replace("\n        \$product_info = \$this->model_catalog_product->getProduct(\$data['product_id']);", '', $so_content);
+        file_put_contents($so_target, $so_content);
+        echo "✔ Successfully patched so_soconfig.php!<br/>";
+    } else {
+        echo "✔ so_soconfig.php is already up to date.<br/>";
+    }
+} else {
+    echo "❌ so_soconfig.php not found at $so_target.<br/>";
+}
+
 echo "<h2>2. Updating Database (Filter Banner + Map Settings)...</h2>";
 
 // 1. Disable Banner Module 82

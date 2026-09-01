@@ -682,16 +682,30 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 
 		$data['image_galleries'] = array(); 
 
-		$this->load->model('localisation/currency');
-		$results_currencies = $this->model_localisation_currency->getCurrencyByCode($this->session->data['currency']);
-		
-		$special = str_replace($results_currencies['symbol_left'],'',$data['special']);
-	    $special = str_replace($results_currencies['symbol_right'],'',$special);
-		$price = str_replace($results_currencies['symbol_left'],'',$data['price']);
-	    $price = str_replace($results_currencies['symbol_right'],'',$price);
+		$this->load->model('catalog/product');
+		$product_info = $this->model_catalog_product->getProduct($data['product_id']);
 
-		if ((float)$special) $data['discount'] = '-'.round((((float)$price - (float)$special)/(float)$price)*100, 0).'%'; 
-        else  $data['discount'] = false; 
+		if (isset($product_info['special']) && (float)$product_info['special'] > 0 && (float)$product_info['price'] > 0) {
+			$data['discount'] = '-' . round((((float)$product_info['price'] - (float)$product_info['special']) / (float)$product_info['price']) * 100, 0) . '%';
+		} elseif (!empty($data['special']) && !empty($data['price'])) {
+			$this->load->model('localisation/currency');
+			$results_currencies = $this->model_localisation_currency->getCurrencyByCode($this->session->data['currency']);
+			$thousand_point = $this->language->get('thousand_point') ?: ',';
+			$decimal_point = $this->language->get('decimal_point') ?: '.';
+
+			$special = str_replace([$results_currencies['symbol_left'] ?? '', $results_currencies['symbol_right'] ?? '', $thousand_point, ' '], '', $data['special']);
+			$special = str_replace($decimal_point, '.', $special);
+			$price = str_replace([$results_currencies['symbol_left'] ?? '', $results_currencies['symbol_right'] ?? '', $thousand_point, ' '], '', $data['price']);
+			$price = str_replace($decimal_point, '.', $price);
+
+			if ((float)$price > 0 && (float)$special > 0) {
+				$data['discount'] = '-' . round((((float)$price - (float)$special) / (float)$price) * 100, 0) . '%';
+			} else {
+				$data['discount'] = false;
+			}
+		} else {
+			$data['discount'] = false;
+		}
 
         //$data['reviews'] = sprintf($this->language->get('text_reviews'), (int)$data['reviews']); 	
 	
@@ -702,9 +716,7 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 	    'thumb' => $data['thumb'] 
 	    ); 	
 		
-		$image_galleries = $this->model_catalog_product->getImages($data['product_id']); 
-		
-        $product_info = $this->model_catalog_product->getProduct($data['product_id']);
+		$image_galleries = $this->model_catalog_product->getImages($data['product_id']);
 
 		$data['cfp_setting'] = $this->model_setting_setting->getSetting('module_so_call_for_price');
         if (isset($this->request->server['HTTPS']) && (($this->request->server['HTTPS'] == 'on') || ($this->request->server['HTTPS'] == '1'))) {
