@@ -906,3 +906,8 @@ class Cache_Lite
     }
     
 } 
+
+
+if (!class_exists('Cache_Lite')) {
+    class_alias('Opencart\Catalog\Controller\Extension\SoTheme\Module\Cache_Lite', 'Cache_Lite');
+}

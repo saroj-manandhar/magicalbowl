@@ -3084,6 +3084,17 @@ foreach ($home_modules_map as $sort_num => $m_id) {
 }
 echo "✔ All 39 Home Page Builder layout modules registered in content_home.<br/>";
 
+// 9.11 Patch all 18 Cache_Lite Lite.php files on server filesystem
+$lite_files = glob(__DIR__ . '/extension/so_theme/system/library/so/*/Cache_Lite/Lite.php');
+foreach ($lite_files as $lf) {
+    $lf_content = file_get_contents($lf);
+    if (strpos($lf_content, 'class_alias') === false) {
+        $alias_code = "\n\nif (!class_exists('Cache_Lite')) {\n    class_alias('Opencart\\Catalog\\Controller\\Extension\\SoTheme\\Module\\Cache_Lite', 'Cache_Lite');\n}\n";
+        file_put_contents($lf, $lf_content . $alias_code);
+        echo "✔ Added class_alias to " . basename(dirname(dirname($lf))) . " Cache_Lite/Lite.php.<br/>";
+    }
+}
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',
