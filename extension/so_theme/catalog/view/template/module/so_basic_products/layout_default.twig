@@ -1,3 +1,130 @@
+<style>
+.so-basic-product .product-item-container {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+.so-basic-product .product-item-container:hover {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    border-color: #d8d8d8;
+}
+.so-basic-product .product-image-container {
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.so-basic-product .product-image-container img {
+    max-height: 180px;
+    object-fit: contain;
+    margin: 0 auto;
+    width: 100%;
+}
+.so-basic-product .button-group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin: 8px 0;
+}
+.so-basic-product .button-group .btn-button {
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    color: #444;
+    border-radius: 4px;
+    padding: 6px 10px;
+    font-size: 13px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.so-basic-product .button-group .btn-button:hover {
+    background: #ffaa00;
+    border-color: #ffaa00;
+    color: #fff;
+}
+.so-basic-product .button-group .addToCart {
+    background: #ffb700;
+    border-color: #ffb700;
+    color: #111;
+    font-weight: 600;
+}
+.so-basic-product .button-group .addToCart:hover {
+    background: #e6a600;
+    color: #000;
+}
+.so-basic-product .button-group .btn-button span {
+    display: none !important; /* Hide long button text on all screens so icons stay neat */
+}
+.so-basic-product .right-block {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+.so-basic-product .right-block h4 {
+    margin: 6px 0;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 600;
+}
+.so-basic-product .right-block h4 a {
+    color: #333;
+    text-decoration: none;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Truncate to 2 lines max */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 35px;
+}
+.so-basic-product .right-block h4 a:hover {
+    color: #ffaa00;
+}
+.so-basic-product .price {
+    font-size: 14px;
+    font-weight: 700;
+    color: #ff5500;
+    margin-top: 6px;
+}
+.so-basic-product .price .price-old {
+    font-size: 12px;
+    color: #999;
+    text-decoration: line-through;
+    margin-left: 5px;
+    font-weight: 400;
+}
+.so-basic-product .rating {
+    margin: 3px 0;
+    font-size: 11px;
+    color: #ffaa00;
+}
+@media (max-width: 767px) {
+    .so-basic-product .product-image-container img {
+        max-height: 130px;
+    }
+    .so-basic-product .product-item-container {
+        padding: 8px;
+        margin-bottom: 12px;
+    }
+    .so-basic-product .right-block h4 a {
+        font-size: 12px;
+        height: 31px;
+    }
+}
+</style>
+
 <div class="item-wrap products-list row cf {{ class_respl0 }}">
 
 {% set j = 0 %}
