@@ -15,14 +15,44 @@ $prefix = defined('DB_PREFIX') ? DB_PREFIX : 'oc_';
 
 echo "<h2>Updating Footer in Database...</h2>";
 
-// 1. Update copyright in soconfig
+// 1. Update soconfig_general_store
 $res = $mysqli->query("SELECT * FROM {$prefix}soconfig WHERE store_id = 0 AND `key` = 'soconfig_general_store'");
 if ($row = $res->fetch_assoc()) {
     $v = json_decode($row['value'], true);
     $v['copyright'] = 'Copyright © {year}, Magical Singing Bowls, All Rights Reserved.';
+    $v['themecolor'] = 'red';
+    $v['typeheader'] = '1';
+    $v['typefooter'] = '2';
     $new_json = $mysqli->real_escape_string(json_encode($v, JSON_UNESCAPED_SLASHES));
     $mysqli->query("UPDATE {$prefix}soconfig SET `value` = '{$new_json}' WHERE store_id = 0 AND `key` = 'soconfig_general_store'");
-    echo "<p style='color: green;'>✔ 1. Copyright in {$prefix}soconfig updated successfully.</p>";
+    echo "<p style='color: green;'>✔ 1. soconfig_general_store updated (themecolor=red, typeheader=1, typefooter=2).</p>";
+}
+
+// 1b. Update soconfig_advanced_store
+$res_adv = $mysqli->query("SELECT * FROM {$prefix}soconfig WHERE store_id = 0 AND `key` = 'soconfig_advanced_store'");
+if ($row_adv = $res_adv->fetch_assoc()) {
+    $v_adv = json_decode($row_adv['value'], true);
+    $v_adv['name_color'] = 'red';
+    $v_adv['theme_color'] = '#d96b00';
+    $new_json_adv = $mysqli->real_escape_string(json_encode($v_adv, JSON_UNESCAPED_SLASHES));
+    $mysqli->query("UPDATE {$prefix}soconfig SET `value` = '{$new_json_adv}' WHERE store_id = 0 AND `key` = 'soconfig_advanced_store'");
+    echo "<p style='color: green;'>✔ 1b. soconfig_advanced_store updated (name_color=red).</p>";
+}
+
+// 1c. Populate 0-byte layout1 CSS files
+$layout1_dir = __DIR__ . '/extension/so_theme/catalog/view/template/css/layout1/';
+$red_css_path = $layout1_dir . 'red.css';
+if (file_exists($red_css_path)) {
+    $red_content = file_get_contents($red_css_path);
+    if (strlen($red_content) > 1000) {
+        $css_list = glob($layout1_dir . '*.css');
+        foreach ($css_list as $cfile) {
+            if (filesize($cfile) === 0) {
+                file_put_contents($cfile, $red_content);
+                echo "<p style='color: green;'>✔ Populated " . basename($cfile) . " with red.css content (" . strlen($red_content) . " bytes).</p>";
+            }
+        }
+    }
 }
 
 // 2. Build cleaned Page Builder structure for Module 45 (Footer 2)
