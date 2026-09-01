@@ -3057,6 +3057,10 @@ echo "✔ Deployed updated header.twig and footer.twig to server.<br/>";
 ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php'));
 echo "✔ Deployed updated so_soconfig.php event controller to server.<br/>";
 
+// 9.8 Deploy updated so_basic_products layout_default.twig
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/view/template/module/so_basic_products/layout_default.twig', file_get_contents(__DIR__ . '/extension/so_theme/catalog/view/template/module/so_basic_products/layout_default.twig'));
+echo "✔ Deployed updated so_basic_products layout_default.twig to server.<br/>";
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',
