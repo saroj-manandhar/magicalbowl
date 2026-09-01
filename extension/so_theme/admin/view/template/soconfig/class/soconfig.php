@@ -360,10 +360,10 @@ class ClassSoconfig extends \stdClass {
 		$resCssName = 'responsive.css';
 		$resCssNameRTL = 'responsive-rtl.css';
 		$ie9CssName = 'ie9-and-up.css';
-		$themeCssHeader   	= 'header/header'.$typeheader.'.css';
-		$themeCssHeaderRTL  = 'header/header'.$typeheader.'-rtl.css';
-		$themeCssFooter   	= 'footer/footer'.$typefooter.'.css';
-		$themeCssFooterRTL  = 'footer/footer'.$typefooter.'-rtl.css';
+		$themeCssHeader   	= 'header/header1.css';
+		$themeCssHeaderRTL  = 'header/header1-rtl.css';
+		$themeCssFooter   	= 'footer/footer2.css';
+		$themeCssFooterRTL  = 'footer/footer2-rtl.css';
 		$imagePath	= 'extension/so_theme/catalog/view/template/images/styling/'.$colorName ? $colorName: 'default';
 		$themeColors  = ($colorHex != null)? $colorHex : $theme_color ;
 
@@ -377,6 +377,29 @@ class ClassSoconfig extends \stdClass {
 			$themeCssName = 'theme.css';
 			$themeCssNameRTL = 'theme.css';
 		endif;
+
+		// Robust Fallback: Prevent empty or missing CSS files from breaking the layout
+		$cssFullPath = DIR_EXTENSION . 'so_theme/catalog/view/template/css/' . $themeCssName;
+		if (!file_exists($cssFullPath) || filesize($cssFullPath) === 0) {
+			$foundFallback = false;
+			$layoutDir = DIR_EXTENSION . 'so_theme/catalog/view/template/css/layout' . $typelayout;
+			if (is_dir($layoutDir)) {
+				foreach (scandir($layoutDir) as $f) {
+					if (substr($f, -4) === '.css' && strpos($f, '-rtl') === false && filesize($layoutDir . '/' . $f) > 0) {
+						$themeCssName = 'layout' . $typelayout . '/' . $f;
+						$foundFallback = true;
+						break;
+					}
+				}
+			}
+			if (!$foundFallback) {
+				$themeCssName = 'layout1/red.css';
+			}
+		}
+		$cssFullPathRTL = DIR_EXTENSION . 'so_theme/catalog/view/template/css/' . $themeCssNameRTL;
+		if (!file_exists($cssFullPathRTL) || filesize($cssFullPathRTL) === 0) {
+			$themeCssNameRTL = $themeCssName;
+		}
 		
 		
 		//Check compass find path  Compile file (css,sass)
@@ -601,7 +624,7 @@ class ClassSoconfig extends \stdClass {
 		if (is_dir($log_directory)) {
 			$allfiles = scandir($log_directory);
 			foreach ($allfiles as  $value) {
-				if (strpos($value, '-rtl') == false && strpos($value, '.css') == true) {
+				if (strpos($value, '-rtl') === false && strpos($value, '.css') !== false && filesize($log_directory . '/' . $value) > 0) {
 					list($themeColors) = explode('.css',$value); 
 					$fileTheme[$themeColors] = ucfirst($themeColors);
 					

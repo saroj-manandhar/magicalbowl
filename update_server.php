@@ -2993,15 +2993,88 @@ $npr_rate = 152.27457744;
 mysqli_query($link, "UPDATE {$prefix}currency SET value = '{$npr_rate}', status = 1, date_modified = NOW() WHERE code = 'NPR'");
 echo "✔ Updated Nepalese Rupee (NPR) exchange rate to {$npr_rate}.<br/>";
 
-// Clear template cache
-$cache_dir = __DIR__ . '/system/storage/cache/template/';
-if (is_dir($cache_dir)) {
-    $files = glob($cache_dir . '*');
-    foreach ($files as $f) {
-        if (is_file($f)) @unlink($f);
+// Section 9. Layout Decoupling & Header/Footer Locking for Magical Singing Bowls
+echo "<h2>9. Applying Layout Decoupling & Header/Footer Locking...</h2>";
+
+// 9.1 Database soconfig settings
+$res_gen = mysqli_query($link, "SELECT id, `value` FROM {$prefix}soconfig WHERE store_id = 0 AND `key` = 'soconfig_general_store'");
+if ($gen_row = mysqli_fetch_assoc($res_gen)) {
+    $gen_val = json_decode($gen_row['value'], true);
+    $gen_val['typeheader'] = '1';
+    $gen_val['typefooter'] = '2';
+    if (!isset($gen_val['themecolor']) || $gen_val['themecolor'] == 'blue' || $gen_val['themecolor'] == 'orange') {
+        $gen_val['themecolor'] = 'red';
     }
-    echo "✔ Twig template cache cleared.<br/>";
+    $new_gen_val = mysqli_real_escape_string($link, json_encode($gen_val, JSON_UNESCAPED_SLASHES));
+    mysqli_query($link, "UPDATE {$prefix}soconfig SET `value` = '{$new_gen_val}' WHERE id = " . (int)$gen_row['id']);
+    echo "✔ Database soconfig_general_store updated (typeheader=1, typefooter=2, themecolor=red).<br/>";
 }
+
+$res_adv = mysqli_query($link, "SELECT id, `value` FROM {$prefix}soconfig WHERE store_id = 0 AND `key` = 'soconfig_advanced_store'");
+if ($adv_row = mysqli_fetch_assoc($res_adv)) {
+    $adv_val = json_decode($adv_row['value'], true);
+    $adv_val['name_color'] = 'red';
+    $adv_val['theme_color'] = '#d96b00';
+    $new_adv_val = mysqli_real_escape_string($link, json_encode($adv_val, JSON_UNESCAPED_SLASHES));
+    mysqli_query($link, "UPDATE {$prefix}soconfig SET `value` = '{$new_adv_val}' WHERE id = " . (int)$adv_row['id']);
+    echo "✔ Database soconfig_advanced_store updated.<br/>";
+}
+
+// 9.2 Populate 0-byte layout1 CSS files
+$layout1_dir = __DIR__ . '/extension/so_theme/catalog/view/template/css/layout1/';
+$red_css_file = $layout1_dir . 'red.css';
+if (file_exists($red_css_file)) {
+    $red_css_content = file_get_contents($red_css_file);
+    if (strlen($red_css_content) > 1000) {
+        $css_files = glob($layout1_dir . '*.css');
+        foreach ($css_files as $cf) {
+            if (filesize($cf) === 0) {
+                file_put_contents($cf, $red_css_content);
+                echo "✔ Populated " . basename($cf) . " with valid CSS (" . strlen($red_css_content) . " bytes).<br/>";
+            }
+        }
+    }
+}
+
+// 9.3 Deploy updated soconfig.twig
+ensure_file_written(__DIR__ . '/extension/so_theme/admin/view/template/soconfig/soconfig.twig', file_get_contents(__DIR__ . '/extension/so_theme/admin/view/template/soconfig/soconfig.twig'));
+echo "✔ Deployed updated soconfig.twig to server.<br/>";
+
+// 9.4 Deploy updated admin soconfig.php
+ensure_file_written(__DIR__ . '/extension/so_theme/admin/controller/module/soconfig.php', file_get_contents(__DIR__ . '/extension/so_theme/admin/controller/module/soconfig.php'));
+echo "✔ Deployed updated admin soconfig.php to server.<br/>";
+
+// 9.5 Deploy updated class/soconfig.php
+ensure_file_written(__DIR__ . '/extension/so_theme/admin/view/template/soconfig/class/soconfig.php', file_get_contents(__DIR__ . '/extension/so_theme/admin/view/template/soconfig/class/soconfig.php'));
+echo "✔ Deployed updated class/soconfig.php to server.<br/>";
+
+// 9.6 Deploy updated header.twig and footer.twig
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/view/template/common/header.twig', file_get_contents(__DIR__ . '/extension/so_theme/catalog/view/template/common/header.twig'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/view/template/common/footer.twig', file_get_contents(__DIR__ . '/extension/so_theme/catalog/view/template/common/footer.twig'));
+echo "✔ Deployed updated header.twig and footer.twig to server.<br/>";
+
+// 9.7 Deploy updated event so_soconfig.php
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php'));
+echo "✔ Deployed updated so_soconfig.php event controller to server.<br/>";
+
+// Clear template cache and minify CSS cache
+$cache_dirs_purge = [
+    __DIR__ . '/storage/cache/template/',
+    __DIR__ . '/system/storage/cache/template/',
+    __DIR__ . '/extension/so_theme/catalog/view/template/minify/'
+];
+foreach ($cache_dirs_purge as $cdp) {
+    if (is_dir($cdp)) {
+        $items_p = glob($cdp . '*');
+        foreach ($items_p as $ip) {
+            if (is_file($ip)) @unlink($ip);
+        }
+    }
+}
+if (function_exists('opcache_reset')) {
+    @opcache_reset();
+}
+echo "✔ All template and minify CSS caches purged.<br/>";
 
 echo "<h2>Done! Remote database updated and cache cleared.</h2>";
 

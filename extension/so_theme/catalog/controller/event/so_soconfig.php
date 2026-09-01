@@ -173,47 +173,8 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 		$data['account_fb'] = isset($this->request->get['account_fb']) ? $this->request->get['account_fb'] : '' ;
 		$data['compare'] = $this->url->link('product/compare', 'language=' . $this->config->get('config_language'));
 		
-		// add position
-		if( $this->soconfig->get_settings('typefooter') == 1) $data['footer_block1'] = $this->load->controller('extension/so_theme/soconfig/footer_block_one');
-		else if( $this->soconfig->get_settings('typefooter') == 2) $data['footer_block2'] = $this->load->controller('extension/so_theme/soconfig/footer_block_two');
-	    else if( $this->soconfig->get_settings('typefooter') == 3)  $data['footer_block3'] = $this->load->controller('extension/so_theme/soconfig/footer_block_three');
-	    else if( $this->soconfig->get_settings('typefooter') == 4)  $data['footer_block4'] = $this->load->controller('extension/so_theme/soconfig/footer_block_four');
-	    else if( $this->soconfig->get_settings('typefooter') == 5)  $data['footer_block5'] = $this->load->controller('extension/so_theme/soconfig/footer_block_five');
-	    else if( $this->soconfig->get_settings('typefooter') == 6)  $data['footer_block6'] = $this->load->controller('extension/so_theme/soconfig/footer_block_six');
-	    else if( $this->soconfig->get_settings('typefooter') == 7)  $data['footer_block7'] = $this->load->controller('extension/so_theme/soconfig/footer_block_seven');
-	    else if( $this->soconfig->get_settings('typefooter') == 8)  $data['footer_block8'] = $this->load->controller('extension/so_theme/soconfig/footer_block_eight');
-	    else if( $this->soconfig->get_settings('typefooter') == 9)  $data['footer_block9'] = $this->load->controller('extension/so_theme/soconfig/footer_block_nine');
-	    else if( $this->soconfig->get_settings('typefooter') == 10)  $data['footer_block10'] = $this->load->controller('extension/so_theme/soconfig/footer_block_ten');
-		else if( $this->soconfig->get_settings('typefooter') == 11)  $data['footer_block11'] = $this->load->controller('extension/so_theme/soconfig/footer_block_eleven');
-		else if( $this->soconfig->get_settings('typefooter') == 12)  $data['footer_block12'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twelve');
-		else if( $this->soconfig->get_settings('typefooter') == 13)  $data['footer_block13'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirteen');
-		else if( $this->soconfig->get_settings('typefooter') == 14)  $data['footer_block14'] = $this->load->controller('extension/so_theme/soconfig/footer_block_fourteen');
-		else if( $this->soconfig->get_settings('typefooter') == 15)  $data['footer_block15'] = $this->load->controller('extension/so_theme/soconfig/footer_block_fifteen');
-		else if( $this->soconfig->get_settings('typefooter') == 16)  $data['footer_block16'] = $this->load->controller('extension/so_theme/soconfig/footer_block_sixteen');
-		else if( $this->soconfig->get_settings('typefooter') == 17)  $data['footer_block17'] = $this->load->controller('extension/so_theme/soconfig/footer_block_seventeen');
-		else if( $this->soconfig->get_settings('typefooter') == 18)  $data['footer_block18'] = $this->load->controller('extension/so_theme/soconfig/footer_block_eighteen');
-		else if( $this->soconfig->get_settings('typefooter') == 19)  $data['footer_block19'] = $this->load->controller('extension/so_theme/soconfig/footer_block_nineteen');
-		else if( $this->soconfig->get_settings('typefooter') == 20)  $data['footer_block20'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty');
-
-		else if( $this->soconfig->get_settings('typefooter') == 21)  $data['footer_block21'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_one');
-		else if( $this->soconfig->get_settings('typefooter') == 22)  $data['footer_block22'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_two');
-		else if( $this->soconfig->get_settings('typefooter') == 23)  $data['footer_block23'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_three');
-		else if( $this->soconfig->get_settings('typefooter') == 24)  $data['footer_block24'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_four');
-		else if( $this->soconfig->get_settings('typefooter') == 25)  $data['footer_block25'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_five');
-		else if( $this->soconfig->get_settings('typefooter') == 26)  $data['footer_block26'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_six');
-		else if( $this->soconfig->get_settings('typefooter') == 27)  $data['footer_block27'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_seven');
-		else if( $this->soconfig->get_settings('typefooter') == 28)  $data['footer_block28'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_eight');
-		else if( $this->soconfig->get_settings('typefooter') == 29)  $data['footer_block29'] = $this->load->controller('extension/so_theme/soconfig/footer_block_twenty_nine');
-		else if( $this->soconfig->get_settings('typefooter') == 30)  $data['footer_block30'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty');
-		else if( $this->soconfig->get_settings('typefooter') == 31)  $data['footer_block31'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_one');
-		else if( $this->soconfig->get_settings('typefooter') == 32)  $data['footer_block32'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_two');
-		else if( $this->soconfig->get_settings('typefooter') == 33)  $data['footer_block33'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_three');
-		else if( $this->soconfig->get_settings('typefooter') == 34)  $data['footer_block34'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_four');
-		else if( $this->soconfig->get_settings('typefooter') == 35)  $data['footer_block35'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_five');
-		else if( $this->soconfig->get_settings('typefooter') == 36)  $data['footer_block36'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_six');
-		else if( $this->soconfig->get_settings('typefooter') == 37)  $data['footer_block37'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_seven');
-		else if( $this->soconfig->get_settings('typefooter') == 38)  $data['footer_block38'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_eight');
-		else if( $this->soconfig->get_settings('typefooter') == 39)  $data['footer_block39'] = $this->load->controller('extension/so_theme/soconfig/footer_block_thirty_nine');
+		// add position - Footer 2 is fixed for Magical Singing Bowls
+		$data['footer_block2'] = $this->load->controller('extension/so_theme/soconfig/footer_block_two');
 
 		$search = array(
 			'/\>[^\S ]+/s',     // strip whitespaces after tags, except space

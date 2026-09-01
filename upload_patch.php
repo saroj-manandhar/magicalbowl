@@ -140,4 +140,136 @@ if (is_dir($cache_dir)) {
     echo "✔ Template cache cleared successfully!<br/>";
 }
 
+echo "<h2>4. Applying Layout Decoupling & Header/Footer Locking...</h2>";
+
+// 1. Update Database (soconfig settings)
+$res_gen = mysqli_query($link, "SELECT id, `value` FROM {$prefix}soconfig WHERE store_id = 0 AND `key` = 'soconfig_general_store'");
+if ($gen_row = mysqli_fetch_assoc($res_gen)) {
+    $gen_val = json_decode($gen_row['value'], true);
+    $gen_val['typeheader'] = '1';
+    $gen_val['typefooter'] = '2';
+    if (!isset($gen_val['themecolor']) || $gen_val['themecolor'] == 'blue' || $gen_val['themecolor'] == 'orange') {
+        $gen_val['themecolor'] = 'red';
+    }
+    $new_gen_val = mysqli_real_escape_string($link, json_encode($gen_val, JSON_UNESCAPED_SLASHES));
+    mysqli_query($link, "UPDATE {$prefix}soconfig SET `value` = '{$new_gen_val}' WHERE id = " . (int)$gen_row['id']);
+    echo "✔ Database soconfig_general_store updated (typeheader=1, typefooter=2, themecolor=red).<br/>";
+}
+
+$res_adv = mysqli_query($link, "SELECT id, `value` FROM {$prefix}soconfig WHERE store_id = 0 AND `key` = 'soconfig_advanced_store'");
+if ($adv_row = mysqli_fetch_assoc($res_adv)) {
+    $adv_val = json_decode($adv_row['value'], true);
+    $adv_val['name_color'] = 'red';
+    $adv_val['theme_color'] = '#d96b00';
+    $new_adv_val = mysqli_real_escape_string($link, json_encode($adv_val, JSON_UNESCAPED_SLASHES));
+    mysqli_query($link, "UPDATE {$prefix}soconfig SET `value` = '{$new_adv_val}' WHERE id = " . (int)$adv_row['id']);
+    echo "✔ Database soconfig_advanced_store updated.<br/>";
+}
+
+// 2. Populate 0-byte layout1 CSS files
+$layout1_dir = __DIR__ . '/extension/so_theme/catalog/view/template/css/layout1/';
+$red_css_file = $layout1_dir . 'red.css';
+if (file_exists($red_css_file)) {
+    $red_css_content = file_get_contents($red_css_file);
+    if (strlen($red_css_content) > 1000) {
+        $css_files = glob($layout1_dir . '*.css');
+        foreach ($css_files as $cf) {
+            if (filesize($cf) === 0) {
+                file_put_contents($cf, $red_css_content);
+                echo "✔ Populated " . basename($cf) . " with valid CSS (" . strlen($red_css_content) . " bytes).<br/>";
+            }
+        }
+    }
+}
+
+// 3. Patch soconfig.twig
+$soconfig_twig_path = __DIR__ . '/extension/so_theme/admin/view/template/soconfig/soconfig.twig';
+if (file_exists($soconfig_twig_path)) {
+    $st_content = file_get_contents($soconfig_twig_path);
+    $st_pattern = '/\$keylayout\s*=\s*\$\(this\)\.data\("keylayout"\);\s*\$keyheader\s*=\s*\$\(this\)\.data\("keyheader"\);.*?\#tab-general__footertype.*?\}\);\s*\}/s';
+    $st_replace = '$keylayout = $(this).data("keylayout"); $store_active = {{active_store}}; /* Header & Footer fixed */ }';
+    if (preg_match($st_pattern, $st_content)) {
+        $st_content = preg_replace($st_pattern, $st_replace, $st_content);
+        file_put_contents($soconfig_twig_path, $st_content);
+        echo "✔ Patched soconfig.twig (decoupled layout selection from header/footer).<br/>";
+    }
+}
+
+// 4. Patch admin soconfig.php
+$admin_soconfig_path = __DIR__ . '/extension/so_theme/admin/controller/module/soconfig.php';
+if (file_exists($admin_soconfig_path)) {
+    $as_content = file_get_contents($admin_soconfig_path);
+    if (strpos($as_content, "['typeheader'] = '1'") === false) {
+        $as_target = "if (  \$this->request->server['REQUEST_METHOD'] == 'POST' && \$this->validate() ) {";
+        $as_replace = "if (  \$this->request->server['REQUEST_METHOD'] == 'POST' && \$this->validate() ) {\n\t\t\tif (isset(\$this->request->post['soconfig_general_store'])) {\n\t\t\t\t\$this->request->post['soconfig_general_store']['typeheader'] = '1';\n\t\t\t\t\$this->request->post['soconfig_general_store']['typefooter'] = '2';\n\t\t\t}";
+        $as_content = str_replace($as_target, $as_replace, $as_content);
+        file_put_contents($admin_soconfig_path, $as_content);
+        echo "✔ Patched admin soconfig.php (enforced typeheader=1 and typefooter=2).<br/>";
+    }
+}
+
+// 5. Patch class/soconfig.php
+$class_soconfig_path = __DIR__ . '/extension/so_theme/admin/view/template/soconfig/class/soconfig.php';
+if (file_exists($class_soconfig_path)) {
+    $cs_content = file_get_contents($class_soconfig_path);
+    $cs_content = str_replace("\$themeCssHeader   \t= 'header/header'.\$typeheader.'.css';", "\$themeCssHeader   \t= 'header/header1.css';", $cs_content);
+    $cs_content = str_replace("\$themeCssHeaderRTL  = 'header/header'.\$typeheader.'-rtl.css';", "\$themeCssHeaderRTL  = 'header/header1-rtl.css';", $cs_content);
+    $cs_content = str_replace("\$themeCssFooter   \t= 'footer/footer'.\$typefooter.'.css';", "\$themeCssFooter   \t= 'footer/footer2.css';", $cs_content);
+    $cs_content = str_replace("\$themeCssFooterRTL  = 'footer/footer'.\$typefooter.'-rtl.css';", "\$themeCssFooterRTL  = 'footer/footer2-rtl.css';", $cs_content);
+    
+    if (strpos($cs_content, 'Robust Fallback: Prevent empty') === false) {
+        $cs_target_fb = "\$themeCssNameRTL = 'theme.css';\n\t\tendif;";
+        $cs_replace_fb = "\$themeCssNameRTL = 'theme.css';\n\t\tendif;\n\n\t\t// Robust Fallback: Prevent empty or missing CSS files from breaking the layout\n\t\t\$cssFullPath = DIR_EXTENSION . 'so_theme/catalog/view/template/css/' . \$themeCssName;\n\t\tif (!file_exists(\$cssFullPath) || filesize(\$cssFullPath) === 0) {\n\t\t\t\$foundFallback = false;\n\t\t\t\$layoutDir = DIR_EXTENSION . 'so_theme/catalog/view/template/css/layout' . \$typelayout;\n\t\t\tif (is_dir(\$layoutDir)) {\n\t\t\t\tforeach (scandir(\$layoutDir) as \$f) {\n\t\t\t\t\tif (substr(\$f, -4) === '.css' && strpos(\$f, '-rtl') === false && filesize(\$layoutDir . '/' . \$f) > 0) {\n\t\t\t\t\t\t\$themeCssName = 'layout' . \$typelayout . '/' . \$f;\n\t\t\t\t\t\t\$foundFallback = true;\n\t\t\t\t\t\tbreak;\n\t\t\t\t\t}\n\t\t\t\t}\n\t\t\t}\n\t\t\tif (!\$foundFallback) {\n\t\t\t\t\$themeCssName = 'layout1/red.css';\n\t\t\t}\n\t\t}\n\t\t\$cssFullPathRTL = DIR_EXTENSION . 'so_theme/catalog/view/template/css/' . \$themeCssNameRTL;\n\t\tif (!file_exists(\$cssFullPathRTL) || filesize(\$cssFullPathRTL) === 0) {\n\t\t\t\$themeCssNameRTL = \$themeCssName;\n\t\t}";
+        $cs_content = str_replace($cs_target_fb, $cs_replace_fb, $cs_content);
+    }
+    
+    $cs_content = str_replace(
+        "if (strpos(\$value, '-rtl') == false && strpos(\$value, '.css') == true)",
+        "if (strpos(\$value, '-rtl') === false && strpos(\$value, '.css') !== false && filesize(\$log_directory . '/' . \$value) > 0)",
+        $cs_content
+    );
+    file_put_contents($class_soconfig_path, $cs_content);
+    echo "✔ Patched class/soconfig.php (header1/footer2 locked + 0-byte CSS fallback added).<br/>";
+}
+
+// 6. Patch header.twig & footer.twig
+$header_twig_path = __DIR__ . '/extension/so_theme/catalog/view/template/common/header.twig';
+if (file_exists($header_twig_path)) {
+    $ht_content = file_get_contents($header_twig_path);
+    if (strpos($ht_content, 'Fixed Header 1 for Magical Singing Bowls') === false) {
+        $ht_pattern = '/\{\#\s*========\s*Show Header.*?\{\% endif \%\}/s';
+        $ht_replace = "{# =========== Fixed Header 1 for Magical Singing Bowls============== #}\n{% include theme_directory~'/view/template/header/header1.twig' with {typeheader: '1'} %}";
+        if (preg_match($ht_pattern, $ht_content)) {
+            $ht_content = preg_replace($ht_pattern, $ht_replace, $ht_content);
+            file_put_contents($header_twig_path, $ht_content);
+            echo "✔ Patched header.twig (Header 1 locked).<br/>";
+        }
+    }
+}
+
+$footer_twig_path = __DIR__ . '/extension/so_theme/catalog/view/template/common/footer.twig';
+if (file_exists($footer_twig_path)) {
+    $ft_content = file_get_contents($footer_twig_path);
+    if (strpos($ft_content, 'Fixed Footer 2 for Magical Singing Bowls') === false) {
+        $ft_pattern = '/\{\#\s*========\s*Show Header.*?\{\% endif \%\}/s';
+        $ft_replace = "{# =========== Fixed Footer 2 for Magical Singing Bowls==============#}\n{% include theme_directory~'/view/template/footer/footer2.twig' with {typefooter: '2'} %}";
+        if (preg_match($ft_pattern, $ft_content)) {
+            $ft_content = preg_replace($ft_pattern, $ft_replace, $ft_content);
+            file_put_contents($footer_twig_path, $ft_content);
+            echo "✔ Patched footer.twig (Footer 2 locked).<br/>";
+        }
+    }
+}
+
+// 7. Clear minify CSS cache
+$minify_dir = __DIR__ . '/extension/so_theme/catalog/view/template/minify/';
+if (is_dir($minify_dir)) {
+    foreach (glob($minify_dir . '*.css') as $mf) {
+        @unlink($mf);
+    }
+    echo "✔ Cleared theme minified CSS cache.<br/>";
+}
+
+echo "<h3 style='color: green;'>Layout decoupling & Header/Footer locking successfully executed!</h3>";
+
 echo "<h2>All done! Remote site updated.</h2>";

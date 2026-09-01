@@ -354,6 +354,11 @@ class Soconfig extends \Opencart\System\Engine\Controller {
 		/*===== End Load Stores========== */
 	
 		if (  $this->request->server['REQUEST_METHOD'] == 'POST' && $this->validate() ) {
+			// Header and Footer remain permanently fixed for Magical Singing Bowls
+			if (isset($this->request->post['soconfig_general_store'])) {
+				$this->request->post['soconfig_general_store']['typeheader'] = '1';
+				$this->request->post['soconfig_general_store']['typefooter'] = '2';
+			}
 			$this->model_extension_so_theme_module_soconfig_setting->editSetting($this->request->post, $store_id);
 			
             // ButtonForm apply

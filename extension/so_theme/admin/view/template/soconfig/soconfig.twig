@@ -155,27 +155,8 @@ $(document).ready(function(){
 			    $('#tab-general__layouttype .type').removeClass("active");
 			    $(this).addClass("active");
 				$keylayout = $(this).data("keylayout");
-				$keyheader = $(this).data("keyheader");
-				$keyfooter = $(this).data("keyfooter");
 				$store_active =  {{active_store}};
-				
-				$("#tab-general__headertype .group-typeheader").each(function() {
-				    $(this).find(".type").removeClass("active");
-					$(this).find("input:radio").prop("checked", false);
-				    if( $keyheader ==  $(this).find(".type").data("typeheader")) {
-						$(this).find(".type").addClass("active");
-						$(this).find(".type").prev().prop("checked", true);
-				    }
-				});
-				$("#tab-general__footertype .group-typeheader").each(function() {
-				    $(this).find(".type").removeClass("active");
-					$(this).find("input:radio").prop("checked", false);
-					
-				    if($keyfooter ==  $(this).find(".type").data("typefooter")) {
-						$(this).find(".type").addClass("active");
-						$(this).find(".type").prev().prop("checked", true);
-				    }
-				});
+				/* Header and Footer remain fixed; layout selection only updates the home section */
 				
 				var $currentcolor = $("#select_color option").filter(":selected").val();
 				$.ajax({
