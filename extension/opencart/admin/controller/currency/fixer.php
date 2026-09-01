@@ -122,6 +122,10 @@ class Fixer extends \Opencart\System\Engine\Controller {
 
 				$results = $this->model_localisation_currency->getCurrencies();
 
+				if (!isset($currencies['NPR']) && isset($currencies['INR'])) {
+					$currencies['NPR'] = (float)$currencies['INR'] * 1.6;
+				}
+
 				foreach ($results as $result) {
 					if (isset($currencies[$result['code']])) {
 						$from = $currencies['EUR'];

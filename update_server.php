@@ -2988,6 +2988,11 @@ while ($r_mod = mysqli_fetch_assoc($res_custom_mods)) {
 }
 echo "✔ Cleaned broken custom_url links from {$cleaned_count} modules.<br/>";
 
+// Update Nepalese Rupee (NPR) conversion rate in oc_currency
+$npr_rate = 152.27457744;
+mysqli_query($link, "UPDATE {$prefix}currency SET value = '{$npr_rate}', status = 1, date_modified = NOW() WHERE code = 'NPR'");
+echo "✔ Updated Nepalese Rupee (NPR) exchange rate to {$npr_rate}.<br/>";
+
 // Clear template cache
 $cache_dir = __DIR__ . '/system/storage/cache/template/';
 if (is_dir($cache_dir)) {
