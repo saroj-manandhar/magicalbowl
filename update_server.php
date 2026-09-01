@@ -3065,6 +3065,25 @@ echo "✔ Deployed updated so_basic_products layout_default.twig to server.<br/>
 ensure_file_written(__DIR__ . '/extension/so_theme/admin/controller/module/so_basic_products.php', file_get_contents(__DIR__ . '/extension/so_theme/admin/controller/module/so_basic_products.php'));
 echo "✔ Deployed updated admin so_basic_products.php to server.<br/>";
 
+// 9.10 Register all 39 Home Page Builder modules in oc_layout_module for Home layout (layout_id = 1)
+$home_modules_map = [
+    1 => 33, 2 => 38, 3 => 76, 4 => 121, 5 => 122, 6 => 141, 7 => 150, 8 => 159, 9 => 167, 10 => 168,
+    11 => 185, 12 => 199, 13 => 203, 14 => 212, 15 => 217, 16 => 231, 17 => 242, 18 => 254, 19 => 263, 20 => 272,
+    21 => 433, 22 => 434, 23 => 435, 24 => 436, 25 => 437, 26 => 439, 27 => 440, 28 => 441, 29 => 442, 30 => 443,
+    31 => 444, 32 => 445, 33 => 446, 34 => 447, 35 => 449, 36 => 470, 37 => 488, 38 => 502, 39 => 515
+];
+
+foreach ($home_modules_map as $sort_num => $m_id) {
+    $code_val = "so_theme.so_page_builder.{$m_id}";
+    $chk_hm = mysqli_query($link, "SELECT * FROM `{$prefix}layout_module` WHERE layout_id = 1 AND position = 'content_home' AND code = '{$code_val}'");
+    if (mysqli_num_rows($chk_hm) == 0) {
+        mysqli_query($link, "INSERT INTO `{$prefix}layout_module` (layout_id, code, position, sort_order) VALUES (1, '{$code_val}', 'content_home', {$sort_num})");
+    } else {
+        mysqli_query($link, "UPDATE `{$prefix}layout_module` SET sort_order = {$sort_num} WHERE layout_id = 1 AND position = 'content_home' AND code = '{$code_val}'");
+    }
+}
+echo "✔ All 39 Home Page Builder layout modules registered in content_home.<br/>";
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',
