@@ -2,7 +2,7 @@
 <div class="so-page-builder">
 	{% for row in font_ends %}
 		{% if row.row_section %}
-			<section id="{{ row.row_section_id }}" class="{{ row.row_section_class }} {% if row.section_background_type == 1 %} {{ "section-color" }} {% elseif row.section_background_type == 1 %} {{ "section-image" }} {% elseif row.section_background_type == 3 %} {{ "section-video" }} {% endif %}">
+			<section id="{{ row.row_section_id }}" class="{{ row.row_section_class }} {% if row.section_background_type == 1 %} {{ "section-color" }} {% elseif row.section_background_type == 2 %} {{ "section-image" }} {% elseif row.section_background_type == 3 %} {{ "section-video" }} {% endif %}">
 				{% if row.section_background_type == 3 %}
 					<div class="bg-content">
 				{% endif %}
@@ -21,7 +21,7 @@
 						{% endif %}
 					{% endif %}
 					{% for col in row.cols %}
-						<div class="col-xl-{{ col.lg_col }} col-lg-{{ col.md_col }} col-md-{{ col.sm_col }} col-sm-{{ col.sm_col }} col-xs-{{ col.xs_col }} col-{{ col.xs_col }} {{ col.text_class_id }} {{ col.text_class != '' ? ' '~col.text_class : '' }}">
+						<div class="col-xl-{{ col.lg_col }} col-lg-{{ col.md_col }} col-md-{{ col.sm_col }} col-sm-{{ col.sm_col }} col-xs-{{ col.xs_col }} col-{{ col.xs_col }} {{ col.text_class_id }} {{ col.text_class != '' ? ' '~col.text_class : '' }} {% if col.background_type == 3 %} col-video {% endif %}">
 							{% for widget in col.widgets %}
 								{% if widget.content %}
 									{{ widget.content }}

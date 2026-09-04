@@ -13,7 +13,7 @@
 	{% endif %}
 
 	{% for col in row_child.cols %}
-		<div class="col-xl-{{ col.lg_col }} col-lg-{{ col.md_col }} col-md-{{ col.sm_col }} col-sm-{{ col.sm_col }} col-xs-{{ col.xs_col }} col-{{ col.xs_col }} {{ col.text_class_id }}{{ col.text_class != '' ? ' '~col.text_class : '' }}">
+		<div class="col-xl-{{ col.lg_col }} col-lg-{{ col.md_col }} col-md-{{ col.sm_col }} col-sm-{{ col.sm_col }} col-xs-{{ col.xs_col }} col-{{ col.xs_col }} {{ col.text_class_id }}{{ col.text_class != '' ? ' '~col.text_class : '' }} {% if col.background_type == 3 %} col-video {% endif %}">
 			{% for widget in col.widgets %}
 				{% if widget.content %}
 					{{ widget.content }}

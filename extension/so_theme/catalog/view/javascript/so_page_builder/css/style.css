@@ -1,5 +1,6 @@
 .section-video,.row-video,.col-video {
 	position: relative;
+	overflow: hidden;
 }
 .bg-video {
 	width: 100%;
@@ -7,6 +8,33 @@
 	position: absolute;
 	z-index: 0;
 	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+.bg-video > div,
+.bg-video iframe,
+.bg-video video {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-webkit-transform: translate(-50%, -50%);
+	min-width: 100%;
+	min-height: 100%;
+	width: auto;
+	height: auto;
+	max-width: none;
+}
+.section-video > .container,
+.section-video > .container-fluid,
+.section-video > .bg-content,
+.row-video > [class*="col-"],
+.col-video > * {
+	position: relative;
+	z-index: 2;
 }
 div#content .col-lg-2:nth-child(6n+1), #content .col-lg-2:nth-child(6n+1), #content .col-lg-3:nth-child(4n+1), #content .col-lg-4:nth-child(3n+1), #content .col-lg-6:nth-child(2n+1){
 	clear:none
