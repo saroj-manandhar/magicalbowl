@@ -582,7 +582,7 @@ class Language extends \Opencart\System\Engine\Model {
 	 * $languages = $this->model_localisation_language->getLanguages($filter_data);
 	 */
 	public function getLanguages(array $data = []): array {
-		$sql = "SELECT * FROM `" . DB_PREFIX . "language`";
+		$sql = "SELECT * FROM `" . DB_PREFIX . "language` WHERE `status` = '1'";
 
 		$sort_data = [
 			'name',
