@@ -1500,8 +1500,21 @@
 				mod.children('.hidden-content-shortcode').text(widget.content);
 				mod.attr( 'data-module', widget.module );
 				var dataShortcode = widget.content;
-				var nameShortcodeEdit = JSON.parse(dataShortcode).cparent[0]["name_shortcode_"+languagesDefault+""];
-				var nameShortcodeEditNoHtml = removeHtml(nameShortcodeEdit);
+				var nameShortcodeEditNoHtml = "";
+				try {
+					var scObj = JSON.parse(dataShortcode);
+					var nameShortcodeEdit = "";
+					if (scObj && scObj.cparent && scObj.cparent[0]) {
+						nameShortcodeEdit = scObj.cparent[0]["name_shortcode_" + languagesDefault] 
+							|| scObj.cparent[0]["name_shortcode_1"] 
+							|| scObj.cparent[0]["name_shortcode_2"] 
+							|| scObj.cparent[0]["name_shortcode_3"] 
+							|| "";
+					}
+					nameShortcodeEditNoHtml = removeHtml(nameShortcodeEdit);
+				} catch (e) {
+					nameShortcodeEditNoHtml = widget.name || "";
+				}
 			}else {
 				var mod = $("#config_module [data-module=\'"+widget.module+"\']").clone();	
 			}
@@ -1535,9 +1548,11 @@
 				col.data('colData',this);
 				
 				/*Update content*/
-				$( this.widgets ).each(function(){   
-					showWidget(col, this);
-				});
+				if( this.widgets && this.widgets.length > 0 ){
+					$( this.widgets ).each(function(){   
+						showWidget(col, this);
+					});
+				}
 					
 				/*Update width for column*/
 				if(this.lg_col == 15){
@@ -1553,7 +1568,7 @@
 				}					
 				
 				/*Check Row child in Column*/
-				if( this.rows.length > 0 ){
+				if( this.rows && this.rows.length > 0 ){
 					 showLayout( this.rows, widgetids, true, col ); 
 				}
 				this.rows = null;

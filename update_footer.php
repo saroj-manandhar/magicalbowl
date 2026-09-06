@@ -86,9 +86,11 @@ function make_widget($name, $mod, $title, $html) {
             "cparent" => [
                 [
                     "name_shortcode_3" => $title,
+                    "name_shortcode_2" => $title,
                     "name_shortcode_1" => $title,
                     "name_shortcode_status" => "no",
                     "content_3" => $html,
+                    "content_2" => $html,
                     "content_1" => $html,
                     "yt_class" => "",
                     "css_internal" => ""
@@ -112,6 +114,7 @@ $pb_data = [
                 "md_col" => 12,
                 "sm_col" => 12,
                 "xs_col" => 12,
+                "widgets" => [],
                 "rows" => [
                     [
                         "text_class_id" => "row_gl1p",
@@ -124,7 +127,8 @@ $pb_data = [
                                 "md_col" => 3,
                                 "sm_col" => 12,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_logo1", "Logo footer", $html_logo) ]
+                                "widgets" => [ make_widget("Html", "html_logo1", "Logo footer", $html_logo) ],
+                                "rows" => []
                             ],
                             [
                                 "text_class_id" => "col_ok71",
@@ -133,7 +137,8 @@ $pb_data = [
                                 "md_col" => 5,
                                 "sm_col" => 12,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_links1", "Footer links", $html_links) ]
+                                "widgets" => [ make_widget("Html", "html_links1", "Footer links", $html_links) ],
+                                "rows" => []
                             ],
                             [
                                 "text_class_id" => "col_d2ob",
@@ -142,7 +147,8 @@ $pb_data = [
                                 "md_col" => 4,
                                 "sm_col" => 12,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_social1", "Social footer", $html_social) ]
+                                "widgets" => [ make_widget("Html", "html_social1", "Social footer", $html_social) ],
+                                "rows" => []
                             ]
                         ]
                     ]
@@ -162,6 +168,7 @@ $pb_data = [
                 "md_col" => 12,
                 "sm_col" => 12,
                 "xs_col" => 12,
+                "widgets" => [],
                 "rows" => [
                     [
                         "text_class_id" => "row_c2c8",
@@ -174,7 +181,8 @@ $pb_data = [
                                 "md_col" => 6,
                                 "sm_col" => 6,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_contact1", "Contact Info", $html_contact) ]
+                                "widgets" => [ make_widget("Html", "html_contact1", "Contact Info", $html_contact) ],
+                                "rows" => []
                             ],
                             [
                                 "text_class_id" => "col_bko7",
@@ -183,7 +191,8 @@ $pb_data = [
                                 "md_col" => 6,
                                 "sm_col" => 6,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_cust1", "Customer Service", $html_cust) ]
+                                "widgets" => [ make_widget("Html", "html_cust1", "Customer Service", $html_cust) ],
+                                "rows" => []
                             ],
                             [
                                 "text_class_id" => "col_6urb",
@@ -192,7 +201,8 @@ $pb_data = [
                                 "md_col" => 6,
                                 "sm_col" => 6,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_info1", "Important Information", $html_info) ]
+                                "widgets" => [ make_widget("Html", "html_info1", "Important Information", $html_info) ],
+                                "rows" => []
                             ],
                             [
                                 "text_class_id" => "col_3d8g",
@@ -201,7 +211,8 @@ $pb_data = [
                                 "md_col" => 6,
                                 "sm_col" => 6,
                                 "xs_col" => 12,
-                                "widgets" => [ make_widget("Html", "html_serv1", "Courses and Healing", $html_serv) ]
+                                "widgets" => [ make_widget("Html", "html_serv1", "Courses and Healing", $html_serv) ],
+                                "rows" => []
                             ]
                         ]
                     ]
@@ -221,7 +232,8 @@ $pb_data = [
                 "md_col" => 12,
                 "sm_col" => 12,
                 "xs_col" => 12,
-                "widgets" => [ make_widget("Html", "html_news1", "Newsletter", $html_news) ]
+                "widgets" => [ make_widget("Html", "html_news1", "Newsletter", $html_news) ],
+                "rows" => []
             ]
         ]
     ]
