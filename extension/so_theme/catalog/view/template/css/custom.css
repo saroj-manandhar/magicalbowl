@@ -3184,20 +3184,29 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 	justify-content: center !important;
 }
 
-/* AddToCart base: golden yellow button */
+/* AddToCart: Always uniform 34px circular gold button in grid cards */
 .products-list .product-grid .product-item-container .right-block .button-group .addToCart,
 .products-list .product-layout .product-item-container .right-block .button-group .addToCart,
 .products-list .product-item-container .button-group .addToCart,
 .product-item-container .button-group .addToCart {
+	width: 34px !important;
+	height: 34px !important;
+	min-width: 34px !important;
+	max-width: 34px !important;
+	padding: 0 !important;
+	border-radius: 50% !important;
+	flex: 0 0 34px !important;
+	flex-shrink: 0 !important;
 	background-color: #f1c40f !important;
 	border: 1px solid #f1c40f !important;
 	color: #1e293b !important;
-	font-weight: 700 !important;
-	font-size: 11.5px !important;
-	letter-spacing: 0.3px !important;
-	height: 34px !important;
 	transition: all 0.2s ease !important;
 	box-shadow: 0 2px 5px rgba(241, 196, 15, 0.25) !important;
+}
+
+.products-list .product-item-container .button-group .addToCart span,
+.product-item-container .button-group .addToCart span {
+	display: none !important;
 }
 
 .products-list .product-item-container .button-group .addToCart:hover,
@@ -3220,61 +3229,19 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 	margin: 0 !important;
 }
 
-/* =========================================================
-   DESKTOP WIDE SCREENS (>= 1200px)
-   Show cart icon + "Add to Cart" text
-   ========================================================= */
-@media (min-width: 1200px) {
-	.products-list .product-grid .product-item-container .right-block .button-group .addToCart,
-	.products-list .product-item-container .button-group .addToCart,
-	.product-item-container .button-group .addToCart {
-		flex: 0 1 auto !important;
-		padding: 0 12px !important;
-		border-radius: 20px !important;
-		max-width: 140px !important;
-	}
-
-	.products-list .product-item-container .button-group .addToCart span,
-	.product-item-container .button-group .addToCart span {
-		display: inline-block !important;
-		margin-left: 5px !important;
-		white-space: nowrap !important;
-		overflow: hidden !important;
-		text-overflow: ellipsis !important;
-		line-height: 1 !important;
-	}
+/* In full-width List view only, show Add to Cart text */
+.products-list .product-list .product-item-container .button-group .addToCart {
+	width: auto !important;
+	min-width: 120px !important;
+	max-width: none !important;
+	border-radius: 20px !important;
+	padding: 0 16px !important;
+	flex: 0 1 auto !important;
 }
 
-/* =========================================================
-   SMALL WIDTHS / MOBILE / TABLET (< 1200px)
-   Show ONLY ICON: perfectly matching 34px circular buttons
-   Row width = 34 + 6 + 34 + 6 + 34 = 114px (fits all card widths)
-   ========================================================= */
-@media (max-width: 1199px) {
-	.products-list .product-grid .product-item-container .right-block .button-group .addToCart,
-	.products-list .product-layout .product-item-container .right-block .button-group .addToCart,
-	.products-list .product-item-container .button-group .addToCart,
-	.product-item-container .button-group .addToCart {
-		width: 34px !important;
-		height: 34px !important;
-		min-width: 34px !important;
-		max-width: 34px !important;
-		flex: 0 0 34px !important;
-		flex-shrink: 0 !important;
-		padding: 0 !important;
-		border-radius: 50% !important;
-	}
-
-	.products-list .product-item-container .button-group .addToCart span,
-	.product-item-container .button-group .addToCart span {
-		display: none !important;
-	}
-
-	.products-list .product-item-container .button-group,
-	.product-item-container .button-group {
-		justify-content: center !important;
-		gap: 6px !important;
-	}
+.products-list .product-list .product-item-container .button-group .addToCart span {
+	display: inline-block !important;
+	margin-left: 6px !important;
 }
 
 /* WhatsApp Floating Chat Button */
