@@ -56,35 +56,6 @@
 						
 					</div> 
 					{% endif %} 
-
-					{#=======Show Group_cart_info ======= #}
-					{% if cartinfo == 'right' %}
-						{% set class_cart_info = 'cartinfo--right' %}
-					{% elseif cartinfo == 'bottom' %}
-						{% set class_cart_info = 'cartinfo--static' %}
-					{% elseif cartinfo == 'center' %}
-						{% set class_cart_info = 'cartinfo--center' %}
-					{% else %}
-						{% set class_cart_info = 'cartinfo--left' %}
-					{% endif %}
-					<div class="button-group {{class_cart_info}}">
-						{% if soconfig.get_settings('desktop_addcart_status') %}
-						{% if (cfp_setting.module_so_call_for_price_status and price_0 <= 0) %} 
-						{% else %} 
-							<button class="addToCart btn-button" type="button" title="{{ button_cart }}" onclick="cart.add('{{ product_id }}', '{{ minimum }}');"><i class="fa fa-shopping-basket"></i><span>{{ button_cart }}</span></button>{% endif %} 							
-						{% endif %}
-						{% if soconfig.get_settings('desktop_wishlist_status') %}
-						<button class="wishlist btn-button" type="button" title="{{ button_wishlist }}" onclick="wishlist.add('{{ product_id }}');"><i class="fa fa-heart"></i><span>{{ button_wishlist }}</span></button>
-						{% endif %} 
-
-						{% if soconfig.get_settings('desktop_Compare_status') %}
-						<button class="compare btn-button" type="button" title="{{ button_compare }}" onclick="compare.add('{{ product_id }}');"><i class="fa fa-random"></i><span>{{ button_compare }}</span></button>
-						{% endif %} 
-
-						{% if soconfig.get_settings('quick_status') %}
-							<a class="quickview iframe-link visible-lg btn-button" title="{{ objlang.get('text_quickview')}}" data-fancybox-type="iframe"  href="{{ href_quickview }}"> <i class="fa fa-eye"></i><span>{{ text_quickview}}</span> </a>
-						{% endif %} 
-					</div>
 				</div>
 				
 				<div class="right-block">
@@ -294,7 +265,26 @@
 						<p>{{ description }} </p>
 					</div>
 
-				
+					{% if soconfig.get_settings('desktop_addcart_status') or soconfig.get_settings('desktop_wishlist_status') or soconfig.get_settings('desktop_Compare_status') or soconfig.get_settings('quick_status') %}
+					<div class="button-group {{class_cart_info}}">
+						{% if soconfig.get_settings('desktop_addcart_status') %}
+						{% if (cfp_setting.module_so_call_for_price_status and price_0 <= 0) %} 
+						{% else %} 
+							<button class="addToCart btn-button" type="button" title="{{ button_cart }}" onclick="cart.add('{{ product_id }}', '{{ minimum }}');"><i class="fa fa-shopping-basket"></i><span>{{ button_cart }}</span></button>{% endif %} 							
+						{% endif %}
+						{% if soconfig.get_settings('desktop_wishlist_status') %}
+						<button class="wishlist btn-button" type="button" title="{{ button_wishlist }}" onclick="wishlist.add('{{ product_id }}');"><i class="fa fa-heart"></i><span>{{ button_wishlist }}</span></button>
+						{% endif %} 
+
+						{% if soconfig.get_settings('desktop_Compare_status') %}
+						<button class="compare btn-button" type="button" title="{{ button_compare }}" onclick="compare.add('{{ product_id }}');"><i class="fa fa-random"></i><span>{{ button_compare }}</span></button>
+						{% endif %} 
+
+						{% if soconfig.get_settings('quick_status') %}
+							<a class="quickview iframe-link visible-lg btn-button" title="{{ objlang.get('text_quickview')}}" data-fancybox-type="iframe"  href="{{ href_quickview }}"> <i class="fa fa-eye"></i><span>{{ text_quickview}}</span> </a>
+						{% endif %} 
+					</div>
+					{% endif %}
 					
 				</div>
 
