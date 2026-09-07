@@ -365,12 +365,12 @@ var compare = {
                 $('.alert').remove();
 				clearTimeout(timer);
                 if (json['info']) {
-                    $('#wrapper').before('<div class="alert alert-info"><i class="fa fa-info-circle"></i>  ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    $('#wrapper').before('<div class="alert alert-info"><i class="fa fa-info-circle"></i> ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                 }
                 if (json['success']) {
-                    $('#wrapper').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i>' + json['success'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    $('#wrapper').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                     if (json['warning']) {
-                        $('.alert').append('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> ' + json['warning'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                        $('#wrapper').before('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> ' + json['warning'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                     }
                     $('#compare-total').html(json['total']);
                 }

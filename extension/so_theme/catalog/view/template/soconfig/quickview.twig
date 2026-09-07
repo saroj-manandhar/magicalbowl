@@ -502,9 +502,9 @@ var compare = {
                    parent. $('#wrapper').before('<div class="alert alert-info"><i class="fa fa-info-circle"></i>  ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                 }
                 if (json['success']) {
-                    parent.$('#wrapper').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i>' + json['success'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    parent.$('#wrapper').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                     if (json['warning']) {
-                        parent.$('.alert').append('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> ' + json['warning'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                        parent.$('#wrapper').before('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> ' + json['warning'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                     }
                     parent.$('#compare-total').attr('data-original-title', json['total']);
                     parent.$('#compare-total').html('<span>' + json['total'] + '</span>');
