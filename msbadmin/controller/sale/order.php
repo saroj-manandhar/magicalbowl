@@ -918,6 +918,28 @@ class Order extends \Opencart\System\Engine\Controller {
 			$data['payment_method_code'] = '';
 		}
 
+		// Payment Proof
+		if (!empty($order_info['payment_proof'])) {
+			$data['payment_proof'] = $order_info['payment_proof'];
+			$data['payment_proof_name'] = basename($order_info['payment_proof']);
+			$data['payment_proof_url'] = HTTP_CATALOG . 'image/' . $order_info['payment_proof'];
+			$data['payment_proof_is_image'] = (bool)preg_match('/\.(jpg|jpeg|png|webp|gif)$/i', $order_info['payment_proof']);
+
+			$this->load->model('tool/image');
+
+			if ($data['payment_proof_is_image'] && is_file(DIR_IMAGE . $order_info['payment_proof'])) {
+				$data['payment_proof_thumb'] = $this->model_tool_image->resize($order_info['payment_proof'], 150, 150);
+			} else {
+				$data['payment_proof_thumb'] = '';
+			}
+		} else {
+			$data['payment_proof'] = '';
+			$data['payment_proof_name'] = '';
+			$data['payment_proof_url'] = '';
+			$data['payment_proof_is_image'] = false;
+			$data['payment_proof_thumb'] = '';
+		}
+
 		// Shipping Address
 		if (!empty($order_info)) {
 			$data['shipping_address_id'] = $order_info['shipping_address_id'];

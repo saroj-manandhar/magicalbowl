@@ -279,6 +279,30 @@
               <button type="button" id="button-payment-methods" class="btn btn-outline-primary"><i class="fa-solid fa-cog"></i></button>
             </div>
           </div>
+          {% if payment_proof %}
+          <div id="payment-proof" class="col-md mb-3">
+            <div class="input-group">
+              <div id="input-payment-proof-info" class="form-control rounded-start" style="min-height: 64px; background-color: #f0fdf4; border-color: #86efac;">
+                <div class="lead"><strong class="text-success"><i class="fa-solid fa-file-invoice me-1"></i> Payment Proof:</strong>
+                  <div class="d-flex align-items-center gap-2 mt-1">
+                    {% if payment_proof_is_image %}
+                      <a href="{{ payment_proof_url }}" target="_blank" title="Click to view full image">
+                        {% if payment_proof_thumb %}
+                          <img src="{{ payment_proof_thumb }}" alt="Payment Proof" class="img-thumbnail shadow-sm" style="max-height: 48px; border-color: #86efac;" />
+                        {% else %}
+                          <img src="{{ payment_proof_url }}" alt="Payment Proof" class="img-thumbnail shadow-sm" style="max-height: 48px; border-color: #86efac;" />
+                        {% endif %}
+                      </a>
+                    {% endif %}
+                    <a href="{{ payment_proof_url }}" target="_blank" class="btn btn-sm btn-success text-white">
+                      <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> View / Download
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
         </div>
         <div id="collapse-order" class="collapse">
           <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3">
