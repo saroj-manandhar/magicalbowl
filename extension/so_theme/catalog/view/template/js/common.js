@@ -332,20 +332,23 @@ var wishlist = {
 			success: function(json) {
                 $('.alert').remove();
 				clearTimeout(timer);
+                var alertContainer = $('#alert').length ? $('#alert') : $('#wrapper');
+                var method = $('#alert').length ? 'prepend' : 'before';
                 if (json['redirect']) {
                     location = json['redirect'];
                 }
                 if (json['success']) {
-                    $('#wrapper').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    alertContainer[method]('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + ' <button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                 }
                 if (json['info']) {
-                    $('#wrapper').before('<div class="alert alert-info"><i class="fa fa-info-circle"></i> ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    alertContainer[method]('<div class="alert alert-info"><i class="fa fa-info-circle"></i> ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                 }
                 $('#wishlist-total').html(json['total']);
 				$('#wishlist-total').attr('title', json['total']);
                 timer = setTimeout(function() {
                     $('.alert').addClass('fadeOut');
-                }, 4000);
+                    setTimeout(function() { $('.alert').remove(); }, 500);
+                }, 4500);
             },
 			error: function(xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
@@ -364,19 +367,23 @@ var compare = {
 			 success: function(json) {
                 $('.alert').remove();
 				clearTimeout(timer);
+                var alertContainer = $('#alert').length ? $('#alert') : $('#wrapper');
+                var method = $('#alert').length ? 'prepend' : 'before';
+
                 if (json['info']) {
-                    $('#wrapper').before('<div class="alert alert-info"><i class="fa fa-info-circle"></i> ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    alertContainer[method]('<div class="alert alert-info"><i class="fa fa-info-circle"></i> ' + json['info'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                 }
                 if (json['success']) {
-                    $('#wrapper').before('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                    alertContainer[method]('<div class="alert alert-success"><i class="fa fa-check-circle"></i> ' + json['success'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                     if (json['warning']) {
-                        $('#wrapper').before('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> ' + json['warning'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
+                        alertContainer[method]('<div class="alert alert-warning"><i class="fa fa-exclamation-circle"></i> ' + json['warning'] + '<button type="button" class="fa fa-close close" data-bs-dismiss="alert"></button></div>');
                     }
                     $('#compare-total').html(json['total']);
                 }
                 timer = setTimeout(function() {
                     $('.alert').addClass('fadeOut');
-                }, 4000);
+                    setTimeout(function() { $('.alert').remove(); }, 500);
+                }, 4500);
             },
 			error: function(xhr, ajaxOptions, thrownError) {
 				alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
