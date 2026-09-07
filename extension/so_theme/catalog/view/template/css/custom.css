@@ -3041,25 +3041,44 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 	margin-bottom: 10px;
 }
 
-/* Container Query setup for adaptive cards */
+/* Card Container: block flow, prevents horizontal splitting */
 .products-list .product-grid .product-item-container,
 .products-list .product-layout .product-item-container,
 .product-item-container {
-	container-type: inline-size;
-	overflow: hidden !important;
+	display: block !important;
+	position: relative !important;
+	clear: both !important;
+	width: 100% !important;
 	max-width: 100% !important;
 	box-sizing: border-box !important;
 }
 
+/* Image Block: always top, full width, centered */
+.products-list .product-grid .product-item-container .left-block,
+.products-list .product-layout .product-item-container .left-block,
+.product-item-container .left-block {
+	float: none !important;
+	width: 100% !important;
+	clear: both !important;
+	text-align: center !important;
+	margin: 0 auto 12px auto !important;
+	display: block !important;
+}
+
+/* Info Block: always below image, full width, centered */
 .products-list .product-grid .product-item-container .right-block,
 .products-list .product-layout .product-item-container .right-block,
 .product-item-container .right-block {
-	overflow: hidden !important;
-	max-width: 100% !important;
+	float: none !important;
+	width: 100% !important;
+	clear: both !important;
+	text-align: center !important;
+	display: block !important;
+	padding: 0 !important;
 	box-sizing: border-box !important;
 }
 
-/* Common Button Group Base */
+/* Common Button Group: centered row */
 .products-list .product-grid .product-item-container .right-block .button-group,
 .products-list .product-layout .product-item-container .right-block .button-group,
 .products-list .product-item-container .button-group,
@@ -3070,14 +3089,15 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 	flex-wrap: nowrap !important;
 	gap: 6px !important;
 	margin: 10px auto 0 !important;
+	padding: 0 !important;
 	width: 100% !important;
 	max-width: 100% !important;
-	padding: 0 4px !important;
 	box-sizing: border-box !important;
-	overflow: hidden !important;
+	float: none !important;
+	clear: both !important;
 }
 
-/* Hide any hidden links inside button-group from taking flex space */
+/* Hide any hidden links inside button-group */
 .product-item-container .button-group > a.hidden,
 .products-list .product-item-container .button-group > a.hidden {
 	display: none !important;
@@ -3102,7 +3122,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 	margin: 0 !important;
 }
 
-/* Wishlist, Compare, Quickview buttons: always circular, compact, centered */
+/* Wishlist and Compare: Always uniform 34px circular icon buttons */
 .products-list .product-grid .product-item-container .right-block .button-group .wishlist,
 .products-list .product-grid .product-item-container .right-block .button-group .compare,
 .products-list .product-grid .product-item-container .right-block .button-group .quickview,
@@ -3201,10 +3221,10 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 }
 
 /* =========================================================
-   DESKTOP WIDE CARDS (>= 992px and Container Width > 230px)
-   Show cart icon + "Add to Cart" text if ample space
+   DESKTOP WIDE SCREENS (>= 1200px)
+   Show cart icon + "Add to Cart" text
    ========================================================= */
-@media (min-width: 992px) {
+@media (min-width: 1200px) {
 	.products-list .product-grid .product-item-container .right-block .button-group .addToCart,
 	.products-list .product-item-container .button-group .addToCart,
 	.product-item-container .button-group .addToCart {
@@ -3226,10 +3246,11 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 }
 
 /* =========================================================
-   SMALL WIDTHS / MOBILE / TABLET (<= 991px or Card < 230px)
+   SMALL WIDTHS / MOBILE / TABLET (< 1200px)
    Show ONLY ICON: perfectly matching 34px circular buttons
+   Row width = 34 + 6 + 34 + 6 + 34 = 114px (fits all card widths)
    ========================================================= */
-@media (max-width: 991px) {
+@media (max-width: 1199px) {
 	.products-list .product-grid .product-item-container .right-block .button-group .addToCart,
 	.products-list .product-layout .product-item-container .right-block .button-group .addToCart,
 	.products-list .product-item-container .button-group .addToCart,
@@ -3239,6 +3260,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 		min-width: 34px !important;
 		max-width: 34px !important;
 		flex: 0 0 34px !important;
+		flex-shrink: 0 !important;
 		padding: 0 !important;
 		border-radius: 50% !important;
 	}
@@ -3250,28 +3272,6 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 
 	.products-list .product-item-container .button-group,
 	.product-item-container .button-group {
-		justify-content: center !important;
-		gap: 6px !important;
-	}
-}
-
-/* Container Query: auto switch to icon-only whenever individual card width is <= 230px */
-@container (max-width: 230px) {
-	.button-group .addToCart {
-		width: 34px !important;
-		height: 34px !important;
-		min-width: 34px !important;
-		max-width: 34px !important;
-		flex: 0 0 34px !important;
-		padding: 0 !important;
-		border-radius: 50% !important;
-	}
-
-	.button-group .addToCart span {
-		display: none !important;
-	}
-
-	.button-group {
 		justify-content: center !important;
 		gap: 6px !important;
 	}
