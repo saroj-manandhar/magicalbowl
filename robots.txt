@@ -1,12 +1,46 @@
-user-agent: *
-Disallow: /*?page=$
-Disallow: /*&page=$
+# Block aggressive / scraping bots that waste server CPU & RAM
+User-agent: Bytespider
+User-agent: SemrushBot
+User-agent: SemrushBot-SA
+User-agent: AhrefsBot
+User-agent: DotBot
+User-agent: MJ12bot
+User-agent: PetalBot
+User-agent: DataForSeoBot
+User-agent: BLEXBot
+User-agent: Amazonbot
+User-agent: ClaudeBot
+User-agent: GPTBot
+Disallow: /
+
+# General Search Engine Rules (Google, Bing, Yahoo, etc.)
+User-agent: *
+# Crawl rate limit
+Crawl-delay: 5
+
+# Block backend and sensitive directories
+Disallow: /admin/
+Disallow: /system/
+Disallow: /journal-cache/
+
+# Block customer account, cart, and checkout paths
+Disallow: /*route=account/
+Disallow: /*route=affiliate/
+Disallow: /*route=checkout/
+Disallow: /*route=common/cart
+Disallow: /*route=information/contact
+Disallow: /*route=product/search
+Disallow: /*route=product/compare
+
+# Block infinite parameter combinations (sorting, filters, pagination)
 Disallow: /*?sort=
 Disallow: /*&sort=
 Disallow: /*?order=
 Disallow: /*&order=
 Disallow: /*?limit=
 Disallow: /*&limit=
+Disallow: /*?filter=
+Disallow: /*&filter=
 Disallow: /*?filter_name=
 Disallow: /*&filter_name=
 Disallow: /*?filter_sub_category=
@@ -15,3 +49,13 @@ Disallow: /*?filter_description=
 Disallow: /*&filter_description=
 Disallow: /*?filter_group=
 Disallow: /*&filter_group=
+Disallow: /*?page=$
+Disallow: /*&page=$
+
+# Allow public images and resources
+Allow: /catalog/view/javascript/
+Allow: /catalog/view/theme/*/stylesheet/
+Allow: /image/
+
+# Sitemap
+Sitemap: https://www.magicalsingingbowls.com/index.php?route=extension/feed/google_sitemap
