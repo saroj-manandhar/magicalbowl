@@ -24,6 +24,11 @@ Options -Indexes
 # If your opencart installation does not run on the main web folder make sure you folder it does run in ie. / becomes /shop/ 
 
 RewriteEngine On
+
+# Block aggressive / scraping bots from spawning PHP-FPM workers and hitting MySQL
+RewriteCond %{HTTP_USER_AGENT} (Bytespider|SemrushBot|AhrefsBot|DotBot|MJ12bot|PetalBot|DataForSeoBot|BLEXBot|Amazonbot|ClaudeBot|GPTBot|CCBot|Seekport|YandexBot|anthropic-ai|cohere-ai) [NC]
+RewriteRule .* - [F,L]
+
 RewriteBase /neww_magicalsingingbowls/
 
 # Remove production force-redirect (local dev)

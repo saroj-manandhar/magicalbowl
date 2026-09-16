@@ -262,8 +262,6 @@ class SoDeals extends \Opencart\System\Engine\Controller {
 
 					$product_image = $this->model_catalog_product->getImages($product['product_id']);
 					
-					$product_info = $this->model_catalog_product->getProduct($product['product_id']);
-					
 					$product_image_first = array_shift($product_image);
 					$image2 = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
 					if($product_image_first != null)

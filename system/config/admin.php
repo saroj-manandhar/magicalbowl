@@ -16,7 +16,7 @@ $_['db_port']           = DB_PORT;
 
 // Session
 $_['session_autostart'] = false;
-$_['session_engine']    = 'db'; // db or file
+$_['session_engine']    = 'file'; // db or file
 
 // Error
 $_['error_display']     = true;

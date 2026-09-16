@@ -65,7 +65,18 @@ class Product extends \Opencart\System\Engine\Model {
 	 * $product_info = $this->model_catalog_product->getProduct($product_id);
 	 */
 	public function getProduct(int $product_id): array {
-		$query = $this->db->query("SELECT DISTINCT *, `pd`.`name`, `p`.`image`, " . $this->statement['discount'] . ", " . $this->statement['special'] . ", " . $this->statement['reward'] . ", " . $this->statement['review'] . " FROM `" . DB_PREFIX . "product_to_store` `p2s` LEFT JOIN `" . DB_PREFIX . "product` `p` ON (`p`.`product_id` = `p2s`.`product_id` AND `p`.`status` = '1' AND `p`.`date_available` <= NOW()) LEFT JOIN `" . DB_PREFIX . "product_description` `pd` ON (`p`.`product_id` = `pd`.`product_id`) WHERE `p2s`.`store_id` = '" . (int)$this->config->get('config_store_id') . "' AND `p2s`.`product_id` = '" . (int)$product_id . "' AND `pd`.`language_id` = '" . (int)$this->config->get('config_language_id') . "'");
+		static $product_cache = [];
+
+		$store_id = (int)$this->config->get('config_store_id');
+		$language_id = (int)$this->config->get('config_language_id');
+		$customer_group_id = (int)$this->config->get('config_customer_group_id');
+		$cache_key = $product_id . '_' . $store_id . '_' . $language_id . '_' . $customer_group_id;
+
+		if (isset($product_cache[$cache_key])) {
+			return $product_cache[$cache_key];
+		}
+
+		$query = $this->db->query("SELECT DISTINCT *, `pd`.`name`, `p`.`image`, " . $this->statement['discount'] . ", " . $this->statement['special'] . ", " . $this->statement['reward'] . ", " . $this->statement['review'] . " FROM `" . DB_PREFIX . "product_to_store` `p2s` LEFT JOIN `" . DB_PREFIX . "product` `p` ON (`p`.`product_id` = `p2s`.`product_id` AND `p`.`status` = '1' AND `p`.`date_available` <= NOW()) LEFT JOIN `" . DB_PREFIX . "product_description` `pd` ON (`p`.`product_id` = `pd`.`product_id`) WHERE `p2s`.`store_id` = '" . $store_id . "' AND `p2s`.`product_id` = '" . (int)$product_id . "' AND `pd`.`language_id` = '" . $language_id . "'");
 
 		if ($query->num_rows) {
 			$product_data = $query->row;
@@ -76,8 +87,12 @@ class Product extends \Opencart\System\Engine\Model {
 			$product_data['rating'] = (int)$query->row['rating'];
 			$product_data['reviews'] = (int)$query->row['reviews'] ? $query->row['reviews'] : 0;
 
+			$product_cache[$cache_key] = $product_data;
+
 			return $product_data;
 		} else {
+			$product_cache[$cache_key] = [];
+
 			return [];
 		}
 	}
@@ -290,7 +305,7 @@ class Product extends \Opencart\System\Engine\Model {
 		}
 		if (!empty($data['type'])) {
 			$escaped_type = $this->db->escape((string)$data['type']);
-			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%' OR `pd`.`description` LIKE '%" . $escaped_type . "%')";
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%')";
 		}
 		if (!empty($data['note'])) {
 			$note_val = trim((string)$data['note']);
@@ -592,7 +607,7 @@ class Product extends \Opencart\System\Engine\Model {
 		}
 		if (!empty($data['type'])) {
 			$escaped_type = $this->db->escape((string)$data['type']);
-			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%' OR `pd`.`description` LIKE '%" . $escaped_type . "%')";
+			$sql .= " AND (`pd`.`name` LIKE '%" . $escaped_type . "%' OR `pd`.`diameter` LIKE '%" . $escaped_type . "%' OR `pd`.`tag` LIKE '%" . $escaped_type . "%')";
 		}
 		if (!empty($data['note'])) {
 			$note_val = trim((string)$data['note']);
@@ -650,9 +665,17 @@ class Product extends \Opencart\System\Engine\Model {
 	 * $categories = $this->model_catalog_product->getCategories($product_id);
 	 */
 	public function getCategories(int $product_id): array {
+		static $product_category_cache = [];
+
+		if (isset($product_category_cache[$product_id])) {
+			return $product_category_cache[$product_id];
+		}
+
 		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "product_to_category` WHERE `product_id` = '" . (int)$product_id . "'");
 
-		return $query->rows;
+		$product_category_cache[$product_id] = $query->rows;
+
+		return $product_category_cache[$product_id];
 	}
 
 	/**
