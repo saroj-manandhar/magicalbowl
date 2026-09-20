@@ -9,7 +9,7 @@
 				<div class="ds-item cf {{ j == 1 ? 'active' : '' }}">
 					<div class="ds-item-inner">
 						<div class="ds-image-thumb">
-							<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
+							<img src="{{ product.thumb }}" data-sizes="auto" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload img-responsive">
 						</div>
 					</div>
 				</div>
@@ -134,12 +134,12 @@
 			{% endif %}
 			arrows: false,
 			autoplay: {{ autoplay }},
-			slidesToShow: {{ nb_column0 }},
-			slidesToScroll: {{ slideBy }},
+			slidesToShow: {{ list|length < 4 ? list|length : 4 }},
+			slidesToScroll: 1,
 			infinite: {{ loop }},
 			initialSlide: {{ startPosition }},
-			speed: {{ autoplayTimeout }},
-			autoplaySpeed: {{ autoplaySpeed }},
+			speed: 500,
+			autoplaySpeed: {{ autoplaySpeed > 1000 ? autoplaySpeed : (autoplayTimeout > 1000 ? autoplayTimeout : 5000) }},
 			asNavFor: '#{{ tag_id }} .ds-items-detail',
 			pauseOnHover: {{ autoplayHoverPause }},
 			dots: false,
@@ -149,36 +149,36 @@
 				{
 					breakpoint: 1199,
 					settings: {
-						slidesToShow: {{ nb_column0 }},
-						slidesToScroll: {{ slideBy }}
+						slidesToShow: {{ list|length < 4 ? list|length : 4 }},
+						slidesToScroll: 1
 					}
 				},
 				{
 					breakpoint: 991,
 					settings: {
-						slidesToShow: {{ nb_column1 }},
-						slidesToScroll: {{ slideBy }}
+						slidesToShow: {{ list|length < 4 ? list|length : 4 }},
+						slidesToScroll: 1
 					}
 				},
 				{
 					breakpoint: 767,
 					settings: {
-						slidesToShow: {{ nb_column2 }},
-						slidesToScroll: {{ slideBy }}
+						slidesToShow: {{ list|length < 3 ? list|length : 3 }},
+						slidesToScroll: 1
 					}
 				},
 				{
 					breakpoint: 479,
 					settings: {
-						slidesToShow: {{ nb_column3 }},
-						slidesToScroll: {{ slideBy }}
+						slidesToShow: {{ list|length < 3 ? list|length : 3 }},
+						slidesToScroll: 1
 					}
 				},
 				{
 					breakpoint: 320,
 					settings: {
-						slidesToShow: {{ nb_column4 }},
-						slidesToScroll: {{ slideBy }}
+						slidesToShow: {{ list|length < 2 ? list|length : 2 }},
+						slidesToScroll: 1
 					}
 				}
 			]
@@ -191,14 +191,14 @@
 			infinite: {{ loop }},
 			arrows: {{ navs }},	
 			initialSlide: 0,
-			//fade: true,
-			speed: {{ autoplayTimeout }},
-			autoplaySpeed: {{ autoplaySpeed }},
+			fade: true,
+			speed: 500,
+			autoplaySpeed: {{ autoplaySpeed > 1000 ? autoplaySpeed : (autoplayTimeout > 1000 ? autoplayTimeout : 5000) }},
 			focusOnSelect: true,
 			pauseOnHover: {{ autoplayHoverPause }},
 			appendArrows: "#{{ tag_id }} .deals-nav",
-			prevArrow: '<span class="slick-prev">&#60;</span>', 
-			nextArrow: '<span class="slick-next">&#62;</span>',
+			prevArrow: '<button type="button" class="slick-prev" aria-label="Previous"><i class="fa fa-chevron-left"></i></button>', 
+			nextArrow: '<button type="button" class="slick-next" aria-label="Next"><i class="fa fa-chevron-right"></i></button>',
 			asNavFor: '#{{ tag_id }} .ds-items'
 		});
 		{% if list|length <= 1 %}
