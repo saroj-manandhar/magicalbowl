@@ -4,7 +4,7 @@
 
 {% if url_cartinfo %} {% set cartinfo = url_cartinfo %}
 {% else %} {% set cartinfo = soconfig.get_settings('desktop_addcart_position') %}{% endif %}
-		<div class="product-layout product-grid col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-12 col-12">
+		<div class="product-layout product-grid product-grid-4 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-12 col-12">
 			<div class="product-item-container product-thumb{{product_id}}">
 				<div class="left-block">
 					{% if thumbgallery   and image_galleries %}

@@ -109,10 +109,9 @@ function reinitView() {
 	$('#grid-view').click(function() {
 		var cols = $('.left_column , .right_column ').length;
 
+		$('.products-category .product-layout').attr('class', 'product-layout product-grid product-grid-4 col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-12 col-12');
 		
-		$('.products-category .product-layout').attr('class', 'product-layout product-grid col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-12 col-12');
-		
-		localStorage.setItem('listview', 'grid');
+		localStorage.setItem('listview', 'grid-4');
 	});
 
 	$('#grid-view-2').click(function() {
@@ -143,22 +142,33 @@ function reinitView() {
 	{% if url_listview %}
 		localStorage.setItem('listview', '{{url_listview}}');
 	{% else %}
-		if(localStorage.getItem('listview')== null) localStorage.setItem('listview', '{{so_config.get_settings('product_catalog_mode')}}');
+		var saved_view = localStorage.getItem('listview');
+		if (!saved_view || saved_view === '' || saved_view === 'grid' || saved_view === 'list') {
+			var config_mode = '{{so_config.get_settings('product_catalog_mode')}}';
+			saved_view = (config_mode && config_mode !== 'list') ? config_mode : 'grid-4';
+			localStorage.setItem('listview', saved_view);
+		}
 	{% endif %}
 
-	if (localStorage.getItem('listview') == 'table') {
+	var current_view = localStorage.getItem('listview');
+	if (current_view == 'table') {
 		$('#table-view').trigger('click');
-	} else if (localStorage.getItem('listview') == 'grid-2'){
+	} else if (current_view == 'grid-2'){
 		$('#grid-view-2').trigger('click');
-	} else if (localStorage.getItem('listview') == 'grid-3'){
+	} else if (current_view == 'grid-3'){
 		$('#grid-view-3').trigger('click');
-	} else if (localStorage.getItem('listview') == 'grid-4'){
-		$('#grid-view-4').trigger('click');
-	} else if (localStorage.getItem('listview') == 'grid-5'){
+	} else if (current_view == 'grid-5'){
 		$('#grid-view-5').trigger('click');
-	} else {
+	} else if (current_view == 'list'){
 		$('#list-view').trigger('click');
+	} else {
+		$('#grid-view-4').trigger('click');
 	}
 
 }
+
+jQuery(document).ready(function($){
+	reinitView();
+	reinitViewImg();
+});
 </script> 

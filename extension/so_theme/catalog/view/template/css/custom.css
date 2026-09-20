@@ -2987,9 +2987,19 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 /* ==========================================================================
    PRODUCT CARDS & ACTION BUTTONS (Homepage & Category Grid)
    ========================================================================== */
+
+/* Permanently hide legacy duplicate list buttons */
+.products-list .product-item-container .list-block,
+.products-list .product-layout .list-block,
+.product-item-container .list-block,
+.product-layout .list-block {
+	display: none !important;
+}
+
+/* Grid View Cards */
 .products-list .product-grid .product-item-container,
-.products-list .product-layout .product-item-container,
-.product-item-container {
+.products-list .product-grid-4 .product-item-container,
+.product-grid .product-item-container {
 	background: #ffffff !important;
 	border: 1px solid #f0f0f0 !important;
 	border-radius: 6px !important;
@@ -3005,16 +3015,16 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 }
 
 .products-list .product-grid .product-item-container:hover,
-.products-list .product-layout .product-item-container:hover,
-.product-item-container:hover {
+.products-list .product-grid-4 .product-item-container:hover,
+.product-grid .product-item-container:hover {
 	border-color: #e0e0e0 !important;
 	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08) !important;
 }
 
 /* Image Block: always top, full width, centered */
 .products-list .product-grid .product-item-container .left-block,
-.products-list .product-layout .product-item-container .left-block,
-.product-item-container .left-block {
+.products-list .product-grid-4 .product-item-container .left-block,
+.product-grid .product-item-container .left-block {
 	float: none !important;
 	width: 100% !important;
 	clear: both !important;
@@ -3026,8 +3036,8 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 }
 
 .products-list .product-grid .product-item-container .left-block img,
-.products-list .product-layout .product-item-container .left-block img,
-.product-item-container .left-block img {
+.products-list .product-grid-4 .product-item-container .left-block img,
+.product-grid .product-item-container .left-block img {
 	max-width: 100% !important;
 	height: auto !important;
 	margin: 0 auto !important;
@@ -3036,15 +3046,15 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 
 /* Never show floating buttons over the image in grid cards */
 .products-list .product-grid .product-item-container .left-block .button-group,
-.products-list .product-layout .product-item-container .left-block .button-group,
-.product-item-container .left-block .button-group {
+.products-list .product-grid-4 .product-item-container .left-block .button-group,
+.product-grid .product-item-container .left-block .button-group {
 	display: none !important;
 }
 
 /* Info Block: always below image, full width, centered */
 .products-list .product-grid .product-item-container .right-block,
-.products-list .product-layout .product-item-container .right-block,
-.product-item-container .right-block {
+.products-list .product-grid-4 .product-item-container .right-block,
+.product-grid .product-item-container .right-block {
 	float: none !important;
 	width: 100% !important;
 	clear: both !important;
@@ -3055,10 +3065,97 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 	box-sizing: border-box !important;
 }
 
+/* Responsive, clean List View layout (if user switches to list view) */
+.products-list .product-list .product-item-container {
+	display: flex !important;
+	flex-direction: row !important;
+	align-items: flex-start !important;
+	gap: 20px !important;
+	background: #ffffff !important;
+	border: 1px solid #f0f0f0 !important;
+	border-radius: 6px !important;
+	padding: 16px !important;
+	margin-bottom: 20px !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+.products-list .product-list .product-item-container .left-block {
+	flex: 0 0 220px !important;
+	width: 220px !important;
+	max-width: 220px !important;
+	float: none !important;
+	margin: 0 !important;
+	text-align: center !important;
+}
+
+.products-list .product-list .product-item-container .right-block {
+	flex: 1 1 auto !important;
+	width: calc(100% - 240px) !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	float: none !important;
+	text-align: left !important;
+}
+
+.products-list .product-list .product-item-container .right-block h4,
+.products-list .product-list .product-item-container .right-block h4 a {
+	text-align: left !important;
+	white-space: normal !important;
+}
+
+.products-list .product-list .product-item-container .right-block .price,
+.products-list .product-list .product-item-container .right-block .rating,
+.products-list .product-list .product-item-container .right-block .rate-history {
+	justify-content: flex-start !important;
+	text-align: left !important;
+}
+
+.products-list .product-list .product-item-container .right-block .description {
+	display: block !important;
+	text-align: left !important;
+	margin: 8px 0 14px 0 !important;
+	color: #64748b !important;
+	font-size: 13.5px !important;
+	line-height: 1.5 !important;
+}
+
+.products-list .product-list .product-item-container .right-block .button-group {
+	justify-content: flex-start !important;
+	margin: 12px 0 0 0 !important;
+}
+
+@media (max-width: 767px) {
+	.products-list .product-list .product-item-container {
+		flex-direction: column !important;
+		align-items: center !important;
+	}
+	.products-list .product-list .product-item-container .left-block {
+		flex: 0 0 auto !important;
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+	.products-list .product-list .product-item-container .right-block {
+		width: 100% !important;
+		text-align: center !important;
+	}
+	.products-list .product-list .product-item-container .right-block h4,
+	.products-list .product-list .product-item-container .right-block h4 a,
+	.products-list .product-list .product-item-container .right-block .price,
+	.products-list .product-list .product-item-container .right-block .rating,
+	.products-list .product-list .product-item-container .right-block .description {
+		text-align: center !important;
+		justify-content: center !important;
+	}
+	.products-list .product-list .product-item-container .right-block .button-group {
+		justify-content: center !important;
+	}
+}
+
 /* Titles */
 .products-list .product-grid .product-item-container .right-block h4,
 .products-list .product-grid .product-item-container .right-block .caption h4,
-.products-list .product-layout .product-item-container .right-block h4 {
+.products-list .product-grid-4 .product-item-container .right-block h4 {
 	margin: 0 0 6px 0 !important;
 	font-size: 14px !important;
 	line-height: 1.4 !important;
@@ -3067,7 +3164,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 
 .products-list .product-grid .product-item-container .right-block h4 a,
 .products-list .product-grid .product-item-container .right-block .caption h4 a,
-.products-list .product-layout .product-item-container .right-block h4 a {
+.products-list .product-grid-4 .product-item-container .right-block h4 a {
 	color: #1e293b !important;
 	font-weight: 600 !important;
 	text-decoration: none !important;
@@ -3109,7 +3206,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 /* Price */
 .products-list .product-grid .product-item-container .right-block .price,
 .products-list .product-grid .product-item-container .right-block .caption .price,
-.products-list .product-layout .product-item-container .right-block .price {
+.products-list .product-grid-4 .product-item-container .right-block .price {
 	font-size: 15px !important;
 	font-weight: 700 !important;
 	color: #d97706 !important;
@@ -3137,7 +3234,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 
 /* Common Button Group: centered row */
 .products-list .product-grid .product-item-container .right-block .button-group,
-.products-list .product-layout .product-item-container .right-block .button-group,
+.products-list .product-grid-4 .product-item-container .right-block .button-group,
 .products-list .product-item-container .button-group,
 .product-item-container .button-group {
 	display: flex !important;
@@ -3162,7 +3259,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 
 /* Base button styling */
 .products-list .product-grid .product-item-container .right-block .button-group .btn-button,
-.products-list .product-layout .product-item-container .right-block .button-group .btn-button,
+.products-list .product-grid-4 .product-item-container .right-block .button-group .btn-button,
 .products-list .product-item-container .button-group .btn-button,
 .product-item-container .button-group .btn-button {
 	display: inline-flex !important;
@@ -3243,7 +3340,7 @@ body.extension-so-theme-mobile-home .navbar-logo img,
 
 /* AddToCart: Always uniform 34px circular gold button in grid cards */
 .products-list .product-grid .product-item-container .right-block .button-group .addToCart,
-.products-list .product-layout .product-item-container .right-block .button-group .addToCart,
+.products-list .product-grid-4 .product-item-container .right-block .button-group .addToCart,
 .products-list .product-item-container .button-group .addToCart,
 .product-item-container .button-group .addToCart {
 	width: 34px !important;
