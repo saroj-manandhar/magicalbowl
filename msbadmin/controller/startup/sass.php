@@ -14,6 +14,7 @@ class Sass extends \Opencart\System\Engine\Controller {
 	 * @return void
 	 */
 	public function index(): void {
+		// return;
 		$files = glob(DIR_APPLICATION . 'view/stylesheet/*.scss');
 
 		if ($files) {
@@ -23,7 +24,7 @@ class Sass extends \Opencart\System\Engine\Controller {
 
 				$stylesheet = DIR_APPLICATION . 'view/stylesheet/' . $filename . '.css';
 
-				if (!is_file($stylesheet) || !$this->config->get('developer_sass')) {
+				if (!is_file($stylesheet) || $this->config->get('developer_sass')) {
 					$scss = new \ScssPhp\ScssPhp\Compiler();
 					$scss->setImportPaths(DIR_APPLICATION . 'view/stylesheet/');
 

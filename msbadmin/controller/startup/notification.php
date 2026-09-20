@@ -12,6 +12,7 @@ class Notification extends \Opencart\System\Engine\Controller {
 	 * @return void
 	 */
 	public function index(): void {
+		return;
 		if (empty($this->request->cookie['notification'])) {
 			$curl = curl_init();
 
