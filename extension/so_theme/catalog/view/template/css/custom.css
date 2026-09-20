@@ -3645,3 +3645,329 @@ body > .alert {
   color: #0f172a !important;
 }
 
+/* ==========================================================================
+   Slider Categories & SO Categories Modern Styling & Fixes
+   Supports .custom-slidercates, .custom-slidercates36, and generic .so-categories
+   ========================================================================== */
+
+/* 1. Module Container & Title */
+.so-categories.module,
+.module.custom-slidercates,
+.module.custom-slidercates36,
+.common-home .custom-slidercates.so-categories,
+.common-home .custom-slidercates36.so-categories {
+    position: relative !important;
+    margin-top: 15px !important;
+    margin-bottom: 30px !important;
+    clear: both !important;
+}
+
+.so-categories .head-title,
+.custom-slidercates36.so-categories .head-title,
+.custom-slidercates.so-categories .head-title {
+    position: relative !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid #edf2f7 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.so-categories .head-title h3.modtitle,
+.custom-slidercates36.so-categories .head-title h3.modtitle,
+.custom-slidercates.so-categories .head-title h3.modtitle {
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    position: relative !important;
+}
+
+.so-categories .head-title h3.modtitle span,
+.custom-slidercates36.so-categories .head-title h3.modtitle span,
+.custom-slidercates.so-categories .head-title h3.modtitle span {
+    position: relative !important;
+}
+
+.so-categories .head-title h3.modtitle span::after,
+.custom-slidercates36.so-categories .head-title h3.modtitle span::after,
+.custom-slidercates.so-categories .head-title h3.modtitle span::after {
+    content: "" !important;
+    position: absolute !important;
+    left: 0 !important;
+    bottom: -14px !important;
+    width: 100% !important;
+    height: 3px !important;
+    background-color: #f1c40f !important;
+    border-radius: 2px !important;
+}
+
+/* 2. Cat Wrap & Carousel Reset */
+.so-categories .cat-wrap,
+.custom-slidercates36.so-categories .cat-wrap,
+.custom-slidercates.so-categories .cat-wrap {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    position: relative !important;
+}
+
+.so-categories .cat-wrap .owl2-stage-outer,
+.custom-slidercates36.so-categories .cat-wrap .owl2-stage-outer,
+.custom-slidercates.so-categories .cat-wrap .owl2-stage-outer {
+    overflow: hidden !important;
+    padding: 10px 4px !important;
+}
+
+/* 3. Category Card (content-box) */
+.so-categories .cat-wrap .content-box,
+.custom-slidercates36.so-categories .cat-wrap .content-box,
+.custom-slidercates.so-categories .cat-wrap .content-box {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    padding: 16px 14px !important;
+    text-align: center !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+    transition: all 0.25s ease-in-out !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 120px !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+.so-categories .cat-wrap .content-box:hover,
+.custom-slidercates36.so-categories .cat-wrap .content-box:hover,
+.custom-slidercates.so-categories .cat-wrap .content-box:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+    border-color: #cbd5e1 !important;
+    transform: translateY(-3px) !important;
+}
+
+/* 4. Category Image */
+.so-categories .cat-wrap .content-box .image-cat,
+.custom-slidercates36.so-categories .cat-wrap .content-box .image-cat,
+.custom-slidercates.so-categories .cat-wrap .content-box .image-cat {
+    width: 100% !important;
+    max-width: 160px !important;
+    margin: 0 auto 12px auto !important;
+    overflow: hidden !important;
+    border-radius: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #f8fafc !important;
+}
+
+.so-categories .cat-wrap .content-box .image-cat a,
+.custom-slidercates36.so-categories .cat-wrap .content-box .image-cat a {
+    display: block !important;
+    width: 100% !important;
+    line-height: 0 !important;
+}
+
+.so-categories .cat-wrap .content-box .image-cat img,
+.custom-slidercates36.so-categories .cat-wrap .content-box .image-cat img,
+.custom-slidercates.so-categories .cat-wrap .content-box .image-cat img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 160px !important;
+    object-fit: cover !important;
+    border-radius: 8px !important;
+    border: none !important;
+    box-shadow: none !important;
+    transition: transform 0.3s ease !important;
+}
+
+.so-categories .cat-wrap .content-box:hover .image-cat img,
+.custom-slidercates36.so-categories .cat-wrap .content-box:hover .image-cat img,
+.custom-slidercates.so-categories .cat-wrap .content-box:hover .image-cat img {
+    transform: scale(1.05) !important;
+}
+
+/* 5. Category Title & Typography */
+.so-categories .cat-wrap .content-box .cat-content,
+.custom-slidercates36.so-categories .cat-wrap .content-box .cat-content {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.so-categories .cat-wrap .content-box .cat-title,
+.custom-slidercates36.so-categories .cat-wrap .content-box .cat-title,
+.custom-slidercates.so-categories .cat-wrap .content-box .cat-title {
+    margin: 4px 0 0 0 !important;
+    padding: 0 !important;
+    line-height: 1.35 !important;
+    width: 100% !important;
+    text-align: center !important;
+}
+
+.so-categories .cat-wrap .content-box .cat-title a,
+.custom-slidercates36.so-categories .cat-wrap .content-box .cat-title a,
+.custom-slidercates.so-categories .cat-wrap .content-box .cat-title a {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #1e293b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.3px !important;
+    text-decoration: none !important;
+    display: inline-block !important;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    transition: color 0.2s ease !important;
+    padding: 2px 4px !important;
+}
+
+.so-categories .cat-wrap .content-box:hover .cat-title a,
+.custom-slidercates36.so-categories .cat-wrap .content-box:hover .cat-title a,
+.custom-slidercates.so-categories .cat-wrap .content-box:hover .cat-title a {
+    color: #d97706 !important;
+}
+
+/* 6. Owl Carousel Navigation Controls */
+.so-categories .owl2-controls,
+.custom-slidercates36.so-categories .owl2-controls,
+.custom-slidercates.so-categories .owl2-controls {
+    position: static !important;
+    height: 0 !important;
+}
+
+.so-categories .owl2-controls .owl2-nav,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav {
+    position: absolute !important;
+    top: 4px !important;
+    right: 0 !important;
+    z-index: 20 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.so-categories .owl2-controls .owl2-nav.disabled,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav.disabled,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav.disabled {
+    display: none !important;
+}
+
+.so-categories .owl2-controls .owl2-nav > div,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div {
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
+    text-align: center !important;
+    border-radius: 50% !important;
+    background: #f1f5f9 !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    text-indent: -9999px !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+    position: relative !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid #e2e8f0 !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+    float: none !important;
+    margin: 0 !important;
+}
+
+.so-categories .owl2-controls .owl2-nav > div:hover,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div:hover,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div:hover {
+    background: #f1c40f !important;
+    border-color: #f1c40f !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 3px 6px rgba(241, 196, 15, 0.25) !important;
+}
+
+.so-categories .owl2-controls .owl2-nav > div.disabled,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div.disabled,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div.disabled {
+    opacity: 0.3 !important;
+    cursor: default !important;
+    pointer-events: none !important;
+}
+
+.so-categories .owl2-controls .owl2-nav > div::before,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div::before,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div::before {
+    font-family: "FontAwesome" !important;
+    font-size: 14px !important;
+    color: #475569 !important;
+    text-indent: 0 !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    line-height: 30px !important;
+    text-align: center !important;
+    display: block !important;
+    transition: color 0.2s ease !important;
+}
+
+.so-categories .owl2-controls .owl2-nav > div:hover::before,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div:hover::before,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div:hover::before {
+    color: #ffffff !important;
+}
+
+.so-categories .owl2-controls .owl2-nav > div.owl2-prev::before,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div.owl2-prev::before,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div.owl2-prev::before {
+    content: "\f053" !important; /* fa-chevron-left */
+}
+
+.so-categories .owl2-controls .owl2-nav > div.owl2-next::before,
+.custom-slidercates36.so-categories .owl2-controls .owl2-nav > div.owl2-next::before,
+.custom-slidercates.so-categories .owl2-controls .owl2-nav > div.owl2-next::before {
+    content: "\f054" !important; /* fa-chevron-right */
+}
+
+/* 7. Single or Few Items Layout Protection */
+.so-categories .cat-wrap .owl2-stage {
+    display: flex !important;
+    align-items: stretch !important;
+}
+
+.so-categories .cat-wrap .owl2-item {
+    min-width: 170px !important;
+    padding: 0 8px !important;
+    display: flex !important;
+    box-sizing: border-box !important;
+}
+
+.so-categories .cat-wrap .owl2-item .content-box {
+    width: 100% !important;
+}
+
+/* When only 1 slide exists without carousel */
+.so-categories .cat-wrap:not(.owl2-carousel) {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 16px !important;
+    justify-content: flex-start !important;
+}
+
+.so-categories .cat-wrap:not(.owl2-carousel) .content-box {
+    flex: 0 0 220px !important;
+    max-width: 260px !important;
+}
+
+
