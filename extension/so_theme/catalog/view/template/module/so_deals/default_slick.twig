@@ -2,19 +2,6 @@
 	<div class="so-deals-slider-loading"></div>
 	<div class="deals-nav"></div>
 	<div class="deals-content">
-		<div class="ds-items">
-			{% set j = 0 %}
-			{% for product in list %}
-				{% set j = j + 1 %}
-				<div class="ds-item cf {{ j == 1 ? 'active' : '' }}">
-					<div class="ds-item-inner">
-						<div class="ds-image-thumb">
-							<img src="{{ product.thumb }}" data-sizes="auto" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload img-responsive">
-						</div>
-					</div>
-				</div>
-			{% endfor %}
-		</div>
 		<div class="ds-items-detail">
 		{% set p = 0 %}
 		{% for product in list %}
@@ -36,10 +23,10 @@
 						{% if product_image %}
 							<a href="{{ product.href }}" target="{{ item_link_target }}">
 								{% if product_image_num ==2 %}
-									<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-thumb1 lazyload" alt="{{ product.name }}">
-									<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-thumb2 lazyload" alt="{{ product.name }}">
+									<img data-sizes="auto" src="{{ product.thumb }}" data-src="{{ product.thumb }}" class="img-thumb1 lazyload" alt="{{ product.name }}">
+									<img data-sizes="auto" src="{{ product.thumb2 }}" data-src="{{ product.thumb2 }}" class="img-thumb2 lazyload" alt="{{ product.name }}">
 								{% else %}
-									<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
+									<img data-sizes="auto" src="{{ product.thumb }}" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
 								{% endif %}
 							</a>
 						{% endif %}
@@ -109,6 +96,19 @@
 				</div>
 			</div>
 		{% endfor %}
+		</div>
+		<div class="ds-items">
+			{% set j = 0 %}
+			{% for product in list %}
+				{% set j = j + 1 %}
+				<div class="ds-item cf {{ j == 1 ? 'active' : '' }}">
+					<div class="ds-item-inner">
+						<div class="ds-image-thumb">
+							<img src="{{ product.thumb }}" data-sizes="auto" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload img-responsive">
+						</div>
+					</div>
+				</div>
+			{% endfor %}
 		</div>
 	</div>
 <script type="text/javascript">

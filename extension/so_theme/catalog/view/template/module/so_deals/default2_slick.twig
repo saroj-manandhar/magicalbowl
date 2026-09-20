@@ -2,19 +2,6 @@
 	<div class="so-deals-slider-loading"></div>
 	<div class="deals-nav"></div>
 	<div class="deals-content products-list">
-		<div class="ds-items">
-			{% set j = 0 %}
-			{% for product in list %}
-				{% set j = j + 1 %}
-				<div class="ds-item cf {{ j == 1 ? 'active' : '' }}">
-					<div class="ds-item-inner">
-						<div class="ds-image-thumb">
-							<img src="{{ product.thumb }}" data-sizes="auto" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload img-responsive">
-						</div>
-					</div>
-				</div>
-			{% endfor %}
-		</div>
 		<div class="ds-items-detail">
 		{% set p = 0 %}
 		{% for product in list %}
@@ -43,10 +30,10 @@
 							{% if product_image %}
 								<a href="{{ product.href }}" target="{{ item_link_target }}">
 									{% if product_image_num ==2 %}
-									<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" class="img-thumb1 lazyload" alt="{{ product.name }}">
-									<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb2 }}" class="img-thumb2 lazyload" alt="{{ product.name }}">
+									<img data-sizes="auto" src="{{ product.thumb }}" data-src="{{ product.thumb }}" class="img-thumb1 lazyload" alt="{{ product.name }}">
+									<img data-sizes="auto" src="{{ product.thumb2 }}" data-src="{{ product.thumb2 }}" class="img-thumb2 lazyload" alt="{{ product.name }}">
 								{% else %}
-									<img data-sizes="auto" src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
+									<img data-sizes="auto" src="{{ product.thumb }}" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload">
 								{% endif %}
 								</a>
 							{% endif %}
@@ -92,9 +79,9 @@
 						{% endif %}
 
 						{% if display_addtocart or display_wishlist or display_compare %}
-							<div class="button-group so-quickview">
+							<div class="button-group">
 								{% if display_addtocart %}
-									<button type="button" class="addToCart" title="{{ objlang.get('button_cart') }}" onclick="cart.add('{{ product.product_id }}');"><i class="fa fa-shopping-basket"></i> <span>{{ objlang.get('button_cart') }}</span></button>
+									<button type="button" class="addToCart btn-button" title="{{ objlang.get('button_cart') }}" onclick="cart.add('{{ product.product_id }}');"><i class="fa fa-shopping-basket"></i> <span class="hidden-xs hidden-sm hidden-md">{{ objlang.get('button_cart') }}</span></button>
 								{% endif %}
 								
 								{% if display_wishlist %}
@@ -112,6 +99,19 @@
 				</div>
 			</div>
 		{% endfor %}
+		</div>
+		<div class="ds-items">
+			{% set j = 0 %}
+			{% for product in list %}
+				{% set j = j + 1 %}
+				<div class="ds-item cf {{ j == 1 ? 'active' : '' }}">
+					<div class="ds-item-inner">
+						<div class="ds-image-thumb">
+							<img src="{{ product.thumb }}" data-sizes="auto" data-src="{{ product.thumb }}" alt="{{ product.name }}" class="lazyload img-responsive">
+						</div>
+					</div>
+				</div>
+			{% endfor %}
 		</div>
 	</div>
 <script type="text/javascript">
