@@ -171,6 +171,55 @@ if ($q_sc) {
 }
 echo "</div>";
 
+// 4c. Inspect Slider categories-G module
+echo "<div class='step'><h3>Diagnostics: Slider categories-G</h3>";
+$q_mod = mysqli_query($link, "SELECT module_id, name, code, setting FROM `{$prefix}module` WHERE name LIKE '%categor%' OR setting LIKE '%Slider categories%'");
+if ($q_mod) {
+    while ($row_m = mysqli_fetch_assoc($q_mod)) {
+        $set = json_decode($row_m['setting'], true);
+        $head_name = $set['head_name'] ?? '';
+        if (is_array($set['module_description'] ?? null)) {
+            foreach ($set['module_description'] as $md) {
+                if (!empty($md['head_name'])) $head_name = $md['head_name'];
+            }
+        }
+        if (stripos($row_m['name'], 'slider') !== false || stripos($head_name, 'slider') !== false || stripos($row_m['name'], 'g') !== false) {
+            echo "<div><b>Module ID:</b> {$row_m['module_id']} - <b>Name:</b> {$row_m['name']} - <b>Code:</b> {$row_m['code']}</div>";
+            if (isset($set['category'])) {
+                // Get category names
+                $cat_names = [];
+                if (!empty($set['category']) && is_array($set['category'])) {
+                    $cat_ids = implode(',', array_map('intval', $set['category']));
+                    if ($cat_ids) {
+                        $qc = mysqli_query($link, "SELECT c.category_id, c.status, cd.name FROM `{$prefix}category` c LEFT JOIN `{$prefix}category_description` cd ON (c.category_id = cd.category_id AND cd.language_id = 1) WHERE c.category_id IN ({$cat_ids})");
+                        if ($qc) {
+                            while ($rc = mysqli_fetch_assoc($qc)) {
+                                $cat_names[] = "ID {$rc['category_id']}: {$rc['name']} (status: {$rc['status']})";
+                            }
+                        }
+                    }
+                }
+                echo "<pre style='font-size:11px;background:#eee;padding:5px;'>" . print_r([
+                    'head_name' => $head_name,
+                    'deviceclass_sfx' => $set['deviceclass_sfx'] ?? '',
+                    'theme' => $set['theme'] ?? '',
+                    'category_ids' => $set['category'] ?? [],
+                    'categories_found' => $cat_names,
+                    'category_columns' => [
+                        'col0' => $set['category_column0'] ?? '',
+                        'col1' => $set['category_column1'] ?? '',
+                        'col2' => $set['category_column2'] ?? '',
+                        'col3' => $set['category_column3'] ?? '',
+                        'col4' => $set['category_column4'] ?? ''
+                    ],
+                    'size' => ($set['width'] ?? '') . 'x' . ($set['height'] ?? '')
+                ], true) . "</pre>";
+            }
+        }
+    }
+}
+echo "</div>";
+
 
 // 5. Purge Caches
 echo "<div class='step'><h3>5. Purging Template &amp; OPcache</h3>";
