@@ -438,6 +438,7 @@ class Category extends \Opencart\System\Engine\Model {
 		}
 
 		$sort_data = [
+			'category_id',
 			'name',
 			'sort_order'
 		];

@@ -12,6 +12,7 @@ $_['text_default']            = 'Par Défaut';
 $_['text_keyword']            = 'N\'utilisez pas d\'espaces, remplacez plutôt les espaces par - et assurez-vous que l\'URL SEO soit unique à l\'échelle mondiale.';
 
 // Colonne
+$_['column_id']               = 'ID';
 $_['column_image']            = 'Image';
 $_['column_name']             = 'Nom de la Catégorie';
 $_['column_sort_order']       = 'Ordre de Tri';

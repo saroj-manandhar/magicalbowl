@@ -191,6 +191,7 @@ class Category extends \Opencart\System\Engine\Controller {
 			$url .= '&order=ASC';
 		}
 
+		$data['sort_category_id'] = $this->url->link('catalog/category.list', 'user_token=' . $this->session->data['user_token'] . '&sort=category_id' . $url);
 		$data['sort_name'] = $this->url->link('catalog/category.list', 'user_token=' . $this->session->data['user_token'] . '&sort=name' . $url);
 		$data['sort_sort_order'] = $this->url->link('catalog/category.list', 'user_token=' . $this->session->data['user_token'] . '&sort=sort_order' . $url);
 
