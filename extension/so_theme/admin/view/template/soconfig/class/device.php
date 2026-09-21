@@ -51,6 +51,10 @@ final class Device extends \stdClass {
 		if(!$this->is_admin()){
 			if($this->session->data['device']=="mobile" && !empty($template_mobile))	{
 				$this->config->set('theme_default_directory','so-mobile' ) ;
+				if (!headers_sent()) {
+					header('X-Accel-Expires: 0');
+					header('Vary: User-Agent');
+				}
 			}
 			if (!defined('URL_TEMPLATE'))  define('URL_TEMPLATE', DIR_EXTENSION.'so_theme/view/template/');
 		}else{

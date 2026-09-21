@@ -49,7 +49,15 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 					$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword($value);
 
 					if ($seo_url_info) {
-						$this->request->get[$seo_url_info['key']] = html_entity_decode($seo_url_info['value'], ENT_QUOTES, 'UTF-8');
+						if ($seo_url_info['key'] == 'path') {
+							if (!isset($this->request->get['path'])) {
+								$this->request->get['path'] = $seo_url_info['value'];
+							} else {
+								$this->request->get['path'] .= '_' . $seo_url_info['value'];
+							}
+						} else {
+							$this->request->get[$seo_url_info['key']] = html_entity_decode($seo_url_info['value'], ENT_QUOTES, 'UTF-8');
+						}
 
 						unset($parts[$key]);
 					}
@@ -130,16 +138,37 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 				$value = '';
 			}
 
-			$index = $key . '=' . $value;
+			if ($key == 'path') {
+				$categories = explode('_', $value);
+				$cat_order = 0;
 
-			if (!isset($this->data[$language_id][$index])) {
-				$this->data[$language_id][$index] = $this->model_design_seo_url->getSeoUrlByKeyValue((string)$key, (string)$value);
-			}
+				foreach ($categories as $category) {
+					$cat_index = 'path=' . $category;
 
-			if ($this->data[$language_id][$index]) {
-				$paths[] = $this->data[$language_id][$index];
+					if (!isset($this->data[$language_id][$cat_index])) {
+						$this->data[$language_id][$cat_index] = $this->model_design_seo_url->getSeoUrlByKeyValue('path', (string)$category);
+					}
+
+					if ($this->data[$language_id][$cat_index]) {
+						$cat_data = $this->data[$language_id][$cat_index];
+						$cat_data['sort_order'] = $cat_order++;
+						$paths[] = $cat_data;
+					}
+				}
 
 				unset($query[$key]);
+			} else {
+				$index = $key . '=' . $value;
+
+				if (!isset($this->data[$language_id][$index])) {
+					$this->data[$language_id][$index] = $this->model_design_seo_url->getSeoUrlByKeyValue((string)$key, (string)$value);
+				}
+
+				if ($this->data[$language_id][$index]) {
+					$paths[] = $this->data[$language_id][$index];
+
+					unset($query[$key]);
+				}
 			}
 		}
 
