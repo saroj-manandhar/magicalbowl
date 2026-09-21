@@ -151,6 +151,30 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 
 		array_multisort($sort_order, SORT_ASC, $paths);
 
+		$has_content_path = false;
+
+		foreach ($paths as $result) {
+			if ($result['key'] != 'language') {
+				$has_content_path = true;
+				break;
+			}
+		}
+
+		if (isset($query['route'])) {
+			if ($has_content_path && in_array($query['route'], [
+				'product/product',
+				'product/category',
+				'information/information',
+				'product/manufacturer',
+				'product/manufacturer|info',
+				'product/manufacturer/info'
+			])) {
+				unset($query['route']);
+			} elseif ($query['route'] == 'common/home') {
+				unset($query['route']);
+			}
+		}
+
 		// Build the path
 		$url .= str_replace('/index.php', '', $url_info['path']);
 

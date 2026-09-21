@@ -1053,20 +1053,20 @@ class Product extends \Opencart\System\Engine\Model {
 	 * $results = $this->model_catalog_product->getProducts($filter_data);
 	 */
 	public function getProducts(array $data = []): array {
-		$sql = "SELECT `p`.*, `pd`.*, `p`.`product_id` FROM `" . DB_PREFIX . "product` `p` LEFT JOIN `" . DB_PREFIX . "product_description` `pd` ON (`p`.`product_id` = `pd`.`product_id`)";
+		$sql = "SELECT `p`.*, `pd`.*, `p`.`product_id`, COALESCE(`pd`.`name`, (SELECT `pd2`.`name` FROM `" . DB_PREFIX . "product_description` `pd2` WHERE `pd2`.`product_id` = `p`.`product_id` AND `pd2`.`name` != '' LIMIT 1), `p`.`model`) AS `name` FROM `" . DB_PREFIX . "product` `p` LEFT JOIN `" . DB_PREFIX . "product_description` `pd` ON (`p`.`product_id` = `pd`.`product_id` AND `pd`.`language_id` = '" . (int)$this->config->get('config_language_id') . "')";
 
 		if (!empty($data['filter_model'])) {
 			$sql .= " LEFT JOIN `" . DB_PREFIX . "product_code` `pc` ON (`p`.`product_id` = `pc`.`product_id`)";
 		}
 
-		$sql .= " WHERE `pd`.`language_id` = '" . (int)$this->config->get('config_language_id') . "'";
+		$sql .= " WHERE 1=1";
 
 		if (!empty($data['filter_master_id'])) {
 			$sql .= " AND `p`.`master_id` = '" . (int)$data['filter_master_id'] . "'";
 		}
 
 		if (!empty($data['filter_name'])) {
-			$sql .= " AND LCASE(`pd`.`name`) LIKE '" . $this->db->escape(oc_strtolower($data['filter_name']) . '%') . "'";
+			$sql .= " AND (LCASE(`pd`.`name`) LIKE '" . $this->db->escape(oc_strtolower($data['filter_name']) . '%') . "' OR `p`.`product_id` IN (SELECT `pd3`.`product_id` FROM `" . DB_PREFIX . "product_description` `pd3` WHERE LCASE(`pd3`.`name`) LIKE '" . $this->db->escape(oc_strtolower($data['filter_name']) . '%') . "'))";
 		}
 
 		if (!empty($data['filter_model'])) {
@@ -1180,20 +1180,20 @@ class Product extends \Opencart\System\Engine\Model {
 	 * $product_total = $this->model_catalog_product->getTotalProducts();
 	 */
 	public function getTotalProducts(array $data = []): int {
-		$sql = "SELECT COUNT(DISTINCT `p`.`product_id`) AS `total` FROM `" . DB_PREFIX . "product` `p` LEFT JOIN `" . DB_PREFIX . "product_description` `pd` ON (`p`.`product_id` = `pd`.`product_id`)";
+		$sql = "SELECT COUNT(DISTINCT `p`.`product_id`) AS `total` FROM `" . DB_PREFIX . "product` `p` LEFT JOIN `" . DB_PREFIX . "product_description` `pd` ON (`p`.`product_id` = `pd`.`product_id` AND `pd`.`language_id` = '" . (int)$this->config->get('config_language_id') . "')";
 
 		if (!empty($data['filter_model'])) {
 			$sql .= " LEFT JOIN `" . DB_PREFIX . "product_code` `pc` ON (`p`.`product_id` = `pc`.`product_id`)";
 		}
 
-		$sql .= " WHERE `pd`.`language_id` = '" . (int)$this->config->get('config_language_id') . "'";
+		$sql .= " WHERE 1=1";
 
 		if (!empty($data['filter_master_id'])) {
 			$sql .= " AND `p`.`master_id` = '" . (int)$data['filter_master_id'] . "'";
 		}
 
 		if (!empty($data['filter_name'])) {
-			$sql .= " AND LCASE(`pd`.`name`) LIKE '" . $this->db->escape(oc_strtolower($data['filter_name']) . '%') . "'";
+			$sql .= " AND (LCASE(`pd`.`name`) LIKE '" . $this->db->escape(oc_strtolower($data['filter_name']) . '%') . "' OR `p`.`product_id` IN (SELECT `pd3`.`product_id` FROM `" . DB_PREFIX . "product_description` `pd3` WHERE LCASE(`pd3`.`name`) LIKE '" . $this->db->escape(oc_strtolower($data['filter_name']) . '%') . "'))";
 		}
 
 		if (!empty($data['filter_model'])) {

@@ -57,7 +57,14 @@ class Import extends \Opencart\System\Engine\Model {
 				$this->db->query("INSERT INTO `" . DB_PREFIX . "category` SET parent_id = '" . (int)$current_parent_id . "', `top` = '" . ($current_parent_id == 0 ? 1 : 0) . "', `column` = 1, sort_order = 0, status = 1, date_added = NOW(), date_modified = NOW()");
 				$category_id = $this->db->getLastId();
 
-				$this->db->query("INSERT INTO `" . DB_PREFIX . "category_description` SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($name) . "', description = '', meta_title = '" . $this->db->escape($name) . "', meta_description = '', meta_keyword = ''");
+				$active_languages = $this->db->query("SELECT language_id FROM `" . DB_PREFIX . "language` WHERE status = '1'")->rows;
+				if (empty($active_languages)) {
+					$active_languages = [['language_id' => $language_id]];
+				}
+
+				foreach ($active_languages as $lang_row) {
+					$this->db->query("INSERT INTO `" . DB_PREFIX . "category_description` SET category_id = '" . (int)$category_id . "', language_id = '" . (int)$lang_row['language_id'] . "', name = '" . $this->db->escape($name) . "', description = '', meta_title = '" . $this->db->escape($name) . "', meta_description = '', meta_keyword = ''");
+				}
 
 				$level = 0;
 				$path_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "category_path` WHERE category_id = '" . (int)$current_parent_id . "' ORDER BY `level` ASC");
@@ -97,27 +104,35 @@ class Import extends \Opencart\System\Engine\Model {
 		$filter_name = trim($filter_name);
 		if ($group_name === '' || $filter_name === '') return 0;
 
-		$fg_query = $this->db->query("SELECT filter_group_id FROM `" . DB_PREFIX . "filter_group_description` WHERE `name` = '" . $this->db->escape($group_name) . "' AND language_id = '" . (int)$language_id . "' LIMIT 1");
+		$active_languages = $this->db->query("SELECT language_id FROM `" . DB_PREFIX . "language` WHERE status = '1'")->rows;
+		if (empty($active_languages)) {
+			$active_languages = [['language_id' => $language_id]];
+		}
+
+		$fg_query = $this->db->query("SELECT filter_group_id FROM `" . DB_PREFIX . "filter_group_description` WHERE `name` = '" . $this->db->escape($group_name) . "' LIMIT 1");
 		if ($fg_query->num_rows) {
 			$filter_group_id = (int)$fg_query->row['filter_group_id'];
 		} else {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group` SET sort_order = 0");
 			$filter_group_id = $this->db->getLastId();
-			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group_description` SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$language_id . "', name = '" . $this->db->escape($group_name) . "'");
+			foreach ($active_languages as $lang_row) {
+				$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_group_description` SET filter_group_id = '" . (int)$filter_group_id . "', language_id = '" . (int)$lang_row['language_id'] . "', name = '" . $this->db->escape($group_name) . "'");
+			}
 		}
 
 		$f_query = $this->db->query("SELECT f.filter_id FROM `" . DB_PREFIX . "filter` f 
 									LEFT JOIN `" . DB_PREFIX . "filter_description` fd ON (f.filter_id = fd.filter_id) 
 									WHERE f.filter_group_id = '" . (int)$filter_group_id . "' 
-									AND fd.name = '" . $this->db->escape($filter_name) . "' 
-									AND fd.language_id = '" . (int)$language_id . "' LIMIT 1");
+									AND fd.name = '" . $this->db->escape($filter_name) . "' LIMIT 1");
 
 		if ($f_query->num_rows) {
 			return (int)$f_query->row['filter_id'];
 		} else {
 			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter` SET filter_group_id = '" . (int)$filter_group_id . "', sort_order = 0");
 			$filter_id = $this->db->getLastId();
-			$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_description` SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$language_id . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_name) . "'");
+			foreach ($active_languages as $lang_row) {
+				$this->db->query("INSERT INTO `" . DB_PREFIX . "filter_description` SET filter_id = '" . (int)$filter_id . "', language_id = '" . (int)$lang_row['language_id'] . "', filter_group_id = '" . (int)$filter_group_id . "', name = '" . $this->db->escape($filter_name) . "'");
+			}
 			return $filter_id;
 		}
 	}
@@ -267,17 +282,50 @@ class Import extends \Opencart\System\Engine\Model {
 			}
 		}
 
-		$this->db->query("DELETE FROM `" . DB_PREFIX . "product_description` WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . (int)$default_language_id . "'");
-		$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET 
-						  product_id = '" . (int)$product_id . "', 
-						  language_id = '" . (int)$default_language_id . "', 
-						  name = '" . $this->db->escape($name) . "', 
-						  description = '" . $this->db->escape($description) . "', 
-						  tag = '" . $this->db->escape($tags) . "', 
-						  meta_title = '" . $this->db->escape($meta_title) . "', 
-						  meta_description = '" . $this->db->escape($meta_desc) . "', 
-						  meta_keyword = '" . $this->db->escape($meta_keywords) . "', 
-						  diameter = '" . $this->db->escape($diameter) . "'");
+		$active_languages = $this->db->query("SELECT language_id FROM `" . DB_PREFIX . "language` WHERE status = '1'")->rows;
+		if (empty($active_languages)) {
+			$active_languages = [['language_id' => $default_language_id]];
+		}
+
+		foreach ($active_languages as $lang_row) {
+			$lid = (int)$lang_row['language_id'];
+			if ($lid == (int)$default_language_id) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_description` WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $lid . "'");
+				$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET 
+								  product_id = '" . (int)$product_id . "', 
+								  language_id = '" . $lid . "', 
+								  name = '" . $this->db->escape($name) . "', 
+								  description = '" . $this->db->escape($description) . "', 
+								  tag = '" . $this->db->escape($tags) . "', 
+								  meta_title = '" . $this->db->escape($meta_title) . "', 
+								  meta_description = '" . $this->db->escape($meta_desc) . "', 
+								  meta_keyword = '" . $this->db->escape($meta_keywords) . "', 
+								  diameter = '" . $this->db->escape($diameter) . "'");
+			} else {
+				$desc_chk = $this->db->query("SELECT product_id FROM `" . DB_PREFIX . "product_description` WHERE product_id = '" . (int)$product_id . "' AND language_id = '" . $lid . "' LIMIT 1");
+				if (!$desc_chk->num_rows) {
+					$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET 
+									  product_id = '" . (int)$product_id . "', 
+									  language_id = '" . $lid . "', 
+									  name = '" . $this->db->escape($name) . "', 
+									  description = '" . $this->db->escape($description) . "', 
+									  tag = '" . $this->db->escape($tags) . "', 
+									  meta_title = '" . $this->db->escape($meta_title) . "', 
+									  meta_description = '" . $this->db->escape($meta_desc) . "', 
+									  meta_keyword = '" . $this->db->escape($meta_keywords) . "', 
+									  diameter = '" . $this->db->escape($diameter) . "'");
+				}
+			}
+		}
+
+		// Save product identifiers to oc_product_code table
+		$code_fields = ['sku' => $sku, 'upc' => $upc, 'ean' => $ean, 'jan' => $jan, 'isbn' => $isbn, 'mpn' => $mpn];
+		foreach ($code_fields as $c_code => $c_val) {
+			if (!empty($c_val)) {
+				$this->db->query("DELETE FROM `" . DB_PREFIX . "product_code` WHERE product_id = '" . (int)$product_id . "' AND `code` = '" . $this->db->escape($c_code) . "'");
+				$this->db->query("INSERT INTO `" . DB_PREFIX . "product_code` SET product_id = '" . (int)$product_id . "', `code` = '" . $this->db->escape($c_code) . "', `value` = '" . $this->db->escape($c_val) . "'");
+			}
+		}
 
 		$this->db->query("INSERT IGNORE INTO `" . DB_PREFIX . "product_to_store` SET product_id = '" . (int)$product_id . "', store_id = '" . (int)$default_store_id . "'");
 
@@ -441,13 +489,28 @@ class Import extends \Opencart\System\Engine\Model {
 		}
 
 		if (!empty($seo_keyword)) {
-			$this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE `key` = 'product_id' AND `value` = '" . (int)$product_id . "' AND `store_id` = '" . (int)$default_store_id . "'");
-			$this->db->query("INSERT INTO `" . DB_PREFIX . "seo_url` SET 
-							  store_id = '" . (int)$default_store_id . "', 
-							  language_id = '" . (int)$default_language_id . "', 
-							  `key` = 'product_id', 
-							  `value` = '" . (int)$product_id . "', 
-							  `keyword` = '" . $this->db->escape($seo_keyword) . "'");
+			foreach ($active_languages as $lang_row) {
+				$lid = (int)$lang_row['language_id'];
+				if ($lid == (int)$default_language_id) {
+					$this->db->query("DELETE FROM `" . DB_PREFIX . "seo_url` WHERE `key` = 'product_id' AND `value` = '" . (int)$product_id . "' AND `store_id` = '" . (int)$default_store_id . "' AND `language_id` = '" . $lid . "'");
+					$this->db->query("INSERT INTO `" . DB_PREFIX . "seo_url` SET 
+									  store_id = '" . (int)$default_store_id . "', 
+									  language_id = '" . $lid . "', 
+									  `key` = 'product_id', 
+									  `value` = '" . (int)$product_id . "', 
+									  `keyword` = '" . $this->db->escape($seo_keyword) . "'");
+				} else {
+					$seo_chk = $this->db->query("SELECT seo_url_id FROM `" . DB_PREFIX . "seo_url` WHERE `key` = 'product_id' AND `value` = '" . (int)$product_id . "' AND `store_id` = '" . (int)$default_store_id . "' AND `language_id` = '" . $lid . "' LIMIT 1");
+					if (!$seo_chk->num_rows) {
+						$this->db->query("INSERT INTO `" . DB_PREFIX . "seo_url` SET 
+										  store_id = '" . (int)$default_store_id . "', 
+										  language_id = '" . $lid . "', 
+										  `key` = 'product_id', 
+										  `value` = '" . (int)$product_id . "', 
+										  `keyword` = '" . $this->db->escape($seo_keyword) . "'");
+					}
+				}
+			}
 		}
 
 		if (!empty($rel_models_str)) {
