@@ -1751,10 +1751,10 @@ header#header.typeheader-1 .header-bottom .container {
 		display: flex !important;
 		align-items: center !important;
 		padding: 13px 14px !important;
-		font-size: 12px !important;
+		font-size: 15px !important;
 		font-weight: 700 !important;
 		text-transform: uppercase !important;
-		letter-spacing: 0.4px !important;
+		letter-spacing: 0.3px !important;
 		color: #ffffff !important;
 		line-height: normal !important;
 		transition: background-color 0.2s ease, color 0.2s ease !important;
@@ -1765,10 +1765,32 @@ header#header.typeheader-1 .header-bottom .container {
 
 	header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
 		font-weight: 700 !important;
-		font-size: 12px !important;
+		font-size: 15px !important;
 		text-transform: uppercase !important;
 		color: #ffffff !important;
-		letter-spacing: 0.4px !important;
+		letter-spacing: 0.3px !important;
+	}
+
+	@media (max-width: 1440px) and (min-width: 1200px) {
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
+			font-size: 14px !important;
+			padding: 13px 10px !important;
+		}
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
+			font-size: 14px !important;
+		}
+	}
+
+	@media (max-width: 1199px) and (min-width: 992px) {
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
+			font-size: 13px !important;
+			padding: 12px 6px !important;
+			letter-spacing: 0.1px !important;
+		}
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
+			font-size: 13px !important;
+			letter-spacing: 0.1px !important;
+		}
 	}
 
 	header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a .caret {
