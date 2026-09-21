@@ -357,7 +357,7 @@ class Product extends \Opencart\System\Engine\Controller {
 
 			$special = '';
 
-			$product_discounts = $this->model_catalog_product->getDiscounts($result['product_id']);
+			$product_discounts = $this->model_catalog_product->getDiscounts((int)$result['product_id']);
 
 			foreach ($product_discounts as $product_discount) {
 				if (($product_discount['date_start'] == '0000-00-00' || strtotime($product_discount['date_start']) < time()) && ($product_discount['date_end'] == '0000-00-00' || strtotime($product_discount['date_end']) > time())) {
@@ -1505,7 +1505,7 @@ class Product extends \Opencart\System\Engine\Controller {
 		foreach ($results as $result) {
 			$option_data = [];
 
-			$product_options = $this->model_catalog_product->getOptions($result['product_id']);
+			$product_options = $this->model_catalog_product->getOptions((int)$result['product_id']);
 
 			foreach ($product_options as $product_option) {
 				$option_info = $this->model_catalog_option->getOption($product_option['option_id']);
@@ -1541,7 +1541,7 @@ class Product extends \Opencart\System\Engine\Controller {
 
 			$subscription_plan_data = [];
 
-			$product_subscriptions = $this->model_catalog_product->getSubscriptions($result['product_id']);
+			$product_subscriptions = $this->model_catalog_product->getSubscriptions((int)$result['product_id']);
 
 			foreach ($product_subscriptions as $product_subscription) {
 				$subscription_plan_info = $this->model_catalog_subscription_plan->getSubscriptionPlan($product_subscription['subscription_plan_id']);

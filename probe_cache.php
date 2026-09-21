@@ -1,5 +1,18 @@
 <?php
 header('Content-Type: text/plain');
+echo "=== SERVER GIT STATUS ===\n";
+if (file_exists(__DIR__ . '/.git/HEAD')) {
+    echo "HEAD: " . trim(file_get_contents(__DIR__ . '/.git/HEAD')) . "\n";
+    $head = trim(file_get_contents(__DIR__ . '/.git/HEAD'));
+    if (strpos($head, 'ref: ') === 0) {
+        $ref = trim(substr($head, 5));
+        if (file_exists(__DIR__ . '/.git/' . $ref)) {
+            echo "COMMIT: " . trim(file_get_contents(__DIR__ . '/.git/' . $ref)) . "\n";
+        }
+    }
+} else {
+    echo ".git/HEAD not found\n";
+}
 
 echo "=== CATALOG CONFIG ===\n";
 if (file_exists(__DIR__ . '/config.php')) {
