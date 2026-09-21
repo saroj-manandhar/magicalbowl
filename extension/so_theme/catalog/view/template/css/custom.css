@@ -1689,8 +1689,17 @@ header#header.typeheader-1 .header-bottom {
 }
 
 header#header.typeheader-1 .header-bottom .container {
-	padding-left: 0 !important;
-	padding-right: 0 !important;
+	width: 100% !important;
+	max-width: 100% !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+}
+
+@media (min-width: 1600px) {
+	header#header.typeheader-1 .header-bottom .container {
+		max-width: 1520px !important;
+		margin: 0 auto !important;
+	}
 }
 
 /* =======================================================
@@ -1721,7 +1730,7 @@ header#header.typeheader-1 .header-bottom .container {
 	}
 
 	header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li {
-		float: left !important;
+		flex: 0 0 auto !important;
 		position: relative !important;
 	}
 
@@ -1730,9 +1739,9 @@ header#header.typeheader-1 .header-bottom .container {
 		display: flex !important;
 		align-items: center !important;
 		justify-content: center !important;
-		padding: 13px 20px !important;
+		padding: 13px 14px !important;
 		color: #ffffff !important;
-		font-size: 15px !important;
+		font-size: 14px !important;
 		background-color: #000000 !important;
 		border-right: 1px solid rgba(255, 255, 255, 0.12) !important;
 		border-radius: 0 !important;
@@ -1750,11 +1759,11 @@ header#header.typeheader-1 .header-bottom .container {
 	header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
 		display: flex !important;
 		align-items: center !important;
-		padding: 13px 14px !important;
-		font-size: 15px !important;
+		padding: 13px 10px !important;
+		font-size: 14px !important;
 		font-weight: 700 !important;
 		text-transform: uppercase !important;
-		letter-spacing: 0.3px !important;
+		letter-spacing: 0.15px !important;
 		color: #ffffff !important;
 		line-height: normal !important;
 		transition: background-color 0.2s ease, color 0.2s ease !important;
@@ -1765,31 +1774,74 @@ header#header.typeheader-1 .header-bottom .container {
 
 	header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
 		font-weight: 700 !important;
-		font-size: 15px !important;
+		font-size: 14px !important;
 		text-transform: uppercase !important;
 		color: #ffffff !important;
-		letter-spacing: 0.3px !important;
+		letter-spacing: 0.15px !important;
 	}
 
-	@media (max-width: 1440px) and (min-width: 1200px) {
+	/* Large Desktop (>= 1400px) */
+	@media (min-width: 1400px) {
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li.home > a {
+			padding: 13px 16px !important;
+			font-size: 15px !important;
+		}
 		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
-			font-size: 14px !important;
-			padding: 13px 10px !important;
+			font-size: 14.5px !important;
+			padding: 13px 12px !important;
+			letter-spacing: 0.25px !important;
 		}
 		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
-			font-size: 14px !important;
+			font-size: 14.5px !important;
+			letter-spacing: 0.25px !important;
 		}
 	}
 
-	@media (max-width: 1199px) and (min-width: 992px) {
+	/* Standard Desktop (1200px - 1399px) */
+	@media (max-width: 1399px) and (min-width: 1200px) {
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li.home > a {
+			padding: 13px 12px !important;
+		}
 		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
-			font-size: 13px !important;
+			font-size: 13.5px !important;
+			padding: 13px 8px !important;
+			letter-spacing: 0.1px !important;
+		}
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
+			font-size: 13.5px !important;
+			letter-spacing: 0.1px !important;
+		}
+	}
+
+	/* Small Desktop / Laptop (1024px - 1199px) */
+	@media (max-width: 1199px) and (min-width: 1024px) {
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li.home > a {
+			padding: 12px 10px !important;
+		}
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
+			font-size: 12px !important;
 			padding: 12px 6px !important;
-			letter-spacing: 0.1px !important;
+			letter-spacing: 0 !important;
 		}
 		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
-			font-size: 13px !important;
-			letter-spacing: 0.1px !important;
+			font-size: 12px !important;
+			letter-spacing: 0 !important;
+		}
+	}
+
+	/* Sub-1024px Desktop (992px - 1023px) */
+	@media (max-width: 1023px) and (min-width: 992px) {
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li.home > a {
+			padding: 12px 8px !important;
+		}
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a {
+			font-size: 11px !important;
+			padding: 12px 4px !important;
+			letter-spacing: 0 !important;
+		}
+		header#header.typeheader-1 .container-megamenu.horizontal ul.megamenu > li > a strong {
+			font-size: 11px !important;
+			letter-spacing: 0 !important;
 		}
 	}
 
