@@ -140,7 +140,7 @@ class SoFilterShopBy extends \Opencart\System\Engine\Model {
 		
 		if($text_search != "")
 		{
-			$sql .= "\n(LCASE(pd.name) LIKE '%".strtolower($this->db->escape($text_search))."%' OR LCASE(p.model) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.sku) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.upc) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.ean) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.jan) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.isbn) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.mpn) = '" . $this->db->escape(strtolower($text_search)) . "') AND";
+			$sql .= "\n(LCASE(pd.name) LIKE '%".strtolower($this->db->escape($text_search))."%' OR LCASE(p.model) LIKE '%" . $this->db->escape(strtolower($text_search)) . "%' OR LCASE(p.sku) LIKE '%" . $this->db->escape(strtolower($text_search)) . "%' OR LCASE(p.upc) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.ean) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.jan) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.isbn) = '" . $this->db->escape(strtolower($text_search)) . "' OR LCASE(p.mpn) = '" . $this->db->escape(strtolower($text_search)) . "') AND";
 		}
 
 		if($subcate_value_id != "")
@@ -148,7 +148,15 @@ class SoFilterShopBy extends \Opencart\System\Engine\Model {
 			$category_id = $subcate_value_id;
 		}
 			
-		$sql .= "\n pc.category_id = '".$category_id."'";
+		if (!empty($category_id)) {
+			$sql .= "\n pc.category_id = '".(int)$category_id."' AND";
+		}
+
+		// Clean up trailing AND / OR logical operators to avoid SQL syntax errors
+		$sql = trim($sql);
+		while (preg_match('/\s+(AND|OR)$/i', $sql)) {
+			$sql = preg_replace('/\s+(AND|OR)$/i', '', $sql);
+		}
 
 		$sort_data = array(
 			'pd.name',
@@ -250,7 +258,7 @@ class SoFilterShopBy extends \Opencart\System\Engine\Model {
 		
 		if($data['text_search'] != "")
 		{
-			$sql .= "\n(LCASE(pd.name) LIKE '%".strtolower($this->db->escape($data['text_search']))."%' OR LCASE(p.model) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.sku) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.upc) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.ean) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.jan) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.isbn) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.mpn) = '" . $this->db->escape(strtolower($data['text_search'])) . "') AND";
+			$sql .= "\n(LCASE(pd.name) LIKE '%".strtolower($this->db->escape($data['text_search']))."%' OR LCASE(p.model) LIKE '%" . $this->db->escape(strtolower($data['text_search'])) . "%' OR LCASE(p.sku) LIKE '%" . $this->db->escape(strtolower($data['text_search'])) . "%' OR LCASE(p.upc) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.ean) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.jan) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.isbn) = '" . $this->db->escape(strtolower($data['text_search'])) . "' OR LCASE(p.mpn) = '" . $this->db->escape(strtolower($data['text_search'])) . "') AND";
 		}
 
 		if($data['subcate_value_id'] != "")
