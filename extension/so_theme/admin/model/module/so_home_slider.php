@@ -131,6 +131,7 @@ class SoHomeSlider extends \Opencart\System\Engine\Model {
 		
 			$this->db->query("INSERT INTO " . DB_PREFIX . "so_homeslider_description SET homeslider_id = '" . (int)$slide_id . "', jusv = '" . (int)$slide_id . "', url_lang = '" . $this->db->escape($value['url_lang']) . "', image_lang = '" . $this->db->escape($value['image_lang']) . "', status_lang = '" . $this->db->escape($value['status_lang']) . "' ,  language_id = '" . (int)$language_id . "', title = '" . $this->db->escape($value['slide_title']) . "', description = '" . $this->db->escape($value['slide_desciption']) . "', caption = '" . $this->db->escape($value['slide_caption']) . "'");
 		}
+		$this->clearCache();
 		return $slide_id;		
 	}
 	public function editSlide($id,$data) {
@@ -142,11 +143,13 @@ class SoHomeSlider extends \Opencart\System\Engine\Model {
 				$this->db->query("INSERT INTO " . DB_PREFIX . "so_homeslider_description SET url_lang = '" . $this->db->escape($value['url_lang']) . "', image_lang = '" . $this->db->escape($value['image_lang']) . "', status_lang = '" . $this->db->escape($value['status_lang']) . "' , jusv = '" . (int)$id . "', language_id = '" . (int)$language_id . "', title = '" . $this->db->escape($value['slide_title']) . "', description = '" . $this->db->escape($value['slide_desciption']) . "', caption = '" . $this->db->escape($value['slide_caption']) . "'");
 			}
 		}
+		$this->clearCache();
 		return $id;
 	}
 	public function deleteSlide($slide_id) {
 		$this->db->query("DELETE FROM " . DB_PREFIX . "so_homeslider_description WHERE jusv = '" . (int)$slide_id . "'");
 		$this->db->query("DELETE FROM " . DB_PREFIX . "so_homeslider WHERE id = '" . (int)$slide_id . "'");
+		$this->clearCache();
 		$this->cache->delete('category');
 	}
 	public function deleteAllSlide($module_id) {
@@ -156,6 +159,7 @@ class SoHomeSlider extends \Opencart\System\Engine\Model {
 			$this->db->query("DELETE FROM " . DB_PREFIX . "so_homeslider_description WHERE jusv = '" . $item['id'] . "'");
 			$this->db->query("DELETE FROM " . DB_PREFIX . "so_homeslider WHERE id = '" . $item['id'] . "'");
 		}
+		$this->clearCache();
 		$this->cache->delete('category');
 	}
 	public function updatePositionSlide($data) {
@@ -165,7 +169,22 @@ class SoHomeSlider extends \Opencart\System\Engine\Model {
 			$item = str_replace('slides_', '', $item);
 			$this->db->query("UPDATE " . DB_PREFIX . "so_homeslider SET position = '" . $position . "' WHERE id = '".$item."'");
 		}
+		$this->clearCache();
 		return $data;
+	}
+
+	public function clearCache() {
+		$folder_cache = DIR_CACHE . 'so/HomeSlider/';
+		if (is_dir($folder_cache)) {
+			$files = glob($folder_cache . '*');
+			if ($files) {
+				foreach ($files as $file) {
+					if (is_file($file)) {
+						unlink($file);
+					}
+				}
+			}
+		}
 	}
 }
 ?>

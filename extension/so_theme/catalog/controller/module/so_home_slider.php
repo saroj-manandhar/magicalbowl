@@ -124,10 +124,10 @@ class SoHomeSlider extends \Opencart\System\Engine\Controller {
 		foreach($slides_arr as $slide_info)
 			{	
 				foreach($languages as $item) {
-					if($slide_info['language_id'] === $item['language_id']) {			
+					if((int)$slide_info['language_id'] == (int)$item['language_id']) {			
 						if (isset($slide_info['description'])) $slide_info['description']  = html_entity_decode($slide_info['description'], ENT_QUOTES, 'UTF-8');
 						$image = $this->model_tool_image->resize($slide_info['image_lang'],$setting['width'],$setting['height']);
-						if($this->config->get('config_language_id') == $slide_info['language_id']) {
+						if((int)$this->config->get('config_language_id') == (int)$slide_info['language_id']) {
 							$list[] = array(
 								//'slider_id'  	=> $slide_info['id'],
 								'thumb'       	=> $image,
