@@ -4678,5 +4678,37 @@ body > .alert {
     }
 }
 
+/* =======================================================
+   Fix Homepage Layout Squished Sections at 100% Zoom / Desktop Breakpoints
+   ======================================================= */
+/* 1. Hide empty placeholder columns that split the homepage rows */
+.common-home .row_56c0 .col_12kv,
+.common-home .row_0ps6 .col_2cpt,
+.common-home .so-page-builder .col-style:empty,
+.common-home .so-page-builder .col-style:has(.module-blank:only-child) {
+    display: none !important;
+}
+
+/* 2. Expand Featured Products & Cosmic Sound Gallery rows to 100% full width */
+.common-home .row_56c0 .col_xzvb,
+.common-home .row_0ps6 .col_od25,
+.common-home .col_xzvb,
+.common-home .col_od25,
+.common-home .so-page-builder .col-style:has(.so-basic-product),
+.common-home .so-page-builder .col-style:has(.basic-layou17) {
+    -ms-flex: 0 0 100% !important;
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    width: 100% !important;
+}
+
+/* 3. Ensure product modules occupy full container width */
+.common-home .so-basic-product,
+.common-home .basic-layou17 {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+
 
 

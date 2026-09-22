@@ -53,7 +53,13 @@ final class Device extends \stdClass {
 				$this->config->set('theme_default_directory','so-mobile' ) ;
 				if (!headers_sent()) {
 					header('X-Accel-Expires: 0');
+					header('X-Cache-Lifetime: 0');
+					header('Cache-Control: private, no-cache, no-store, must-revalidate');
+					header('Pragma: no-cache');
 					header('Vary: User-Agent');
+					if (class_exists('ClpVarnish')) {
+						\ClpVarnish::setCacheLifetime(0);
+					}
 				}
 			}
 			if (!defined('URL_TEMPLATE'))  define('URL_TEMPLATE', DIR_EXTENSION.'so_theme/view/template/');

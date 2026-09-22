@@ -145,7 +145,13 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 
 		if($this->session->data['device']=='mobile' && $platforms_mobile != 0){
 			$this->response->addHeader('X-Accel-Expires: 0');
+			$this->response->addHeader('X-Cache-Lifetime: 0');
+			$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate');
+			$this->response->addHeader('Pragma: no-cache');
 			$this->response->addHeader('Vary: User-Agent');
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(0);
+			}
 			$data['home'] = $this->url->link('extension/so_theme/mobile/home');
 			$this->load->language('extension/so_theme/soconfig/somobile','',$this->config->get('config_language'));
 			$data['menu_search'] = $this->url->link('product/search', '', true);
@@ -237,7 +243,13 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 		$platforms_mobile 		= $soconfig->get_settings('platforms_mobile');		
 		if($this->session->data['device']=='mobile' && $platforms_mobile != 0){
 			$this->response->addHeader('X-Accel-Expires: 0');
+			$this->response->addHeader('X-Cache-Lifetime: 0');
+			$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate');
+			$this->response->addHeader('Pragma: no-cache');
 			$this->response->addHeader('Vary: User-Agent');
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(0);
+			}
 			$this->load->language('extension/soconfig/somobile','',$this->config->get('config_language'));
 			//Decodes HTML Entities
 			$data['customfooter_text'] = html_entity_decode($data['soconfig']->get_settings('customfooter_text') ?? '', ENT_QUOTES, 'UTF-8');			
