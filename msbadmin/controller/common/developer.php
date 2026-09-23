@@ -75,6 +75,8 @@ class Developer extends \Opencart\System\Engine\Controller {
 				}
 			}
 
+			$this->purgeVarnish();
+
 			$json['success'] = $this->language->get('text_cache_success');
 		}
 
@@ -114,6 +116,8 @@ class Developer extends \Opencart\System\Engine\Controller {
 					}
 				}
 			}
+
+			$this->purgeVarnish();
 
 			$json['success'] = $this->language->get('text_theme_success');
 		}
@@ -289,4 +293,32 @@ class Developer extends \Opencart\System\Engine\Controller {
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}
+
+	protected function purgeVarnish(): void {
+		$url = defined('HTTP_CATALOG') ? HTTP_CATALOG : 'https://www.magicalsingingbowls.com/';
+		$host = parse_url($url, PHP_URL_HOST) ?: 'www.magicalsingingbowls.com';
+
+		$purge_headers = [
+			["X-Purge-Method: regex", "X-Purge-Regex: .*"],
+			["X-Cache-Tags: d0a4"],
+			["Host: " . $host]
+		];
+
+		foreach ($purge_headers as $headers) {
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			@curl_exec($ch);
+			@curl_close($ch);
+		}
+
+		if (function_exists('exec')) {
+			@exec('clpctl varnish-cache:purge --purge=all 2>&1');
+		}
+	}
 }
+

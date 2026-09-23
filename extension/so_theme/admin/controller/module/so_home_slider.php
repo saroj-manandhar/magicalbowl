@@ -106,6 +106,7 @@ class SoHomeSlider extends \Opencart\System\Engine\Controller {
 					$this->request->post['moduleid'] = $this->request->get['module_id'];
 					$this->model_setting_module->editModule($this->request->get['module_id'], $this->request->post);
 				}
+				$this->model_extension_so_theme_module_so_home_slider->clearCache();
 				$data = $this->request->post;
 				
 				$this->session->data['success'] = $this->language->get('text_success');
