@@ -48,6 +48,18 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 				foreach ($parts as $key => $value) {
 					$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword($value);
 
+					if (!$seo_url_info && strpos($value, '%') !== false) {
+						$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword(rawurldecode($value));
+					}
+
+					if (!$seo_url_info) {
+						$decoded = rawurldecode($value);
+						$hyphenated = strtolower(preg_replace('/[\s_]+/', '-', trim($decoded)));
+						if ($hyphenated !== strtolower($decoded)) {
+							$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword($hyphenated);
+						}
+					}
+
 					if ($seo_url_info) {
 						if ($seo_url_info['key'] == 'path') {
 							if (!isset($this->request->get['path'])) {

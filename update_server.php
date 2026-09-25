@@ -2033,6 +2033,24 @@ foreach ($lite_files as $lf) {
         echo "✔ Added class_alias to " . basename(dirname(dirname($lf))) . " Cache_Lite/Lite.php.<br/>";
     }
 }
+// 9.12 Fix SEO URL for Category 294 (Carving Singing Bowls)
+$check_cat294 = mysqli_query($link, "SELECT * FROM `{$prefix}seo_url` WHERE `key` = 'path' AND `value` = '294'");
+$updated_cat294 = false;
+while ($row_c294 = mysqli_fetch_assoc($check_cat294)) {
+    echo "Found SEO URL for Category 294: ID " . $row_c294['seo_url_id'] . " with keyword '" . htmlspecialchars($row_c294['keyword']) . "'<br/>";
+    if ($row_c294['keyword'] !== 'nepali-handmade-carving-singing-bowls') {
+        mysqli_query($link, "UPDATE `{$prefix}seo_url` SET `keyword` = 'nepali-handmade-carving-singing-bowls' WHERE `seo_url_id` = " . (int)$row_c294['seo_url_id']);
+        echo "✔ Updated Category 294 SEO URL to 'nepali-handmade-carving-singing-bowls'.<br/>";
+        $updated_cat294 = true;
+    }
+}
+if (!$updated_cat294) {
+    echo "✔ Category 294 SEO URL is already up to date.<br/>";
+}
+
+// 9.13 Deploy updated catalog/controller/startup/seo_url.php
+ensure_file_written(__DIR__ . '/catalog/controller/startup/seo_url.php', file_get_contents(__DIR__ . '/catalog/controller/startup/seo_url.php'));
+echo "✔ Deployed updated startup/seo_url.php to server.<br/>";
 
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
@@ -2052,6 +2070,29 @@ if (function_exists('opcache_reset')) {
     @opcache_reset();
 }
 echo "✔ All template and minify CSS caches purged.<br/>";
+
+// Purge Varnish Cache
+$purge_url = 'https://www.magicalsingingbowls.com/';
+$purge_headers = [
+    ["X-Purge-Method: regex", "X-Purge-Regex: .*"],
+    ["X-Cache-Tags: d0a4"],
+    ["Host: www.magicalsingingbowls.com"]
+];
+foreach ($purge_headers as $ph) {
+    $ch = curl_init($purge_url);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $ph);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    @curl_exec($ch);
+    @curl_close($ch);
+}
+if (function_exists('exec')) {
+    @exec('clpctl varnish-cache:purge --purge=all 2>&1');
+}
+echo "✔ Varnish cache purged.<br/>";
 
 echo "<h2>Done! Remote database updated and cache cleared.</h2>";
 
