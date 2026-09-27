@@ -98,6 +98,10 @@ class Category extends \Opencart\System\Engine\Model {
 			}
 		}
 
+		$this->cache->delete('category');
+
+		$this->purgeVarnish();
+
 		return $category_id;
 	}
 
@@ -272,6 +276,10 @@ class Category extends \Opencart\System\Engine\Model {
 				}
 			}
 		}
+
+		$this->cache->delete('category');
+
+		$this->purgeVarnish();
 	}
 
 	/**
@@ -327,6 +335,8 @@ class Category extends \Opencart\System\Engine\Model {
 		$this->model_catalog_category->deletePaths($category_id);
 
 		$this->cache->delete('category');
+
+		$this->purgeVarnish();
 	}
 
 	/**
@@ -1044,5 +1054,39 @@ class Category extends \Opencart\System\Engine\Model {
 		$query = $this->db->query("SELECT COUNT(*) AS `total` FROM `" . DB_PREFIX . "category_to_layout` WHERE `layout_id` = '" . (int)$layout_id . "'");
 
 		return (int)$query->row['total'];
+	}
+
+	/**
+	 * Purge Varnish Cache
+	 *
+	 * Purge Varnish and CloudPanel cache on frontend
+	 *
+	 * @return void
+	 */
+	public function purgeVarnish(): void {
+		$url = defined('HTTP_CATALOG') ? HTTP_CATALOG : 'https://www.magicalsingingbowls.com/';
+		$host = parse_url($url, PHP_URL_HOST) ?: 'www.magicalsingingbowls.com';
+
+		$purge_headers = [
+			["X-Purge-Method: regex", "X-Purge-Regex: .*"],
+			["X-Cache-Tags: d0a4"],
+			["Host: " . $host]
+		];
+
+		foreach ($purge_headers as $headers) {
+			$ch = curl_init($url);
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+			@curl_exec($ch);
+			@curl_close($ch);
+		}
+
+		if (function_exists('exec')) {
+			@exec('clpctl varnish-cache:purge --purge=all 2>&1');
+		}
 	}
 }

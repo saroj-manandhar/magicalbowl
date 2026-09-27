@@ -2052,6 +2052,12 @@ if (!$updated_cat294) {
 ensure_file_written(__DIR__ . '/catalog/controller/startup/seo_url.php', file_get_contents(__DIR__ . '/catalog/controller/startup/seo_url.php'));
 echo "✔ Deployed updated startup/seo_url.php to server.<br/>";
 
+// 9.14 Deploy updated admin models (information, category, product) with automated Varnish cache purge
+ensure_file_written(__DIR__ . '/msbadmin/model/catalog/information.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/information.php'));
+ensure_file_written(__DIR__ . '/msbadmin/model/catalog/category.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/category.php'));
+ensure_file_written(__DIR__ . '/msbadmin/model/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/product.php'));
+echo "✔ Deployed updated information, category, and product models with auto Varnish purge.<br/>";
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',
