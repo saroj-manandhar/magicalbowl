@@ -2101,7 +2101,9 @@ echo "✔ Updated config_telephone_required to 0 in setting table.<br/>";
 ensure_file_written(__DIR__ . '/system/library/mail.php', file_get_contents(__DIR__ . '/system/library/mail.php'));
 ensure_file_written(__DIR__ . '/catalog/controller/startup/setting.php', file_get_contents(__DIR__ . '/catalog/controller/startup/setting.php'));
 ensure_file_written(__DIR__ . '/msbadmin/controller/startup/setting.php', file_get_contents(__DIR__ . '/msbadmin/controller/startup/setting.php'));
-echo "✔ Deployed updated mail.php and setting startup controllers.<br/>";
+ensure_file_written(__DIR__ . '/catalog/controller/account/forgotten.php', file_get_contents(__DIR__ . '/catalog/controller/account/forgotten.php'));
+ensure_file_written(__DIR__ . '/catalog/language/en-gb/account/forgotten.php', file_get_contents(__DIR__ . '/catalog/language/en-gb/account/forgotten.php'));
+echo "✔ Deployed updated mail.php, setting startup controllers, and forgotten password files.<br/>";
 
 // 9.19 Configure Mail Engine and Alerts in Database
 $chk_m_engine = mysqli_query($link, "SELECT * FROM `{$prefix}setting` WHERE `store_id` = 0 AND `key` = 'config_mail_engine'");
