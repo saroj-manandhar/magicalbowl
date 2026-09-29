@@ -2097,6 +2097,60 @@ echo "✔ Deployed updated seo_url.php, so_sociallogin.php, and register.php (en
 mysqli_query($link, "UPDATE `{$prefix}setting` SET `value` = '0' WHERE `key` = 'config_telephone_required'");
 echo "✔ Updated config_telephone_required to 0 in setting table.<br/>";
 
+// 9.18 Deploy updated mail library and startup setting controllers
+ensure_file_written(__DIR__ . '/system/library/mail.php', file_get_contents(__DIR__ . '/system/library/mail.php'));
+ensure_file_written(__DIR__ . '/catalog/controller/startup/setting.php', file_get_contents(__DIR__ . '/catalog/controller/startup/setting.php'));
+ensure_file_written(__DIR__ . '/msbadmin/controller/startup/setting.php', file_get_contents(__DIR__ . '/msbadmin/controller/startup/setting.php'));
+echo "✔ Deployed updated mail.php and setting startup controllers.<br/>";
+
+// 9.19 Configure Mail Engine and Alerts in Database
+$chk_m_engine = mysqli_query($link, "SELECT * FROM `{$prefix}setting` WHERE `store_id` = 0 AND `key` = 'config_mail_engine'");
+if (mysqli_num_rows($chk_m_engine) == 0) {
+    mysqli_query($link, "INSERT INTO `{$prefix}setting` (store_id, code, `key`, value, serialized) VALUES (0, 'config', 'config_mail_engine', 'mail', 0)");
+    echo "✔ Inserted config_mail_engine = 'mail' in setting table.<br/>";
+} else {
+    $row_me = mysqli_fetch_assoc($chk_m_engine);
+    if (empty($row_me['value'])) {
+        mysqli_query($link, "UPDATE `{$prefix}setting` SET `value` = 'mail' WHERE `store_id` = 0 AND `key` = 'config_mail_engine'");
+        echo "✔ Updated config_mail_engine to 'mail' in setting table.<br/>";
+    } else {
+        echo "✔ config_mail_engine is already set to '<b>" . htmlspecialchars($row_me['value']) . "</b>'.<br/>";
+    }
+}
+
+// Ensure mail alerts include both order and account
+$chk_m_alert = mysqli_query($link, "SELECT * FROM `{$prefix}setting` WHERE `store_id` = 0 AND `key` = 'config_mail_alert'");
+if ($row_ma = mysqli_fetch_assoc($chk_m_alert)) {
+    $alerts = json_decode($row_ma['value'], true) ?: [];
+    if (!in_array('account', $alerts) || !in_array('order', $alerts)) {
+        if (!in_array('order', $alerts)) $alerts[] = 'order';
+        if (!in_array('account', $alerts)) $alerts[] = 'account';
+        $new_alerts = mysqli_real_escape_string($link, json_encode(array_values(array_unique($alerts))));
+        mysqli_query($link, "UPDATE `{$prefix}setting` SET `value` = '{$new_alerts}' WHERE `store_id` = 0 AND `key` = 'config_mail_alert'");
+        echo "✔ Updated config_mail_alert to: {$new_alerts}<br/>";
+    } else {
+        echo "✔ config_mail_alert already includes order and account alerts.<br/>";
+    }
+}
+
+// Check admin email and test mail sending
+$admin_email_res = mysqli_query($link, "SELECT `value` FROM `{$prefix}setting` WHERE `store_id` = 0 AND `key` = 'config_email'");
+$admin_email_row = mysqli_fetch_assoc($admin_email_res);
+$admin_email = !empty($admin_email_row['value']) ? $admin_email_row['value'] : 'sales.magicalsb@gmail.com';
+echo "Store Email Address: <b>{$admin_email}</b><br/>";
+
+$test_mail_result = @mail(
+    $admin_email,
+    'Magical Singing Bowls - Server Email Test',
+    "Hello,\r\n\r\nThis is an automated test email from Magical Singing Bowls server.\r\nIf you receive this, the server email system is working properly.\r\n\r\nSent at: " . date('Y-m-d H:i:s'),
+    "From: {$admin_email}\r\nReply-To: {$admin_email}\r\nX-Mailer: PHP/" . PHP_VERSION
+);
+if ($test_mail_result) {
+    echo "✔ PHP mail() successfully accepted the test email for delivery to <b>{$admin_email}</b>.<br/>";
+} else {
+    echo "<span style='color:red;'>✘ PHP mail() failed to send test email to {$admin_email}.</span><br/>";
+}
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',

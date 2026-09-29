@@ -26,6 +26,10 @@ class Mail {
 	 * @param array<string, mixed> $option
 	 */
 	public function __construct(string $adaptor = 'mail', array $option = []) {
+		if (empty($adaptor)) {
+			$adaptor = 'mail';
+		}
+
 		$class = 'Opencart\System\Library\Mail\\' . $adaptor;
 
 		if (class_exists($class)) {
@@ -150,8 +154,14 @@ class Mail {
 			throw new \Exception('Error: E-Mail message required!');
 		}
 
-		$mail = new $this->class($this->option);
+		try {
+			$mail = new $this->class($this->option);
 
-		return $mail->send();
+			return $mail->send();
+		} catch (\Exception $e) {
+			error_log('OpenCart Mail Send Exception: ' . $e->getMessage());
+
+			return false;
+		}
 	}
 }

@@ -25,6 +25,11 @@ class Setting extends \Opencart\System\Engine\Controller {
 			}
 		}
 
+		// Ensure mail engine defaults to 'mail' if not set
+		if (!$this->config->get('config_mail_engine')) {
+			$this->config->set('config_mail_engine', 'mail');
+		}
+
 		// Set time zone
 		if ($this->config->get('config_timezone')) {
 			date_default_timezone_set($this->config->get('config_timezone'));

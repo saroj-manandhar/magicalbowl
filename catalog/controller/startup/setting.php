@@ -49,6 +49,11 @@ class Setting extends \Opencart\System\Engine\Controller {
 			}
 		}
 
+		// Ensure mail engine defaults to 'mail' if not set
+		if (!$this->config->get('config_mail_engine')) {
+			$this->config->set('config_mail_engine', 'mail');
+		}
+
 		// Url
 		$this->registry->set('url', new \Opencart\System\Library\Url($this->config->get('config_url')));
 
