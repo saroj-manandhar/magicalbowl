@@ -2090,7 +2090,12 @@ foreach ($clean_seo_routes as $route_val => $kw_val) {
 }
 ensure_file_written(__DIR__ . '/catalog/controller/startup/seo_url.php', file_get_contents(__DIR__ . '/catalog/controller/startup/seo_url.php'));
 ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/event/so_sociallogin.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/event/so_sociallogin.php'));
-echo "✔ Deployed updated seo_url.php and so_sociallogin.php (en-gb removed, clean URLs enabled).<br/>";
+ensure_file_written(__DIR__ . '/catalog/controller/account/register.php', file_get_contents(__DIR__ . '/catalog/controller/account/register.php'));
+echo "✔ Deployed updated seo_url.php, so_sociallogin.php, and register.php (en-gb removed, telephone validation fixed).<br/>";
+
+// 9.17 Fix config_telephone_required in oc_setting
+mysqli_query($link, "UPDATE `{$prefix}setting` SET `value` = '0' WHERE `key` = 'config_telephone_required'");
+echo "✔ Updated config_telephone_required to 0 in setting table.<br/>";
 
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [

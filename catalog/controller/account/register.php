@@ -225,8 +225,12 @@ class Register extends \Opencart\System\Engine\Controller {
 				$json['error']['warning'] = $this->language->get('error_exists');
 			}
 
-			if ($this->config->get('config_telephone_required') && !oc_validate_length($post_info['telephone'], 3, 32)) {
-				$json['error']['telephone'] = $this->language->get('error_telephone');
+			if ($this->config->get('config_telephone_display')) {
+				if ($this->config->get('config_telephone_required') && !oc_validate_length($post_info['telephone'], 3, 32)) {
+					$json['error']['telephone'] = $this->language->get('error_telephone');
+				} elseif (!empty($post_info['telephone']) && !oc_validate_length($post_info['telephone'], 3, 32)) {
+					$json['error']['telephone'] = $this->language->get('error_telephone');
+				}
 			}
 
 			// Custom field validation
