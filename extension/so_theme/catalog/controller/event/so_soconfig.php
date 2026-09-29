@@ -142,6 +142,27 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
          $data['mselector_heading'] = !empty($data['soconfig']->get_settings('mselector_heading')) ? html_entity_decode($data['soconfig']->get_settings('mselector_heading'), ENT_QUOTES, 'UTF-8') : '';
 				
 		$platforms_mobile 		= $soconfig->get_settings('platforms_mobile');	
+		$current_route = isset($this->request->get['route']) ? (string)$this->request->get['route'] : '';
+
+		if (
+			str_starts_with($current_route, 'account/') ||
+			str_starts_with($current_route, 'checkout/') ||
+			$this->customer->isLogged()
+		) {
+			$this->response->addHeader('X-Accel-Expires: 0');
+			$this->response->addHeader('X-Cache-Lifetime: 0');
+			$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			$this->response->addHeader('Pragma: no-cache');
+			if (!headers_sent()) {
+				header('X-Accel-Expires: 0');
+				header('X-Cache-Lifetime: 0');
+				header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+				header('Pragma: no-cache');
+			}
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(0);
+			}
+		}
 
 		if($this->session->data['device']=='mobile' && $platforms_mobile != 0){
 			$this->response->addHeader('X-Accel-Expires: 0');
@@ -241,6 +262,28 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 		}
 	
 		$platforms_mobile 		= $soconfig->get_settings('platforms_mobile');		
+		$current_route = isset($this->request->get['route']) ? (string)$this->request->get['route'] : '';
+
+		if (
+			str_starts_with($current_route, 'account/') ||
+			str_starts_with($current_route, 'checkout/') ||
+			$this->customer->isLogged()
+		) {
+			$this->response->addHeader('X-Accel-Expires: 0');
+			$this->response->addHeader('X-Cache-Lifetime: 0');
+			$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			$this->response->addHeader('Pragma: no-cache');
+			if (!headers_sent()) {
+				header('X-Accel-Expires: 0');
+				header('X-Cache-Lifetime: 0');
+				header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+				header('Pragma: no-cache');
+			}
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(0);
+			}
+		}
+
 		if($this->session->data['device']=='mobile' && $platforms_mobile != 0){
 			$this->response->addHeader('X-Accel-Expires: 0');
 			$this->response->addHeader('X-Cache-Lifetime: 0');

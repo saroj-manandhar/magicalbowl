@@ -2058,6 +2058,14 @@ ensure_file_written(__DIR__ . '/msbadmin/model/catalog/category.php', file_get_c
 ensure_file_written(__DIR__ . '/msbadmin/model/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/product.php'));
 echo "✔ Deployed updated information, category, and product models with auto Varnish purge.<br/>";
 
+// 9.15 Deploy updated account/login, account/register, startup/session, startup/customer, and so_soconfig
+ensure_file_written(__DIR__ . '/catalog/controller/account/login.php', file_get_contents(__DIR__ . '/catalog/controller/account/login.php'));
+ensure_file_written(__DIR__ . '/catalog/controller/account/register.php', file_get_contents(__DIR__ . '/catalog/controller/account/register.php'));
+ensure_file_written(__DIR__ . '/catalog/controller/startup/session.php', file_get_contents(__DIR__ . '/catalog/controller/startup/session.php'));
+ensure_file_written(__DIR__ . '/catalog/controller/startup/customer.php', file_get_contents(__DIR__ . '/catalog/controller/startup/customer.php'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php'));
+echo "✔ Deployed updated login, register, session, customer, and so_soconfig with Varnish cache control.<br/>";
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',

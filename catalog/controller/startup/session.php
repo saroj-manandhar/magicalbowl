@@ -70,6 +70,29 @@ class Session extends \Opencart\System\Engine\Controller {
 
 		$this->response->addHeader('Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
 
+		$route = isset($this->request->get['route']) ? (string)$this->request->get['route'] : '';
+
+		if (
+			str_starts_with($route, 'account/') ||
+			str_starts_with($route, 'checkout/') ||
+			(isset($_SERVER['REQUEST_METHOD']) && in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'DELETE'])) ||
+			!empty($this->session->data['customer_id'])
+		) {
+			$this->response->addHeader('X-Accel-Expires: 0');
+			$this->response->addHeader('X-Cache-Lifetime: 0');
+			$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			$this->response->addHeader('Pragma: no-cache');
+			if (!headers_sent()) {
+				header('X-Accel-Expires: 0');
+				header('X-Cache-Lifetime: 0');
+				header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+				header('Pragma: no-cache');
+			}
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(0);
+			}
+		}
+
 		setcookie($this->config->get('session_name'), $session->getId(), $option);
 	}
 }

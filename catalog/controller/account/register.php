@@ -44,6 +44,19 @@ class Register extends \Opencart\System\Engine\Controller {
 		$data['config_file_max_size'] = ((int)$this->config->get('config_file_max_size') * 1024 * 1024);
 		$data['config_telephone_display'] = $this->config->get('config_telephone_display');
 		$data['config_telephone_required'] = $this->config->get('config_telephone_required');
+		$this->response->addHeader('X-Accel-Expires: 0');
+		$this->response->addHeader('X-Cache-Lifetime: 0');
+		$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+		$this->response->addHeader('Pragma: no-cache');
+		if (!headers_sent()) {
+			header('X-Accel-Expires: 0');
+			header('X-Cache-Lifetime: 0');
+			header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			header('Pragma: no-cache');
+		}
+		if (class_exists('ClpVarnish')) {
+			\ClpVarnish::setCacheLifetime(0);
+		}
 
 		// Create form token
 		$this->session->data['register_token'] = oc_token(26);
@@ -141,8 +154,27 @@ class Register extends \Opencart\System\Engine\Controller {
 
 		$post_info = $this->request->post + $required;
 
-		if (!isset($this->request->get['register_token']) || !isset($this->session->data['register_token']) || ($this->session->data['register_token'] != $this->request->get['register_token'])) {
-			$json['redirect'] = $this->url->link('account/register', 'language=' . $this->config->get('config_language'), true);
+		$this->response->addHeader('X-Accel-Expires: 0');
+		$this->response->addHeader('X-Cache-Lifetime: 0');
+		$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+		$this->response->addHeader('Pragma: no-cache');
+		if (!headers_sent()) {
+			header('X-Accel-Expires: 0');
+			header('X-Cache-Lifetime: 0');
+			header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			header('Pragma: no-cache');
+		}
+		if (class_exists('ClpVarnish')) {
+			\ClpVarnish::setCacheLifetime(0);
+		}
+
+		$token_valid = (isset($this->request->get['register_token']) && isset($this->session->data['register_token']) && ($this->session->data['register_token'] == $this->request->get['register_token']));
+
+		if (!$token_valid) {
+			$has_registration_data = (!empty($post_info['firstname']) || !empty($post_info['lastname']) || !empty($post_info['email']) || !empty($post_info['password']));
+			if (!$has_registration_data) {
+				$json['redirect'] = $this->url->link('account/register', 'language=' . $this->config->get('config_language'), true);
+			}
 		}
 
 		// Captcha first to prevent probing for registered emails

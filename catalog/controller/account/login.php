@@ -84,6 +84,20 @@ class Login extends \Opencart\System\Engine\Controller {
 			$data['redirect'] = '';
 		}
 
+		$this->response->addHeader('X-Accel-Expires: 0');
+		$this->response->addHeader('X-Cache-Lifetime: 0');
+		$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+		$this->response->addHeader('Pragma: no-cache');
+		if (!headers_sent()) {
+			header('X-Accel-Expires: 0');
+			header('X-Cache-Lifetime: 0');
+			header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			header('Pragma: no-cache');
+		}
+		if (class_exists('ClpVarnish')) {
+			\ClpVarnish::setCacheLifetime(0);
+		}
+
 		$this->session->data['login_token'] = oc_token(26);
 
 		$data['login'] = $this->url->link('account/login.login', 'language=' . $this->config->get('config_language') . '&login_token=' . $this->session->data['login_token']);
@@ -110,6 +124,20 @@ class Login extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
+		$this->response->addHeader('X-Accel-Expires: 0');
+		$this->response->addHeader('X-Cache-Lifetime: 0');
+		$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+		$this->response->addHeader('Pragma: no-cache');
+		if (!headers_sent()) {
+			header('X-Accel-Expires: 0');
+			header('X-Cache-Lifetime: 0');
+			header('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+			header('Pragma: no-cache');
+		}
+		if (class_exists('ClpVarnish')) {
+			\ClpVarnish::setCacheLifetime(0);
+		}
+
 		// Stop any undefined index messages.
 		$required = [
 			'email'    => '',
@@ -121,8 +149,13 @@ class Login extends \Opencart\System\Engine\Controller {
 
 		$this->customer->logout();
 
-		if (!isset($this->request->get['login_token']) || !isset($this->session->data['login_token']) || ($this->request->get['login_token'] != $this->session->data['login_token'])) {
-			$json['redirect'] = $this->url->link('account/login', 'language=' . $this->config->get('config_language'), true);
+		$token_valid = (isset($this->request->get['login_token']) && isset($this->session->data['login_token']) && ($this->request->get['login_token'] == $this->session->data['login_token']));
+
+		if (!$token_valid) {
+			$has_credentials = (!empty($post_info['email']) && !empty($post_info['password']));
+			if (!$has_credentials) {
+				$json['redirect'] = $this->url->link('account/login', 'language=' . $this->config->get('config_language'), true);
+			}
 		}
 
 		if (!$json) {
