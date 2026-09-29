@@ -399,7 +399,7 @@ class SoSociallogin extends \Opencart\System\Engine\Controller {
                             function checkWidth() {
                                 var windowsize = $window.width();
                                 if (windowsize > 767) {
-                                    $("a[href*=\'account/login\']").click(function (e) {
+                                    $("a[href*=\'account/login\'], a[href$=\"/login\"], a[href$=\"/login \"], a[href*=\"/login?\"]").click(function (e) {
                                         e.preventDefault();
 										
                                         $("#so_sociallogin").modal("toggle");

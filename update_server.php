@@ -2066,6 +2066,32 @@ ensure_file_written(__DIR__ . '/catalog/controller/startup/customer.php', file_g
 ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/event/so_soconfig.php'));
 echo "✔ Deployed updated login, register, session, customer, and so_soconfig with Varnish cache control.<br/>";
 
+// 9.16 Clean SEO URLs: register, login, cart, checkout, and remove en-gb prefix
+$clean_seo_routes = [
+    'account/register'    => 'register',
+    'account/login'       => 'login',
+    'account/logout'      => 'logout',
+    'account/forgotten'   => 'forgot-password',
+    'account/account'     => 'account',
+    'account/wishlist'    => 'wishlist',
+    'account/order'       => 'order-history',
+    'checkout/cart'       => 'cart',
+    'checkout/checkout'   => 'checkout',
+    'checkout/success'    => 'order-success',
+    'information/contact' => 'contact-us',
+    'information/sitemap' => 'sitemap'
+];
+foreach ($clean_seo_routes as $route_val => $kw_val) {
+    $chk_route = mysqli_query($link, "SELECT * FROM `{$prefix}seo_url` WHERE `key` = 'route' AND `value` = '{$route_val}'");
+    if (mysqli_num_rows($chk_route) == 0) {
+        mysqli_query($link, "INSERT INTO `{$prefix}seo_url` (store_id, language_id, `key`, `value`, `keyword`, sort_order) VALUES (0, 1, 'route', '{$route_val}', '{$kw_val}', 0)");
+        echo "✔ Added SEO URL keyword '<b>{$kw_val}</b>' for '<b>{$route_val}</b>'.<br/>";
+    }
+}
+ensure_file_written(__DIR__ . '/catalog/controller/startup/seo_url.php', file_get_contents(__DIR__ . '/catalog/controller/startup/seo_url.php'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/event/so_sociallogin.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/event/so_sociallogin.php'));
+echo "✔ Deployed updated seo_url.php and so_sociallogin.php (en-gb removed, clean URLs enabled).<br/>";
+
 // Clear template cache and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',

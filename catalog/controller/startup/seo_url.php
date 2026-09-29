@@ -60,6 +60,30 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 						}
 					}
 
+					if (!$seo_url_info) {
+						$static_routes_decode = [
+							'register'        => 'account/register',
+							'login'           => 'account/login',
+							'logout'          => 'account/logout',
+							'forgot-password' => 'account/forgotten',
+							'account'         => 'account/account',
+							'wishlist'        => 'account/wishlist',
+							'order-history'   => 'account/order',
+							'cart'            => 'checkout/cart',
+							'checkout'        => 'checkout/checkout',
+							'order-success'   => 'checkout/success',
+							'contact-us'      => 'information/contact',
+							'contact'         => 'information/contact',
+							'sitemap'         => 'information/sitemap'
+						];
+						if (isset($static_routes_decode[$value])) {
+							$seo_url_info = [
+								'key'   => 'route',
+								'value' => $static_routes_decode[$value]
+							];
+						}
+					}
+
 					if ($seo_url_info) {
 						if ($seo_url_info['key'] == 'path') {
 							if (!isset($this->request->get['path'])) {
@@ -170,10 +194,42 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 
 				unset($query[$key]);
 			} else {
+				// 1. Skip adding default language prefix (e.g. en-gb) to URLs across the entire website
+				if ($key == 'language' && ($value == 'en-gb' || $value == $this->config->get('config_language_catalog') || $value == $this->config->get('config_language'))) {
+					unset($query[$key]);
+					continue;
+				}
+
 				$index = $key . '=' . $value;
 
 				if (!isset($this->data[$language_id][$index])) {
 					$this->data[$language_id][$index] = $this->model_design_seo_url->getSeoUrlByKeyValue((string)$key, (string)$value);
+				}
+
+				// 2. Fallback route mapping for clean SEO URLs if not in database
+				if (!$this->data[$language_id][$index] && $key == 'route') {
+					$static_routes_encode = [
+						'account/register'    => 'register',
+						'account/login'       => 'login',
+						'account/logout'      => 'logout',
+						'account/forgotten'   => 'forgot-password',
+						'account/account'     => 'account',
+						'account/wishlist'    => 'wishlist',
+						'account/order'       => 'order-history',
+						'checkout/cart'       => 'cart',
+						'checkout/checkout'   => 'checkout',
+						'checkout/success'    => 'order-success',
+						'information/contact' => 'contact-us',
+						'information/sitemap' => 'sitemap'
+					];
+					if (isset($static_routes_encode[$value])) {
+						$this->data[$language_id][$index] = [
+							'key'        => 'route',
+							'value'      => $value,
+							'keyword'    => $static_routes_encode[$value],
+							'sort_order' => 0
+						];
+					}
 				}
 
 				if ($this->data[$language_id][$index]) {
