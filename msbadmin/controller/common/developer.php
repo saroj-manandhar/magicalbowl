@@ -298,26 +298,46 @@ class Developer extends \Opencart\System\Engine\Controller {
 		$url = defined('HTTP_CATALOG') ? HTTP_CATALOG : 'https://www.magicalsingingbowls.com/';
 		$host = parse_url($url, PHP_URL_HOST) ?: 'www.magicalsingingbowls.com';
 
-		$purge_headers = [
-			["X-Purge-Method: regex", "X-Purge-Regex: .*"],
-			["X-Cache-Tags: d0a4"],
+		// 1. Purge via local CloudPanel CLI tool
+		if (function_exists('exec')) {
+			@exec('clpctl varnish-cache:purge --purge=all 2>&1');
+			@exec('/usr/bin/clpctl varnish-cache:purge --purge=all 2>&1');
+			@exec('/usr/local/bin/clpctl varnish-cache:purge --purge=all 2>&1');
+		}
+
+		// 2. HTTP PURGE targets & headers
+		$targets = [
+			'https://www.magicalsingingbowls.com/',
+			'http://127.0.0.1:6081/',
+			'http://127.0.0.1/'
+		];
+
+		$header_sets = [
+			["Host: " . $host, "X-Cache-Tags: d0a4"],
+			["Host: " . $host, "X-Purge-Method: regex", "X-Purge-Regex: .*"],
 			["Host: " . $host]
 		];
 
-		foreach ($purge_headers as $headers) {
-			$ch = curl_init($url);
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
-			curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-			curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-			@curl_exec($ch);
-			@curl_close($ch);
+		foreach ($targets as $target_url) {
+			foreach ($header_sets as $headers) {
+				$ch = curl_init($target_url);
+				curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+				curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+				curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+				@curl_exec($ch);
+				@curl_close($ch);
+			}
 		}
 
-		if (function_exists('exec')) {
-			@exec('clpctl varnish-cache:purge --purge=all 2>&1');
+		// 3. Clear OpenCart internal cache
+		if (isset($this->cache)) {
+			$this->cache->delete('product');
+			$this->cache->delete('category');
+			$this->cache->delete('information');
 		}
 	}
 }

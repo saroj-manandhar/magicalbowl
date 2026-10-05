@@ -91,6 +91,14 @@ class Session extends \Opencart\System\Engine\Controller {
 			if (class_exists('ClpVarnish')) {
 				\ClpVarnish::setCacheLifetime(0);
 			}
+		} else {
+			$this->response->addHeader('X-Cache-Lifetime: 600');
+			if (!headers_sent()) {
+				header('X-Cache-Lifetime: 600');
+			}
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(600);
+			}
 		}
 
 		setcookie($this->config->get('session_name'), $session->getId(), $option);

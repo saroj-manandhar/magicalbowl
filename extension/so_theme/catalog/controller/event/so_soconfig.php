@@ -162,6 +162,14 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 			if (class_exists('ClpVarnish')) {
 				\ClpVarnish::setCacheLifetime(0);
 			}
+		} else {
+			$this->response->addHeader('X-Cache-Lifetime: 600');
+			if (!headers_sent()) {
+				header('X-Cache-Lifetime: 600');
+			}
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(600);
+			}
 		}
 
 		if($this->session->data['device']=='mobile' && $platforms_mobile != 0){
@@ -281,6 +289,14 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 			}
 			if (class_exists('ClpVarnish')) {
 				\ClpVarnish::setCacheLifetime(0);
+			}
+		} else {
+			$this->response->addHeader('X-Cache-Lifetime: 600');
+			if (!headers_sent()) {
+				header('X-Cache-Lifetime: 600');
+			}
+			if (class_exists('ClpVarnish')) {
+				\ClpVarnish::setCacheLifetime(600);
 			}
 		}
 

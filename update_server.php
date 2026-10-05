@@ -2052,11 +2052,13 @@ if (!$updated_cat294) {
 ensure_file_written(__DIR__ . '/catalog/controller/startup/seo_url.php', file_get_contents(__DIR__ . '/catalog/controller/startup/seo_url.php'));
 echo "✔ Deployed updated startup/seo_url.php to server.<br/>";
 
-// 9.14 Deploy updated admin models (information, category, product) with automated Varnish cache purge
+// 9.14 Deploy updated admin models (information, category, product) and developer controller with automated Varnish cache purge
 ensure_file_written(__DIR__ . '/msbadmin/model/catalog/information.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/information.php'));
 ensure_file_written(__DIR__ . '/msbadmin/model/catalog/category.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/category.php'));
 ensure_file_written(__DIR__ . '/msbadmin/model/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/product.php'));
-echo "✔ Deployed updated information, category, and product models with auto Varnish purge.<br/>";
+ensure_file_written(__DIR__ . '/msbadmin/controller/common/developer.php', file_get_contents(__DIR__ . '/msbadmin/controller/common/developer.php'));
+ensure_file_written(__DIR__ . '/extension/tmd/admin/controller/other/import.php', file_get_contents(__DIR__ . '/extension/tmd/admin/controller/other/import.php'));
+echo "✔ Deployed updated information, category, product, developer, and TMD import controllers with auto Varnish purge.<br/>";
 
 // 9.15 Deploy updated account/login, account/register, startup/session, startup/customer, and so_soconfig
 ensure_file_written(__DIR__ . '/catalog/controller/account/login.php', file_get_contents(__DIR__ . '/catalog/controller/account/login.php'));
@@ -2173,25 +2175,34 @@ if (function_exists('opcache_reset')) {
 echo "✔ All template and minify CSS caches purged.<br/>";
 
 // Purge Varnish Cache
-$purge_url = 'https://www.magicalsingingbowls.com/';
-$purge_headers = [
-    ["X-Purge-Method: regex", "X-Purge-Regex: .*"],
-    ["X-Cache-Tags: d0a4"],
+$purge_targets = [
+    'https://www.magicalsingingbowls.com/',
+    'http://127.0.0.1:6081/',
+    'http://127.0.0.1/'
+];
+$purge_header_sets = [
+    ["Host: www.magicalsingingbowls.com", "X-Cache-Tags: d0a4"],
+    ["Host: www.magicalsingingbowls.com", "X-Purge-Method: regex", "X-Purge-Regex: .*"],
     ["Host: www.magicalsingingbowls.com"]
 ];
-foreach ($purge_headers as $ph) {
-    $ch = curl_init($purge_url);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $ph);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 2);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    @curl_exec($ch);
-    @curl_close($ch);
+foreach ($purge_targets as $pt) {
+    foreach ($purge_header_sets as $ph) {
+        $ch = curl_init($pt);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PURGE');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $ph);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        @curl_exec($ch);
+        @curl_close($ch);
+    }
 }
 if (function_exists('exec')) {
     @exec('clpctl varnish-cache:purge --purge=all 2>&1');
+    @exec('/usr/bin/clpctl varnish-cache:purge --purge=all 2>&1');
+    @exec('/usr/local/bin/clpctl varnish-cache:purge --purge=all 2>&1');
 }
 echo "✔ Varnish cache purged.<br/>";
 
