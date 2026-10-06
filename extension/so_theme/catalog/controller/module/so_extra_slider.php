@@ -277,14 +277,17 @@ class SoExtraSlider extends \Opencart\System\Engine\Controller {
 					$data['image_galleries'] = array();
 					$image_galleries = $this->model_catalog_product->getImages($product_info['product_id']);
 					foreach ($image_galleries as $image_gallery) {
-						$data['image_galleries'][] = array(
-							'cart' => $this->model_tool_image->resize($image_gallery['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height')),
-							'thumb' => $this->model_tool_image->resize($image_gallery['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'))
-						);
+						if (!empty($image_gallery['image'])) {
+							$data['image_galleries'][] = array(
+								'cart' => $this->model_tool_image->resize($image_gallery['image'], (int)$this->config->get('config_image_cart_width'), (int)$this->config->get('config_image_cart_height')),
+								'thumb' => $this->model_tool_image->resize($image_gallery['image'], (int)$this->config->get('config_image_product_width'), (int)$this->config->get('config_image_product_height'))
+							);
+						}
 					}
+					$first_gallery_image = !empty($product_info['image']) ? $product_info['image'] : (!empty($product_image_first['image']) ? $product_image_first['image'] : 'placeholder.png');
 					$data['first_gallery'] = array(
-							'cart' => $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height')),
-							'thumb' => $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_product_width'), $this->config->get('config_image_product_height'))
+							'cart' => $this->model_tool_image->resize($first_gallery_image, (int)$this->config->get('config_image_cart_width'), (int)$this->config->get('config_image_cart_height')),
+							'thumb' => $this->model_tool_image->resize($first_gallery_image, (int)$this->config->get('config_image_product_width'), (int)$this->config->get('config_image_product_height'))
 					);
 					
 					

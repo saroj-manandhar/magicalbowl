@@ -578,23 +578,29 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 				$setting['height'] = ($setting['height'] == 0 ? "30px" : $setting['height']);
 				$product_image_first = array_shift($product_image);
 				$image2 = $this->model_tool_image->resize('placeholder.png', $setting['width'], $setting['height']);
-				if($product_image_first != null)
+				if($product_image_first != null && !empty($product_image_first['image']))
 				{
 					$image2 = $this->model_tool_image->resize($product_image_first['image'], $setting['width'], $setting['height']);
 				}
-				$images_lg = $this->model_tool_image->resize($product_info['image'], 600, 600);
-				if ($product_info['image'] && $setting['product_get_image_data']) {
+				if (!empty($product_info['image'])) {
+					$images_lg = $this->model_tool_image->resize($product_info['image'], 600, 600);
+				} elseif (!empty($product_image_first['image'])) {
+					$images_lg = $this->model_tool_image->resize($product_image_first['image'], 600, 600);
+				} else {
+					$images_lg = $this->model_tool_image->resize('placeholder.png', 600, 600);
+				}
+				if (!empty($product_info['image']) && $setting['product_get_image_data']) {
 					$image = $this->model_tool_image->resize($product_info['image'], $setting['width'], $setting['height']);
-				}elseif(isset($product_image_first['image']) && $setting['product_get_image_image']){
+				}elseif(isset($product_image_first['image']) && !empty($product_image_first['image']) && $setting['product_get_image_image']){
 					$image = $this->model_tool_image->resize($product_image_first['image'], $setting['width'], $setting['height']);
 				} else {
-					$url = file_exists("image/so_listing_tabs/images/".$setting['product_placeholder_path']);
-				if ($url) {
-					$image_name = "so_listing_tabs/images/".$setting['product_placeholder_path'];
-				} else {
-					$image_name = "no_image.png";
-				}
-				$image = $this->model_tool_image->resize($image_name, $setting['width'], $setting['height']);
+					$url = !empty($setting['product_placeholder_path']) && file_exists("image/so_listing_tabs/images/".$setting['product_placeholder_path']);
+					if ($url) {
+						$image_name = "so_listing_tabs/images/".$setting['product_placeholder_path'];
+					} else {
+						$image_name = "no_image.png";
+					}
+					$image = $this->model_tool_image->resize($image_name, $setting['width'], $setting['height']);
 				}
 				if ($this->customer->isLogged() || !$this->config->get('config_customer_price')) {
 					$price = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
@@ -628,14 +634,17 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
         		$data['image_galleries'] = array();
 				$image_galleries = $this->model_catalog_product->getImages($product_info['product_id']);
 				foreach ($image_galleries as $image_gallery) {
-					$data['image_galleries'][] = array(
-						'cart' => $this->model_tool_image->resize($image_gallery['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height')),
-						'thumb' => $this->model_tool_image->resize($image_gallery['image'], $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'))
-					);
+					if (!empty($image_gallery['image'])) {
+						$data['image_galleries'][] = array(
+							'cart' => $this->model_tool_image->resize($image_gallery['image'], (int)$this->config->get('config_image_cart_width'), (int)$this->config->get('config_image_cart_height')),
+							'thumb' => $this->model_tool_image->resize($image_gallery['image'], (int)$this->config->get('config_image_thumb_width'), (int)$this->config->get('config_image_thumb_height'))
+						);
+					}
 				}
+				$first_gallery_image = !empty($product_info['image']) ? $product_info['image'] : (!empty($product_image_first['image']) ? $product_image_first['image'] : 'placeholder.png');
 				$data['first_gallery'] = array(
-						'cart' => $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_cart_width'), $this->config->get('config_image_cart_height')),
-						'thumb' => $this->model_tool_image->resize($product_info['image'], $this->config->get('config_image_thumb_width'), $this->config->get('config_image_thumb_height'))
+						'cart' => $this->model_tool_image->resize($first_gallery_image, (int)$this->config->get('config_image_cart_width'), (int)$this->config->get('config_image_cart_height')),
+						'thumb' => $this->model_tool_image->resize($first_gallery_image, (int)$this->config->get('config_image_thumb_width'), (int)$this->config->get('config_image_thumb_height'))
 				);
 				
 				// Dev Custom Show Category
@@ -731,7 +740,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 									'product_option_value_id' => $option_value['product_option_value_id'],
 									'option_value_id'         => $option_value['option_value_id'],
 									'name'                    => $option_value['name'],
-									'image'                   => $this->model_tool_image->resize($option_value['image'], $width_product_page, $height_product_page),
+									'image'                   => !empty($option_value['image']) ? $this->model_tool_image->resize($option_value['image'], $width_product_page, $height_product_page) : '',
 									'price'                   => $priceO,
 									'price_prefix'            => $option_value['price_prefix'],
 									'color_image'             => $pimage,

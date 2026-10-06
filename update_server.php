@@ -2155,10 +2155,20 @@ if ($test_mail_result) {
     echo "<span style='color:red;'>✘ PHP mail() failed to send test email to {$admin_email}.</span><br/>";
 }
 
-// Clear template cache and minify CSS cache
+// 9.20 Deploy null-safe image models and hardened theme image handling
+ensure_file_written(__DIR__ . '/catalog/model/tool/image.php', file_get_contents(__DIR__ . '/catalog/model/tool/image.php'));
+ensure_file_written(__DIR__ . '/msbadmin/model/tool/image.php', file_get_contents(__DIR__ . '/msbadmin/model/tool/image.php'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/module/so_listing_tabs.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/module/so_listing_tabs.php'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/module/so_extra_slider.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/module/so_extra_slider.php'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/module/so_filter_shop_by.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/module/so_filter_shop_by.php'));
+echo "✔ Deployed null-safe image models and hardened so_listing_tabs, so_extra_slider, so_filter_shop_by.<br/>";
+
+// Clear template cache, SO listing tabs cache, and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',
     __DIR__ . '/system/storage/cache/template/',
+    __DIR__ . '/system/storage/cache/so/ListingTabs/',
+    __DIR__ . '/storage/cache/so/ListingTabs/',
     __DIR__ . '/extension/so_theme/catalog/view/template/minify/'
 ];
 foreach ($cache_dirs_purge as $cdp) {

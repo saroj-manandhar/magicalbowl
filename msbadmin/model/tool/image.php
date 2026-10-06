@@ -25,7 +25,11 @@ class Image extends \Opencart\System\Engine\Model {
 	 *
 	 * $placeholder = $this->model_tool_image->resize($filename, $width, $height);
 	 */
-	public function resize(string $filename, int $width, int $height): string {
+	public function resize(?string $filename = null, int $width = 0, int $height = 0): string {
+		if (empty($filename)) {
+			return '';
+		}
+
 		$filename = html_entity_decode($filename, ENT_QUOTES, 'UTF-8');
 
 		if (!is_file(DIR_IMAGE . $filename) || substr(str_replace('\\', '/', realpath(DIR_IMAGE . $filename)), 0, strlen(DIR_IMAGE)) != DIR_IMAGE) {
