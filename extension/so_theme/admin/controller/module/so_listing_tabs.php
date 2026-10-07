@@ -108,6 +108,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			'display_wishlist' 		=> '1',
 			'display_compare'		=> '1',
 			'display_rating'		=> '1',
+			'display_viewed'		=> '1',
 			'display_sale'			=> '1',
 			'display_new'			=> '1',
 			'date_day'				=> '7',
@@ -154,6 +155,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			'rating' 		=> $this->language->get('value_rating'),
 			'p_sort_order' 	=> $this->language->get('value_sort_order'),
 			'p_date_added' 	=> $this->language->get('value_date_added'),
+			'p_viewed' 		=> $this->language->get('value_viewed'),
 			'sell' 			=> $this->language->get('value_sell')
 		);
 		if (isset($this->request->get['module_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST') || $this->request->server['REQUEST_METHOD'] == 'POST' && !$this->validate() && isset($this->request->get['module_id'])) {
@@ -307,7 +309,8 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			'p.quantity' 	=> $this->language->get('value_quantity'),
 			'rating' 		=> $this->language->get('value_rating'),
 			'p.sort_order' 	=> $this->language->get('value_sort_order'),
-			'p.date_added' 	=> $this->language->get('value_date_added')
+			'p.date_added' 	=> $this->language->get('value_date_added'),
+			'p.viewed' 		=> $this->language->get('value_viewed')
 		);
 		//Product order direction
 		$data['product_orderings'] = array(
@@ -556,6 +559,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 				'rating' 		=> $this->language->get('value_rating'),
 				'p_sort_order' 	=> $this->language->get('value_sort_order'),
 				'p_date_added' 	=> $this->language->get('value_date_added'),
+				'p_viewed' 		=> $this->language->get('value_viewed'),
 				'sell' 			=> $this->language->get('value_sell')
 			);
 			foreach ($field_product_tabs as $option_id => $option_value) {

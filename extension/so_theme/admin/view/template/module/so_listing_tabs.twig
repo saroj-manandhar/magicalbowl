@@ -812,6 +812,31 @@
 												</div>
 											</div>
 											<div class="row mb-3">
+												<label class="col-sm-3 col-form-label" for="input-display_viewed"> <span data-toggle="tooltip" title="{{ objlang.get('entry_display_viewed_desc') }}">{{ objlang.get('entry_display_viewed') }}</span></label>
+												<div class="col-sm-9">
+													<div class="col-sm-5">
+														<label class="radio-inline">
+															{% if module.display_viewed %}
+																<input type="radio" name="display_viewed" value="1" checked="checked" />
+																{{ objlang.get('text_yes') }}
+															{% else %}
+																<input type="radio" name="display_viewed" value="1" />
+																{{ objlang.get('text_yes') }}
+															{% endif %}
+														</label>
+														<label class="radio-inline">
+															{% if module.display_viewed %}
+																<input type="radio" name="display_viewed" value="0" />
+																{{ objlang.get('text_no') }}
+															{% else %}
+																<input type="radio" name="display_viewed" value="0" checked="checked" />
+																{{ objlang.get('text_no') }}
+															{% endif %}
+														</label>
+													</div>
+												</div>
+											</div>
+											<div class="row mb-3">
 												<label class="col-sm-3 col-form-label" for="input-display_sale"> <span data-toggle="tooltip" title="{{ objlang.get('entry_display_sale_desc') }}">{{ objlang.get('entry_display_sale') }}</span></label>
 												<div class="col-sm-9">
 													<div class="col-sm-5">

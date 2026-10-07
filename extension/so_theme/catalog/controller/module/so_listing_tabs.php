@@ -76,6 +76,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			'display_wishlist' 		=> '1',
 			'display_compare'		=> '1',
 			'display_rating'		=> '1',
+			'display_viewed'		=> '1',
 			'display_sale'			=> '1',
 			'display_new'			=> '1',
 			'date_day'				=> '7',
@@ -262,6 +263,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			$tab_id = $_POST['categoryid'];
 			$tab_id = $tab_id == '*' ? 'all' : $tab_id;
 			$display_rating			= (int)$setting['display_rating'] ;
+			$display_viewed			= isset($setting['display_viewed']) ? (int)$setting['display_viewed'] : 1;
 			$display_sale			= $setting['display_sale'];
 			$display_new 			= $setting['display_new'];
 			$product_image_num 		= (int)$setting['product_image_num'];
@@ -302,6 +304,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 				'touchdrag'			=> $touchdrag,
 				'rl_loaded'			=> $rl_loaded,
 				'display_rating'	=> $display_rating,
+				'display_viewed'	=> $display_viewed,
 				'display_sale'		=> $display_sale,
 				'display_new'		=> $display_new,
 				'product_image_num'	=> $product_image_num,
@@ -798,6 +801,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 					'productNew'	=> $productNew,	
 					'tax'         	=> $tax,
 					'rating'      	=> $rating,
+					'viewed'      	=> isset($product_info['viewed']) ? (int)$product_info['viewed'] : 0,
 					'date_added'  	=> $product_info['date_added'],
 					'model'  	  	=> $product_info['model'],
 					'quantity'    	=> $product_info['quantity'],
@@ -824,6 +828,8 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			case 'rating' 			: return $this->language->get('value_rating');
 			case 'p_sort_order' 	: return $this->language->get('value_sort_add');
 			case 'p_date_added' 	: return $this->language->get('value_date_add');
+			case 'p_viewed' 		: 
+			case 'p.viewed' 		: return $this->language->get('value_viewed');
 			case 'sell' 			: return $this->language->get('value_sell');
 		}
 	}

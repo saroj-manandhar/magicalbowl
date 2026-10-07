@@ -125,6 +125,7 @@ class SoListingTabs extends \Opencart\System\Engine\Model {
 			'rating',
 			'p.sort_order',
 			'p.date_added',
+			'p.viewed',
 		);
 		if (isset($data['sort'])){
 			switch($data['sort'])
@@ -134,6 +135,9 @@ class SoListingTabs extends \Opencart\System\Engine\Model {
 				break;
 				case 'p_date_added':
 					$data['sort'] = str_replace('p_date_added','p.date_added',$data['sort']);
+				break;
+				case 'p_viewed':
+					$data['sort'] = str_replace('p_viewed','p.viewed',$data['sort']);
 				break;
 				default :
 					$data['sort'] = str_replace('_','.',$data['sort']);

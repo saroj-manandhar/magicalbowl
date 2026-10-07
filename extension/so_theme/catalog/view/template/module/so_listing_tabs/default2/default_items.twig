@@ -45,7 +45,7 @@
 
 					</div>
 					<div class="right-block">
-						{% if display_title or display_description or display_price or display_rating %}
+						{% if display_title or display_description or display_price or display_rating or display_viewed %}
 						<div class="caption">
 							{% if display_title %}
 								<h4><a href="{{ product.href }}" title="{{ product.name }}" target="{{ item_link_target }}">{{ product.name }}</a></h4>
@@ -60,6 +60,12 @@
 								  			<span class="fa fa-stack"><i class="fa fa-star fa-stack-2x"></i><i class="fa fa-star-o fa-stack-2x"></i></span>
 								  		{% endif %}
 								  	{% endfor %}
+								</div>
+							{% endif %}
+
+							{% if (display_viewed is not defined or display_viewed) and product.viewed is defined %}
+								<div class="product-viewed" style="font-size: 12px; color: #777; margin: 3px 0 6px;">
+									<i class="fa fa-eye"></i> {{ product.viewed }} {{ objlang.get('text_views') ? objlang.get('text_views') : 'views' }}
 								</div>
 							{% endif %}
 							
