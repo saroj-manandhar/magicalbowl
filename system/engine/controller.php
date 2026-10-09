@@ -55,4 +55,15 @@ class Controller {
 	public function __set(string $key, object $value): void {
 		$this->registry->set($key, $value);
 	}
+
+	/**
+	 * __isset
+	 *
+	 * @param string $key
+	 *
+	 * @return bool
+	 */
+	public function __isset(string $key): bool {
+		return $this->registry->has($key);
+	}
 }

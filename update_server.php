@@ -2169,6 +2169,7 @@ ensure_file_written(__DIR__ . '/extension/so_theme/catalog/view/template/product
 ensure_file_written(__DIR__ . '/msbadmin/controller/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/controller/catalog/product.php'));
 ensure_file_written(__DIR__ . '/msbadmin/model/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/product.php'));
 ensure_file_written(__DIR__ . '/msbadmin/view/template/catalog/product_form.twig', file_get_contents(__DIR__ . '/msbadmin/view/template/catalog/product_form.twig'));
+ensure_file_written(__DIR__ . '/system/engine/controller.php', file_get_contents(__DIR__ . '/system/engine/controller.php'));
 echo "✔ Deployed product specifications controller, theme template, and admin product form fields.<br/>";
 
 // Ensure specifications for TH-VIP-SET (VIP Nepali Khana Set) if currently empty

@@ -273,7 +273,7 @@ class Product extends \Opencart\System\Engine\Controller {
 			$data['sound_embed'] = isset($product_info['sound_embed']) ? html_entity_decode($product_info['sound_embed'], ENT_QUOTES, 'UTF-8') : '';
 
 			$data['weight_value'] = (float)($product_info['weight'] ?? 0);
-			if ($data['weight_value'] > 0 && isset($this->weight)) {
+			if ($data['weight_value'] > 0 && $this->registry->has('weight')) {
 				$formatted_weight = $this->weight->format($product_info['weight'], $product_info['weight_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point'));
 				$weight_unit = $this->weight->getUnit($product_info['weight_class_id']);
 				if (in_array(strtolower(trim($weight_unit)), ['g', 'gram', 'grams', 'gm'])) {
@@ -288,7 +288,7 @@ class Product extends \Opencart\System\Engine\Controller {
 			$data['length_value'] = (float)($product_info['length'] ?? 0);
 			$data['width_value'] = (float)($product_info['width'] ?? 0);
 			$data['height_value'] = (float)($product_info['height'] ?? 0);
-			if (($data['length_value'] > 0 || $data['width_value'] > 0 || $data['height_value'] > 0) && isset($this->length)) {
+			if (($data['length_value'] > 0 || $data['width_value'] > 0 || $data['height_value'] > 0) && $this->registry->has('length')) {
 				$data['dimensions'] = sprintf(
 					'%s × %s × %s',
 					$this->length->format($product_info['length'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point')),
