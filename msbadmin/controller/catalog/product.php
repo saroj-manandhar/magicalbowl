@@ -818,6 +818,12 @@ class Product extends \Opencart\System\Engine\Controller {
 			$data['sort_order'] = 1;
 		}
 
+		if (!empty($product_info)) {
+			$data['sound_embed'] = $product_info['sound_embed'] ?? '';
+		} else {
+			$data['sound_embed'] = '';
+		}
+
 		// Manufacturer
 		$this->load->model('catalog/manufacturer');
 
@@ -1215,7 +1221,8 @@ class Product extends \Opencart\System\Engine\Controller {
 			'length_class_id'     => 0,
 			'status'              => 0,
 			'tax_class_id'        => 0,
-			'sort_order'          => 0
+			'sort_order'          => 0,
+			'sound_embed'         => ''
 		];
 
 		$post_info = $this->request->post + $required;

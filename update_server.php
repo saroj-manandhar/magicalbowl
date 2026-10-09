@@ -2163,6 +2163,27 @@ ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/module/so_
 ensure_file_written(__DIR__ . '/extension/so_theme/catalog/controller/module/so_filter_shop_by.php', file_get_contents(__DIR__ . '/extension/so_theme/catalog/controller/module/so_filter_shop_by.php'));
 echo "✔ Deployed null-safe image models and hardened so_listing_tabs, so_extra_slider, so_filter_shop_by.<br/>";
 
+// 9.21 Deploy Product Specifications, Weight / Dimensions display, and Admin specifications fields
+ensure_file_written(__DIR__ . '/catalog/controller/product/product.php', file_get_contents(__DIR__ . '/catalog/controller/product/product.php'));
+ensure_file_written(__DIR__ . '/extension/so_theme/catalog/view/template/product/product.twig', file_get_contents(__DIR__ . '/extension/so_theme/catalog/view/template/product/product.twig'));
+ensure_file_written(__DIR__ . '/msbadmin/controller/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/controller/catalog/product.php'));
+ensure_file_written(__DIR__ . '/msbadmin/model/catalog/product.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/product.php'));
+ensure_file_written(__DIR__ . '/msbadmin/view/template/catalog/product_form.twig', file_get_contents(__DIR__ . '/msbadmin/view/template/catalog/product_form.twig'));
+echo "✔ Deployed product specifications controller, theme template, and admin product form fields.<br/>";
+
+// Ensure specifications for TH-VIP-SET (VIP Nepali Khana Set) if currently empty
+$check_vip = mysqli_query($link, "SELECT pd.product_id, pd.diameter FROM {$prefix}product_description pd JOIN {$prefix}product p ON p.product_id = pd.product_id WHERE p.model = 'TH-VIP-SET' OR p.product_id = 3588");
+if ($check_vip) {
+    while ($vrow = mysqli_fetch_assoc($check_vip)) {
+        if (empty(trim($vrow['diameter'] ?? ''))) {
+            $vip_specs = "<b>Product Net Weight:</b> 6000 gm, 6.0 kg (approx)<br/>\r\n<b>Material:</b> Pure Traditional Brass / Bronze (Yellow/Shiny Quality)<br/>\r\n<b>Quality:</b> Authentic Handcrafted VIP Quality<br/>\r\n<b>Included Items:</b> Full Traditional Nepali Khana / Thali Set (Thali Plate, Daal Stand Bowl, Meat Stand Bowl, Curry Bowl, Salad Bowl, Pickle Bowl, Spoon, Fork, Knife, Glass, and Karuwa)";
+            $vip_specs_esc = mysqli_real_escape_string($link, $vip_specs);
+            mysqli_query($link, "UPDATE {$prefix}product_description SET diameter = '{$vip_specs_esc}' WHERE product_id = " . (int)$vrow['product_id']);
+            echo "✔ Populated specifications for VIP Nepali Khana Set (TH-VIP-SET).<br/>";
+        }
+    }
+}
+
 // Clear template cache, SO listing tabs cache, and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',

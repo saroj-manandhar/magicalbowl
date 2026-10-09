@@ -197,13 +197,30 @@
 					</div>										
 				</div>
 
-				{% if diameter %}
+				{% if diameter or weight or dimensions or attribute_groups %}
 				<div class="product-specifications" style="clear: both; margin: 20px 0; padding: 20px; border-radius: 8px; background: rgba(0, 0, 0, 0.02); border-left: 4px solid rgb(255, 204, 0); font-size: 14px; line-height: 1.8;">
 					<h4 style="margin-top: 0; margin-bottom: 10px; font-weight: 600; color: #333; display: flex; align-items: center; gap: 8px;">
 						<i class="fa fa-info-circle" style="color: rgb(255, 204, 0);"></i> Specifications
 					</h4>
 					<div style="color: #555;">
-						{{ diameter }}
+						{% if diameter %}
+							{{ diameter }}
+						{% endif %}
+						{% if weight and (not diameter or 'weight' not in diameter|lower) %}
+							<div><strong>Weight:</strong> {{ weight }}</div>
+						{% endif %}
+						{% if dimensions and (not diameter or 'dimension' not in diameter|lower) %}
+							<div><strong>Dimensions (L × W × H):</strong> {{ dimensions }}</div>
+						{% endif %}
+						{% if attribute_groups and not diameter %}
+							<div class="product-attribute-specs" style="margin-top: 8px;">
+								{% for attribute_group in attribute_groups %}
+									{% for attribute in attribute_group.attribute %}
+										<div><strong>{{ attribute.name }}:</strong> {{ attribute.text }}</div>
+									{% endfor %}
+								{% endfor %}
+							</div>
+						{% endif %}
 					</div>
 				</div>
 				{% endif %}
