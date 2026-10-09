@@ -71,16 +71,26 @@ foreach ($potential_caches as $pc) {
 
 $pids = isset($_GET['pid']) ? array_map('intval', explode(',', $_GET['pid'])) : [3588, 3589, 3590, 4017];
 $pids_str = implode(',', $pids);
+$q = isset($_GET['q']) ? trim($_GET['q']) : '';
+
 echo "\n=== PRODUCT DATA ($pids_str) ===\n";
 if (file_exists(__DIR__ . '/config.php')) {
     require_once(__DIR__ . '/config.php');
     $link = @mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
     if ($link) {
-        $res = mysqli_query($link, "SELECT p.product_id, p.model, p.weight, p.weight_class_id, p.length, p.width, p.height, pd.name, pd.diameter FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON p.product_id = pd.product_id WHERE p.product_id IN ($pids_str) AND pd.language_id = 1");
+        $where = "p.product_id IN ($pids_str)";
+        if ($q !== '') {
+            $q_esc = mysqli_real_escape_string($link, $q);
+            $where .= " OR p.model LIKE '%$q_esc%' OR pd.name LIKE '%$q_esc%'";
+        }
+        $res = mysqli_query($link, "SELECT p.product_id, p.model, p.status, p.weight, p.weight_class_id, p.length, p.width, p.height, pd.name, pd.diameter FROM " . DB_PREFIX . "product p LEFT JOIN " . DB_PREFIX . "product_description pd ON p.product_id = pd.product_id WHERE ($where) AND pd.language_id = 1");
         while ($row = mysqli_fetch_assoc($res)) {
-            echo "ID: " . $row['product_id'] . " | Model: " . $row['model'] . " | Name: " . $row['name'] . "\n";
+            echo "ID: " . $row['product_id'] . " | Model: " . $row['model'] . " | Status: " . $row['status'] . " | Name: " . $row['name'] . "\n";
             echo "  Weight: " . $row['weight'] . " | WeightClass: " . $row['weight_class_id'] . " | Dimensions: " . $row['length'] . "x" . $row['width'] . "x" . $row['height'] . "\n";
             echo "  Diameter: " . ($row['diameter'] ? substr($row['diameter'], 0, 100) . '...' : 'EMPTY') . "\n";
+            $seo_res = mysqli_query($link, "SELECT keyword FROM " . DB_PREFIX . "seo_url WHERE `key` = 'product_id' AND `value` = '" . (int)$row['product_id'] . "'");
+            $seo_row = mysqli_fetch_assoc($seo_res);
+            echo "  SEO URL: " . ($seo_row ? $seo_row['keyword'] : 'NONE') . "\n";
             $attr_res = mysqli_query($link, "SELECT * FROM " . DB_PREFIX . "product_attribute WHERE product_id = " . (int)$row['product_id']);
             echo "  Attributes count: " . mysqli_num_rows($attr_res) . "\n\n";
         }

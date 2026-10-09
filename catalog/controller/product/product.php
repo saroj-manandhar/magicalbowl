@@ -289,12 +289,25 @@ class Product extends \Opencart\System\Engine\Controller {
 			$data['width_value'] = (float)($product_info['width'] ?? 0);
 			$data['height_value'] = (float)($product_info['height'] ?? 0);
 			if (($data['length_value'] > 0 || $data['width_value'] > 0 || $data['height_value'] > 0) && $this->registry->has('length')) {
-				$data['dimensions'] = sprintf(
-					'%s × %s × %s',
-					$this->length->format($product_info['length'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point')),
-					$this->length->format($product_info['width'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point')),
-					$this->length->format($product_info['height'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point'))
-				);
+				$formatted_len = $this->length->format($product_info['length'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point'));
+				$formatted_wid = $this->length->format($product_info['width'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point'));
+				$formatted_hgt = $this->length->format($product_info['height'], $product_info['length_class_id'], $this->language->get('decimal_point'), $this->language->get('thousand_point'));
+
+				if ($data['length_value'] > 0 && $data['width_value'] > 0 && $data['height_value'] > 0) {
+					$data['dimensions'] = sprintf('%s × %s × %s (L × W × H)', $formatted_len, $formatted_wid, $formatted_hgt);
+				} elseif ($data['length_value'] <= 0 && $data['width_value'] > 0 && $data['height_value'] > 0) {
+					$data['dimensions'] = sprintf('Diameter: %s | Height: %s', $formatted_wid, $formatted_hgt);
+				} elseif ($data['length_value'] > 0 && $data['width_value'] > 0 && $data['height_value'] <= 0) {
+					$data['dimensions'] = sprintf('%s × %s (L × W)', $formatted_len, $formatted_wid);
+				} elseif ($data['height_value'] > 0) {
+					$data['dimensions'] = sprintf('Height: %s', $formatted_hgt);
+				} elseif ($data['width_value'] > 0) {
+					$data['dimensions'] = sprintf('Diameter / Width: %s', $formatted_wid);
+				} elseif ($data['length_value'] > 0) {
+					$data['dimensions'] = sprintf('Length: %s', $formatted_len);
+				} else {
+					$data['dimensions'] = '';
+				}
 			} else {
 				$data['dimensions'] = '';
 			}

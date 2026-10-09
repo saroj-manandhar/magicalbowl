@@ -209,8 +209,8 @@
 						{% if weight and (not diameter or 'weight' not in diameter|lower) %}
 							<div><strong>Weight:</strong> {{ weight }}</div>
 						{% endif %}
-						{% if dimensions and (not diameter or 'dimension' not in diameter|lower) %}
-							<div><strong>Dimensions (L × W × H):</strong> {{ dimensions }}</div>
+						{% if dimensions and (not diameter or ('dimension' not in diameter|lower and 'diameter' not in diameter|lower)) %}
+							<div><strong>Dimensions:</strong> {{ dimensions }}</div>
 						{% endif %}
 						{% if attribute_groups and not diameter %}
 							<div class="product-attribute-specs" style="margin-top: 8px;">
