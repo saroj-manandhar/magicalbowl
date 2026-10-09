@@ -2184,6 +2184,34 @@ if ($check_vip) {
     }
 }
 
+// Ensure specifications for TH-SPC-SET (Special Nepali Khana Set) if currently empty
+$check_spc = mysqli_query($link, "SELECT pd.product_id, pd.diameter FROM {$prefix}product_description pd JOIN {$prefix}product p ON p.product_id = pd.product_id WHERE p.model = 'TH-SPC-SET' OR p.product_id = 3589");
+if ($check_spc) {
+    while ($srow = mysqli_fetch_assoc($check_spc)) {
+        if (empty(trim($srow['diameter'] ?? ''))) {
+            $spc_specs = "<b>Product Net Weight:</b> 2500 gm, 2.5 kg (approx)<br/>\r\n<b>Material:</b> Pure Traditional Brass / Bronze (Yellow/Shiny Quality)<br/>\r\n<b>Quality:</b> Special Authentic Handcrafted Quality<br/>\r\n<b>Included Items:</b> 9-Piece Set (Thali Plate, Daal Stand Bowl, Curry Bowl, Salad Bowl, Pickle Bowl, Spoon, Fork, Knife, and Glass)";
+            $spc_specs_esc = mysqli_real_escape_string($link, $spc_specs);
+            mysqli_query($link, "UPDATE {$prefix}product_description SET diameter = '{$spc_specs_esc}' WHERE product_id = " . (int)$srow['product_id']);
+            mysqli_query($link, "UPDATE {$prefix}product SET weight = 2500, weight_class_id = 2 WHERE product_id = " . (int)$srow['product_id'] . " AND (weight = 0 OR weight IS NULL)");
+            echo "✔ Populated specifications for Special Nepali Khana Set (TH-SPC-SET).<br/>";
+        }
+    }
+}
+
+// Ensure specifications for TH-NOR-SET (Normal Nepali Khana Set) if currently empty
+$check_nor = mysqli_query($link, "SELECT pd.product_id, pd.diameter FROM {$prefix}product_description pd JOIN {$prefix}product p ON p.product_id = pd.product_id WHERE p.model = 'TH-NOR-SET' OR p.product_id = 3590");
+if ($check_nor) {
+    while ($nrow = mysqli_fetch_assoc($check_nor)) {
+        if (empty(trim($nrow['diameter'] ?? ''))) {
+            $nor_specs = "<b>Product Net Weight:</b> 1800 gm, 1.8 kg (approx)<br/>\r\n<b>Material:</b> Pure Traditional Brass / Bronze (Yellow/Shiny Quality)<br/>\r\n<b>Quality:</b> Normal Authentic Handcrafted Quality<br/>\r\n<b>Included Items:</b> 5-Piece Set (Thali Plate, Daal Stand Bowl, Curry Bowl, Spoon, and Glass)";
+            $nor_specs_esc = mysqli_real_escape_string($link, $nor_specs);
+            mysqli_query($link, "UPDATE {$prefix}product_description SET diameter = '{$nor_specs_esc}' WHERE product_id = " . (int)$nrow['product_id']);
+            mysqli_query($link, "UPDATE {$prefix}product SET weight = 1800, weight_class_id = 2 WHERE product_id = " . (int)$nrow['product_id'] . " AND (weight = 0 OR weight IS NULL)");
+            echo "✔ Populated specifications for Normal Nepali Khana Set (TH-NOR-SET).<br/>";
+        }
+    }
+}
+
 // Clear template cache, SO listing tabs cache, and minify CSS cache
 $cache_dirs_purge = [
     __DIR__ . '/storage/cache/template/',
