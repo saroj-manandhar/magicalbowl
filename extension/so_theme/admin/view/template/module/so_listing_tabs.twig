@@ -350,6 +350,46 @@
 												</div>
 											</div>
 											<div class="row mb-3">
+												<label class="col-sm-3 col-form-label" for="input-display_feature">
+													<span data-toggle="tooltip" title="{{ objlang.get('entry_display_feature_desc') }}">{{ objlang.get('entry_display_feature') }}</span>
+												</label>
+												<div class="col-sm-9">
+													<div class="col-sm-8">
+														<label class="radio-inline me-3">
+															<input type="radio" name="display_feature" value="1" {% if module.display_feature == '1' %}checked="checked"{% endif %} />
+															{{ objlang.get('text_yes') }} (Selected Products Only)
+														</label>
+														<label class="radio-inline me-3">
+															<input type="radio" name="display_feature" value="2" {% if module.display_feature == '2' %}checked="checked"{% endif %} />
+															{{ objlang.get('text_yes') }} (Pin Selected Products First)
+														</label>
+														<label class="radio-inline">
+															<input type="radio" name="display_feature" value="0" {% if not module.display_feature or module.display_feature == '0' %}checked="checked"{% endif %} />
+															{{ objlang.get('text_no') }} (Category Products)
+														</label>
+													</div>
+												</div>
+											</div>
+											<div class="row mb-3" id="input-product_feature_form">
+												<label class="col-sm-3 col-form-label" for="input-product_feature">
+													<span data-toggle="tooltip" title="{{ objlang.get('entry_product_feature_desc') }}">{{ objlang.get('entry_product_feature') }}</span>
+												</label>
+												<div class="col-sm-9">
+													<div class="col-sm-5">
+														<input data-oc-target="list-product-feature" type="text" name="product_feature_search" value="" placeholder="Type product name or model to search & select..." id="input-product_feature" class="form-control" autocomplete="off" />
+														<ul id="list-product-feature" class="dropdown-menu"></ul>
+														<br>
+														<div id="featured-product_feature" class="well well-sm" style="min-height: 80px; max-height: 220px; overflow: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px; background: #f9f9f9;">
+															{% for product_feature in module.product_features %}
+																<div id="featured-product_feature{{ product_feature.product_id }}" style="padding: 3px 0;"><i class="fa fa-minus-circle text-danger" style="cursor:pointer;"></i> {{ product_feature.product_name }}
+																	<input type="hidden" name="product_feature[]" value="{{ product_feature.product_id }}" />
+																</div>
+															{% endfor %}
+														</div>
+													</div>
+												</div>
+											</div>
+											<div class="row mb-3">
 												<label class="col-sm-3 col-form-label" for="input-category"> <b style="font-weight:bold; color:#f00">*</b> <span data-toggle="tooltip" title="{{ objlang.get('entry_category_desc') }}">{{ objlang.get('entry_category') }}</span></label>
 												<div class="col-sm-9">
 													<div class="col-sm-5">
@@ -613,7 +653,24 @@
 											</div>
 										</div>
 						
-										<div class="tab-pane" id="items_option">
+																				<div class="tab-pane" id="items_option">
+											<div class="row mb-3">
+												<label class="col-sm-3 col-form-label" for="input-product_feature_items">
+													<span data-toggle="tooltip" title="{{ objlang.get('entry_product_feature_desc') }}">{{ objlang.get('entry_product_feature') }}</span>
+												</label>
+												<div class="col-sm-9">
+													<div class="col-sm-5">
+														<input data-oc-target="list-product-feature-items" type="text" name="product_feature_items" value="" placeholder="Type product name or model to search & select..." id="input-product_feature_items" class="form-control" autocomplete="off" />
+														<ul id="list-product-feature-items" class="dropdown-menu"></ul>
+														<br>
+														<div id="featured-product_feature_items" class="well well-sm" style="min-height: 80px; max-height: 220px; overflow: auto; border: 1px solid #ddd; padding: 8px; border-radius: 4px; background: #f9f9f9;">
+															{% for product_feature in module.product_features %}
+																<div id="featured-product_feature_items{{ product_feature.product_id }}" data-pid="{{ product_feature.product_id }}" style="padding: 3px 0;"><i class="fa fa-minus-circle text-danger" style="cursor:pointer;"></i> {{ product_feature.product_name }}</div>
+															{% endfor %}
+														</div>
+													</div>
+												</div>
+											</div>
 											<div class="row mb-3">
 												<label class="col-sm-3 col-form-label" for="input-display_title"> <span data-toggle="tooltip" title="{{ objlang.get('entry_display_title_desc') }}">{{ objlang.get('entry_display_title') }}</span></label>
 												<div class="col-sm-9">
@@ -1370,6 +1427,74 @@
 			}
 		});
 		
+				function addListingTabProductFeature(item) {
+			$('#featured-product_feature' + item['value']).remove();
+			$('#featured-product_feature').append('<div id="featured-product_feature' + item['value'] + '" style="padding: 3px 0;"><i class="fa fa-minus-circle text-danger" style="cursor:pointer;"></i> ' + item['label'] + '<input type="hidden" name="product_feature[]" value="' + item['value'] + '" /></div>');
+
+			$('#featured-product_feature_items' + item['value']).remove();
+			$('#featured-product_feature_items').append('<div id="featured-product_feature_items' + item['value'] + '" data-pid="' + item['value'] + '" style="padding: 3px 0;"><i class="fa fa-minus-circle text-danger" style="cursor:pointer;"></i> ' + item['label'] + '</div>');
+
+			if ($("input[name='display_feature']:checked").val() == '0') {
+				$("input[name='display_feature'][value='1']").prop('checked', true);
+			}
+		}
+
+		$('input[name=\'product_feature_search\']').autocomplete({
+			source: function(request, response) {
+				$.ajax({
+					url: 'index.php?route=extension/so_theme/module/so_listing_tabs.autocomplete_product&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+					dataType: 'json',
+					success: function(json) {
+						response($.map(json, function(item) {
+							return {
+								label: item['name'],
+								value: item['product_id']
+							}
+						}));
+					}
+				});
+			},
+			select: function(item) {
+				$('input[name=\'product_feature_search\']').val('');
+				addListingTabProductFeature(item);
+			}
+		});
+
+		$('input[name=\'product_feature_items\']').autocomplete({
+			source: function(request, response) {
+				$.ajax({
+					url: 'index.php?route=extension/so_theme/module/so_listing_tabs.autocomplete_product&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+					dataType: 'json',
+					success: function(json) {
+						response($.map(json, function(item) {
+							return {
+								label: item['name'],
+								value: item['product_id']
+							}
+						}));
+					}
+				});
+			},
+			select: function(item) {
+				$('input[name=\'product_feature_items\']').val('');
+				addListingTabProductFeature(item);
+			}
+		});
+
+		$('#featured-product_feature').delegate('.fa-minus-circle', 'click', function() {
+			var parentDiv = $(this).parent();
+			var pid = parentDiv.attr('id').replace('featured-product_feature', '');
+			parentDiv.remove();
+			$('#featured-product_feature_items' + pid).remove();
+		});
+
+		$('#featured-product_feature_items').delegate('.fa-minus-circle', 'click', function() {
+			var parentDiv = $(this).parent();
+			var pid = parentDiv.attr('data-pid');
+			parentDiv.remove();
+			$('#featured-product_feature' + pid).remove();
+		});
+
 		$('#featured-category').delegate('.fa-minus-circle', 'click', function() {
 			$(this).parent().remove();
 			var id_par = $(this).parent().attr('id').substr(17);

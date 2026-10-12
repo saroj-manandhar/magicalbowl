@@ -48,6 +48,9 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			'nb_row'				=> '1',
 
 			'type_source'			=> '1',
+			'display_feature'		=> '0',
+			'product_feature'		=> array(),
+			'product_features'		=> array(),
 			'categorys'				=> array(),
 			'category'				=> array(),
 			'child_category'		=> '1',
@@ -414,7 +417,9 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 				'start' 	   			=> $setting['start']
 			);
 			$cat['category_id_list'] = $category_id_list;
-			$cat['count'] = $this->model_extension_so_theme_module_so_listing_tabs->getTotalProducts_listing_tabs($filter_data);
+			$filter_data['display_feature'] = !empty($setting['display_feature']) ? $setting['display_feature'] : '0';
+		$filter_data['filter_product_ids'] = (!empty($setting['product_feature']) && is_array($setting['product_feature'])) ? $setting['product_feature'] : array();
+		$cat['count'] = $this->model_extension_so_theme_module_so_listing_tabs->getTotalProducts_listing_tabs($filter_data);
 			if($cat['count'] > 0){
 				$_cats[] = $cat;
 			}
@@ -570,6 +575,8 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			);
 		}
 
+		$filter_data['display_feature'] = !empty($setting['display_feature']) ? $setting['display_feature'] : '0';
+		$filter_data['filter_product_ids'] = (!empty($setting['product_feature']) && is_array($setting['product_feature'])) ? $setting['product_feature'] : array();
 		$cat['count'] = $this->model_extension_so_theme_module_so_listing_tabs->getTotalProducts_listing_tabs($filter_data);
 		if ($cat['count'] > 0) 
 		{

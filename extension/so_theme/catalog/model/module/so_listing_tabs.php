@@ -27,6 +27,42 @@ class SoListingTabs extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getProducts_listing_tabs($data = array()) {
+		$display_feature = !empty($data['display_feature']) ? (string)$data['display_feature'] : '0';
+		$feature_ids = array();
+		if (!empty($data['filter_product_ids']) && is_array($data['filter_product_ids'])) {
+			foreach ($data['filter_product_ids'] as $fpid) {
+				if ((int)$fpid > 0) {
+					$feature_ids[] = (int)$fpid;
+				}
+			}
+			$feature_ids = array_values(array_unique($feature_ids));
+		}
+
+		// Mode 1: Selected Products Only
+		if ($display_feature === '1' && !empty($feature_ids)) {
+			$product_data = array();
+			$start = isset($data['start']) && (int)$data['start'] >= 0 ? (int)$data['start'] : 0;
+			$limit = isset($data['limit']) && (int)$data['limit'] > 0 ? (int)$data['limit'] : count($feature_ids);
+			$sliced_ids = array_slice($feature_ids, $start, $limit);
+			foreach ($sliced_ids as $pid) {
+				$p_info = $this->model_catalog_product->getProduct($pid);
+				if ($p_info && !empty($p_info['status'])) {
+					$product_data[$pid] = $p_info;
+				}
+			}
+			return $product_data;
+		}
+
+		// Mode 2: Pin Selected Products First, then fill with Category Products
+		$pinned_products = array();
+		if ($display_feature === '2' && !empty($feature_ids) && empty($data['start'])) {
+			foreach ($feature_ids as $pid) {
+				$p_info = $this->model_catalog_product->getProduct($pid);
+				if ($p_info && !empty($p_info['status'])) {
+					$pinned_products[$pid] = $p_info;
+				}
+			}
+		}
 		$sql = "SELECT DISTINCT *, `pd`.`name`, `p`.`image`, " . $this->statement['discount'] . ", " . $this->statement['special'] . ", " . $this->statement['reward'] . ", " . $this->statement['review'];
 
 		if (!empty($data['filter_category_id'])) {
@@ -226,6 +262,19 @@ class SoListingTabs extends \Opencart\System\Engine\Model {
 	}
 	
 	public function getTotalProducts_listing_tabs($data = array()) {
+		$display_feature = !empty($data['display_feature']) ? (string)$data['display_feature'] : '0';
+		$feature_ids = array();
+		if (!empty($data['filter_product_ids']) && is_array($data['filter_product_ids'])) {
+			foreach ($data['filter_product_ids'] as $fpid) {
+				if ((int)$fpid > 0) {
+					$feature_ids[] = (int)$fpid;
+				}
+			}
+			$feature_ids = array_values(array_unique($feature_ids));
+		}
+		if ($display_feature === '1' && !empty($feature_ids)) {
+			return count($feature_ids);
+		}
 		$sql = "SELECT COUNT(DISTINCT p.product_id) AS total";
 
 		if (!empty($data['filter_category_id'])) {

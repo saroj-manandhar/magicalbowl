@@ -14,6 +14,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 
 		// Load model
 		$this->load->model('catalog/category');
+		$this->load->model('catalog/product');
 		$this->load->model('setting/module');
 		$this->load->model('extension/so_theme/module/so_listing_tabs');
 		$this->load->model('tool/image');
@@ -80,6 +81,9 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			'nb_row'				=> '1',
 
 			'type_source'			=> '1',
+			'display_feature'		=> '0',
+			'product_feature'		=> array(),
+			'product_features'		=> array(),
 			'categorys'				=> array(),
 			'category'				=> array(),
 			'child_category'		=> '1',
@@ -175,6 +179,19 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 					);
 				}
 			}
+			$product_features = isset($module_info['product_feature']) ? $module_info['product_feature'] : array();
+			if ($product_features != null && is_array($product_features)) {
+				foreach ($product_features as $product_feature_id) {
+					$product_feature_info = $this->model_catalog_product->getProduct($product_feature_id);
+					if ($product_feature_info) {
+						$model_str = !empty($product_feature_info['model']) ? ' (' . $product_feature_info['model'] . ')' : '';
+						$module_info['product_features'][] = array(
+							'product_id'   => $product_feature_info['product_id'],
+							'product_name' => $product_feature_info['name'] . $model_str
+						);
+					}
+				}
+			}
 			$field_product_tabs = $module_info['field_product_tab'];
 			foreach($field_product_tab as $option_id => $option_value) 
 			{
@@ -208,7 +225,20 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 						}
 					}
 				}
-				$field_product_tabs = $module_info['field_product_tab'];
+				$product_features = isset($module_info['product_feature']) ? $module_info['product_feature'] : array();
+			if ($product_features != null && is_array($product_features)) {
+				foreach ($product_features as $product_feature_id) {
+					$product_feature_info = $this->model_catalog_product->getProduct($product_feature_id);
+					if ($product_feature_info) {
+						$model_str = !empty($product_feature_info['model']) ? ' (' . $product_feature_info['model'] . ')' : '';
+						$module_info['product_features'][] = array(
+							'product_id'   => $product_feature_info['product_id'],
+							'product_name' => $product_feature_info['name'] . $model_str
+						);
+					}
+				}
+			}
+			$field_product_tabs = $module_info['field_product_tab'];
 				foreach($field_product_tab as $option_id => $option_value) 
 				{
 					if($field_product_tabs != null && in_array($option_id,$field_product_tabs))
@@ -461,7 +491,7 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 			}
 		}
 
-		if ($this->request->post['category'] == null) {
+		if (empty($this->request->post['category']) && empty($this->request->post['product_feature'])) {
 			$this->error['category'] = $this->language->get('error_category');
 		}
 
@@ -581,6 +611,47 @@ class SoListingTabs extends \Opencart\System\Engine\Controller {
 		$this->response->setOutput(json_encode($json));
 	}
 	
+	public function autocomplete_product() {
+		$json = array();
+
+		if (isset($this->request->get['filter_name'])) {
+			$this->load->model('catalog/product');
+
+			$filter_name = trim($this->request->get['filter_name']);
+			$filter_data = array(
+				'filter_name' => $filter_name,
+				'sort'        => 'pd.name',
+				'order'       => 'ASC',
+				'start'       => 0,
+				'limit'       => 30
+			);
+
+			$results = $this->model_catalog_product->getProducts($filter_data);
+
+			if (empty($results) && $filter_name !== '') {
+				$filter_data_model = array(
+					'filter_model' => $filter_name,
+					'sort'         => 'pd.name',
+					'order'        => 'ASC',
+					'start'        => 0,
+					'limit'        => 30
+				);
+				$results = $this->model_catalog_product->getProducts($filter_data_model);
+			}
+
+			foreach ($results as $result) {
+				$model_str = !empty($result['model']) ? ' (' . $result['model'] . ')' : '';
+				$json[] = array(
+					'product_id' => $result['product_id'],
+					'name'       => strip_tags(html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8')) . $model_str
+				);
+			}
+		}
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($json));
+	}
+
 	public function autocomplete_category() {
 		$json = array();
 
