@@ -2167,7 +2167,7 @@ echo "✔ Deployed null-safe image models and hardened so_listing_tabs, so_extra
 if (function_exists("exec")) {
     $git_out = [];
     $git_ret = 0;
-    @exec("git pull origin main 2>&1", $git_out, $git_ret);
+    @exec("GIT_SSH_COMMAND='ssh -o StrictHostKeyChecking=no' git pull origin main 2>&1", $git_out, $git_ret);
     echo "Git pull result (code {$git_ret}): " . implode("<br/>", $git_out) . "<br/>";
 }
 
