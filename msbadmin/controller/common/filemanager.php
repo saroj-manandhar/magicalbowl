@@ -53,7 +53,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 	public function list(): void {
 		$this->load->language('common/filemanager');
 
-		$base = DIR_IMAGE;
+		$base = str_replace('\\', '/', realpath(DIR_IMAGE)) . '/';
 
 		// Make sure we have the correct directory
 		if (isset($this->request->get['directory']) && $this->request->get['directory'] !== '') {
@@ -152,7 +152,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 							'name'  => $name,
 							'path'  => oc_substr($path, oc_strlen($base)),
 							'href'  => HTTP_CATALOG . 'image/' . oc_substr($path, oc_strlen($base)),
-							'thumb' => $this->model_tool_image->resize(oc_substr($path, oc_strlen(DIR_IMAGE)), $this->config->get('config_image_default_width'), $this->config->get('config_image_default_height'))
+							'thumb' => $this->model_tool_image->resize(oc_substr($path, oc_strlen($base)), $this->config->get('config_image_default_width'), $this->config->get('config_image_default_height'))
 						];
 					}
 				}
@@ -268,7 +268,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
-		$base = DIR_IMAGE;
+		$base = str_replace('\\', '/', realpath(DIR_IMAGE)) . '/';
 
 		// Check user has permission
 		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
@@ -359,7 +359,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
-		$base = DIR_IMAGE;
+		$base = str_replace('\\', '/', realpath(DIR_IMAGE)) . '/';
 
 		// Check user has permission
 		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
@@ -416,7 +416,7 @@ class FileManager extends \Opencart\System\Engine\Controller {
 
 		$json = [];
 
-		$base = DIR_IMAGE;
+		$base = str_replace('\\', '/', realpath(DIR_IMAGE)) . '/';
 
 		// Check user has permission
 		if (!$this->user->hasPermission('modify', 'common/filemanager')) {
