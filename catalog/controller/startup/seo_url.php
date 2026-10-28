@@ -60,6 +60,20 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 						}
 					}
 
+					// Fallback for Category 301 (Planetary, Therapeutic, Harmonic Sound - Information)
+					if (!$seo_url_info && in_array(strtolower($value), [
+						'planetary-therapeutic-harmonic-sound-information',
+						'harmonic-sound-information',
+						'planetary-therapeutic-singingbowls-gongs-healing-course-nepal',
+						'harmonic-sound',
+						'harmonic-sound-info'
+					])) {
+						$seo_url_info = [
+							'key'   => 'path',
+							'value' => '301'
+						];
+					}
+
 					if (!$seo_url_info) {
 						$static_routes_decode = [
 							'register'        => 'account/register',
@@ -183,6 +197,22 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 
 					if (!isset($this->data[$language_id][$cat_index])) {
 						$this->data[$language_id][$cat_index] = $this->model_design_seo_url->getSeoUrlByKeyValue('path', (string)$category);
+					}
+
+					// Ensure Category 301 (Planetary, Therapeutic, Harmonic Sound - Information) has correct keyword
+					if ($category == '301') {
+						if (!isset($this->data[$language_id][$cat_index])
+							|| !$this->data[$language_id][$cat_index]
+							|| $this->data[$language_id][$cat_index]['keyword'] == 'Himalayan-Singing-Bowls'
+							|| $this->data[$language_id][$cat_index]['keyword'] == 'planetary-therapeutic-singingbowls-gongs-healing-course-nepal'
+							|| empty($this->data[$language_id][$cat_index]['keyword'])) {
+							$this->data[$language_id][$cat_index] = [
+								'key'        => 'path',
+								'value'      => '301',
+								'keyword'    => 'planetary-therapeutic-harmonic-sound-information',
+								'sort_order' => 0
+							];
+						}
 					}
 
 					if ($this->data[$language_id][$cat_index]) {

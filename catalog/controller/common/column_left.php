@@ -107,6 +107,13 @@ class ColumnLeft extends \Opencart\System\Engine\Controller {
 			}
 		}
 
+		if (empty($data['modules']) && $route == 'product/category') {
+			$category_menu = $this->load->controller('extension/opencart/module/category');
+			if ($category_menu) {
+				$data['modules'][] = $category_menu;
+			}
+		}
+
 		return $this->load->view('common/column_left', $data);
 	}
 }

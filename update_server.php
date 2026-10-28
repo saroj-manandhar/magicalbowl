@@ -2048,9 +2048,57 @@ if (!$updated_cat294) {
     echo "✔ Category 294 SEO URL is already up to date.<br/>";
 }
 
-// 9.13 Deploy updated catalog/controller/startup/seo_url.php
+// 9.12b Fix SEO URL for Category 301 (Planetary, Therapeutic, Harmonic Sound - Information)
+$target_c301_keyword = 'planetary-therapeutic-harmonic-sound-information';
+$col_query = mysqli_query($link, "SHOW COLUMNS FROM `{$prefix}seo_url`");
+$seo_cols = [];
+if ($col_query) {
+    while ($c = mysqli_fetch_assoc($col_query)) {
+        $seo_cols[] = $c['Field'];
+    }
+}
+$has_key_col = in_array('key', $seo_cols);
+$has_query_col = in_array('query', $seo_cols);
+
+if ($has_key_col) {
+    $check_c301 = mysqli_query($link, "SELECT * FROM `{$prefix}seo_url` WHERE `key` = 'path' AND `value` = '301'");
+    if (mysqli_num_rows($check_c301) == 0) {
+        $insert_sql = "INSERT INTO `{$prefix}seo_url` (store_id, language_id, `key`, `value`, `keyword`" . (in_array('sort_order', $seo_cols) ? ", `sort_order`" : "") . (in_array('query', $seo_cols) ? ", `query`" : "") . ") VALUES (0, 1, 'path', '301', '{$target_c301_keyword}'" . (in_array('sort_order', $seo_cols) ? ", 0" : "") . (in_array('query', $seo_cols) ? ", 'category_id=301'" : "") . ")";
+        mysqli_query($link, $insert_sql);
+        echo "✔ Inserted Category 301 SEO URL '{$target_c301_keyword}' (key/value).<br/>";
+    } else {
+        while ($r301 = mysqli_fetch_assoc($check_c301)) {
+            echo "Found SEO URL for Category 301: ID " . $r301['seo_url_id'] . " with keyword '" . htmlspecialchars($r301['keyword']) . "'<br/>";
+            if (empty($r301['keyword']) || $r301['keyword'] === 'Himalayan-Singing-Bowls' || $r301['keyword'] !== $target_c301_keyword) {
+                mysqli_query($link, "UPDATE `{$prefix}seo_url` SET `keyword` = '{$target_c301_keyword}' WHERE `seo_url_id` = " . (int)$r301['seo_url_id']);
+                echo "✔ Updated Category 301 SEO URL to '{$target_c301_keyword}'.<br/>";
+            } else {
+                echo "✔ Category 301 SEO URL is already up to date.<br/>";
+            }
+        }
+    }
+}
+if ($has_query_col) {
+    $check_q301 = mysqli_query($link, "SELECT * FROM `{$prefix}seo_url` WHERE `query` = 'category_id=301'");
+    if (mysqli_num_rows($check_q301) == 0) {
+        $insert_q = "INSERT INTO `{$prefix}seo_url` (store_id, language_id, `query`, `keyword`" . ($has_key_col ? ", `key`, `value`" : "") . (in_array('sort_order', $seo_cols) ? ", `sort_order`" : "") . ") VALUES (0, 1, 'category_id=301', '{$target_c301_keyword}'" . ($has_key_col ? ", 'path', '301'" : "") . (in_array('sort_order', $seo_cols) ? ", 0" : "") . ")";
+        mysqli_query($link, $insert_q);
+        echo "✔ Inserted Category 301 SEO URL '{$target_c301_keyword}' (query).<br/>";
+    } else {
+        while ($rq301 = mysqli_fetch_assoc($check_q301)) {
+            if (empty($rq301['keyword']) || $rq301['keyword'] === 'Himalayan-Singing-Bowls' || $rq301['keyword'] !== $target_c301_keyword) {
+                mysqli_query($link, "UPDATE `{$prefix}seo_url` SET `keyword` = '{$target_c301_keyword}' WHERE `seo_url_id` = " . (int)$rq301['seo_url_id']);
+                echo "✔ Updated Category 301 query SEO URL to '{$target_c301_keyword}'.<br/>";
+            }
+        }
+    }
+}
+
+// 9.13 Deploy updated catalog/controller/startup/seo_url.php, category.php, and column_left.php
 ensure_file_written(__DIR__ . '/catalog/controller/startup/seo_url.php', file_get_contents(__DIR__ . '/catalog/controller/startup/seo_url.php'));
-echo "✔ Deployed updated startup/seo_url.php to server.<br/>";
+ensure_file_written(__DIR__ . '/catalog/controller/product/category.php', file_get_contents(__DIR__ . '/catalog/controller/product/category.php'));
+ensure_file_written(__DIR__ . '/catalog/controller/common/column_left.php', file_get_contents(__DIR__ . '/catalog/controller/common/column_left.php'));
+echo "✔ Deployed updated startup/seo_url.php, category.php, and column_left.php to server.<br/>";
 
 // 9.14 Deploy updated admin models (information, category, product) and developer controller with automated Varnish cache purge
 ensure_file_written(__DIR__ . '/msbadmin/model/catalog/information.php', file_get_contents(__DIR__ . '/msbadmin/model/catalog/information.php'));

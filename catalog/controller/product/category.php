@@ -102,6 +102,9 @@ class Category extends \Opencart\System\Engine\Controller {
 
 		$category_id = (int)array_pop($parts);
 
+		// Deduplicate parent path IDs to prevent repeating parent category names in breadcrumbs
+		$parts = array_unique(array_filter($parts));
+
 		$this->load->model('catalog/category');
 
 		$category_info = $this->model_catalog_category->getCategory($category_id);
@@ -192,7 +195,7 @@ class Category extends \Opencart\System\Engine\Controller {
 			$data['maxPrice'] = $maxPrice;
 			
 			$custom_filter_categories = [27];
-			if (in_array($category_id, $custom_filter_categories) || in_array($category_info['parent_id'], $custom_filter_categories) || in_array(27, $parts)) {
+			if ($category_id != 301 && (in_array($category_id, $custom_filter_categories) || in_array($category_info['parent_id'], $custom_filter_categories) || in_array(27, $parts))) {
 				$data['custom_filter'] = true;
 			} else {
 				$data['custom_filter'] = false;
@@ -206,11 +209,15 @@ class Category extends \Opencart\System\Engine\Controller {
 			// Image
 			$this->load->model('tool/image');
 
+			$cat_img_w = (int)$this->config->get('config_image_category_width') ?: 870;
+			$cat_img_h = (int)$this->config->get('config_image_category_height') ?: 350;
+
 			if (!empty($category_info['image']) && is_file(DIR_IMAGE . html_entity_decode($category_info['image'], ENT_QUOTES, 'UTF-8'))) {
-				$data['image'] = $this->model_tool_image->resize($category_info['image'], $this->config->get('config_image_category_width'), $this->config->get('config_image_category_height'));
+				$data['image'] = $this->model_tool_image->resize($category_info['image'], $cat_img_w, $cat_img_h);
 			} else {
 				$data['image'] = '';
 			}
+			$data['thumb'] = $data['image'];
 
 			$data['description'] = html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8');
 			$data['compare'] = $this->url->link('product/compare', 'language=' . $this->config->get('config_language'));

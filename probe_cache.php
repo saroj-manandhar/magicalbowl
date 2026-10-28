@@ -54,7 +54,41 @@ if (file_exists($ctrl_file)) {
     echo "NOT FOUND: $ctrl_file\n";
 }
 
-echo "\n=== CACHE DIRECTORIES ===\n";
+echo "\n=== CATEGORY DATA ===\n";
+if (file_exists(__DIR__ . '/config.php')) {
+    require_once(__DIR__ . '/config.php');
+}
+$link = @mysqli_connect(DB_HOSTNAME, DB_USERNAME, DB_PASSWORD, DB_DATABASE, DB_PORT);
+if (isset($_GET['cat']) && $link) {
+    $cat_id = (int)$_GET['cat'];
+    $cat_res = mysqli_query($link, "SELECT c.*, cd.name, cd.description, cd.meta_title FROM " . DB_PREFIX . "category c LEFT JOIN " . DB_PREFIX . "category_description cd ON c.category_id = cd.category_id WHERE c.category_id = $cat_id");
+    while ($row = mysqli_fetch_assoc($cat_res)) {
+        echo "Category ID: " . $row['category_id'] . "\n";
+        echo "  Name: " . $row['name'] . "\n";
+        echo "  Parent ID: " . $row['parent_id'] . "\n";
+        echo "  Status: " . $row['status'] . "\n";
+        echo "  Image: " . $row['image'] . "\n";
+        echo "  Meta Title: " . $row['meta_title'] . "\n";
+        echo "  Desc length: " . strlen($row['description']) . "\n";
+    }
+    echo "  SEO URLs:\n";
+    $seo_cat = mysqli_query($link, "SELECT * FROM " . DB_PREFIX . "seo_url WHERE (`key` = 'path' AND `value` = '$cat_id') OR `value` = '$cat_id' OR `query` LIKE '%$cat_id%'");
+    while ($s = mysqli_fetch_assoc($seo_cat)) {
+        echo "    ID: {$s['seo_url_id']} | Store: {$s['store_id']} | Lang: {$s['language_id']} | Key: {$s['key']} | Value: {$s['value']} | Keyword: {$s['keyword']}\n";
+    }
+    echo "  Category Paths:\n";
+    $path_cat = mysqli_query($link, "SELECT * FROM " . DB_PREFIX . "category_path WHERE category_id = $cat_id ORDER BY level ASC");
+    while ($p = mysqli_fetch_assoc($path_cat)) {
+        echo "    Path ID: {$p['path_id']} | Level: {$p['level']}\n";
+    }
+    echo "  Parent Category SEO URLs:\n";
+    $seo_p = mysqli_query($link, "SELECT * FROM " . DB_PREFIX . "seo_url WHERE (`key` = 'path' AND `value` = '27') OR `value` = '27'");
+    while ($sp = mysqli_fetch_assoc($seo_p)) {
+        echo "    Parent ID: {$sp['seo_url_id']} | Key: {$sp['key']} | Value: {$sp['value']} | Keyword: {$sp['keyword']}\n";
+    }
+}
+
+
 $potential_caches = [
     __DIR__ . '/storage/cache/template/',
     __DIR__ . '/system/storage/cache/template/',
