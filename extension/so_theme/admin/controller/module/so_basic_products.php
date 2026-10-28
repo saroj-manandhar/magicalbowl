@@ -80,6 +80,9 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 			'nb_column2'			=> '3',
 			'nb_column3'			=> '2',
 			'nb_column4'			=> '1',
+			'display_feature'		=> '0',
+			'product_feature'		=> array(),
+			'product_features'		=> array(),
 			'categorys'				=> array(),
 			'child_category'		=> '1',
 			'category_depth'		=> '1',
@@ -113,6 +116,8 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 			'cache_time'			=> '3600'
 		);
 
+		$this->load->model('catalog/product');
+
 		if (isset($this->request->get['module_id']) && ($this->request->server['REQUEST_METHOD'] != 'POST') || $this->request->server['REQUEST_METHOD'] == 'POST' && !$this->validate() && isset($this->request->get['module_id'])) {
 			$module_info = $this->model_setting_module->getModule($this->request->get['module_id']);
 			$module_info =  array_merge($default,$module_info);//check data empty database
@@ -131,6 +136,19 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 					}
 				}
 			}
+			$product_features = isset($module_info['product_feature']) ? $module_info['product_feature'] : array();
+			if ($product_features != null && is_array($product_features)) {
+				foreach ($product_features as $product_feature_id) {
+					$product_feature_info = $this->model_catalog_product->getProduct($product_feature_id);
+					if ($product_feature_info) {
+						$model_str = !empty($product_feature_info['model']) ? ' (' . $product_feature_info['model'] . ')' : '';
+						$module_info['product_features'][] = array(
+							'product_id'   => $product_feature_info['product_id'],
+							'product_name' => $product_feature_info['name'] . $model_str
+						);
+					}
+				}
+			}
 			$data['action'] = $this->url->link('extension/so_theme/module/so_basic_products', 'user_token=' . $this->session->data['user_token'].'&module_id='. $this->request->get['module_id'], 'SSL');
 			$data['subheading'] = $this->language->get('text_edit_module') . $module_info['name'];
 			$data['selectedid'] = $this->request->get['module_id'];
@@ -139,7 +157,7 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 			if($this->request->post != null)
 			{
 				$module_info = array_merge($module_info,$this->request->post);
-				$categorys = $module_info['category'];
+				$categorys = isset($module_info['category']) ? $module_info['category'] : array();
 				if($categorys != null)
 				{
 					foreach ($categorys as $category_id) {
@@ -149,6 +167,19 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 							$module_info['categorys'][] = array(
 								'category_id' => $category_info['category_id'],
 								'name'       => $category_info['name']
+							);
+						}
+					}
+				}
+				$product_features = isset($module_info['product_feature']) ? $module_info['product_feature'] : array();
+				if ($product_features != null && is_array($product_features)) {
+					foreach ($product_features as $product_feature_id) {
+						$product_feature_info = $this->model_catalog_product->getProduct($product_feature_id);
+						if ($product_feature_info) {
+							$model_str = !empty($product_feature_info['model']) ? ' (' . $product_feature_info['model'] . ')' : '';
+							$module_info['product_features'][] = array(
+								'product_id'   => $product_feature_info['product_id'],
+								'product_name' => $product_feature_info['name'] . $model_str
 							);
 						}
 					}
@@ -319,8 +350,8 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 		}
 
 		// Validate category selection (Source Options tab)
-		if (!isset($this->request->post['category']) || empty($this->request->post['category'])) {
-			$this->error['category'] = 'Please select at least one Category in the "Source Options" tab!';
+		if ((!isset($this->request->post['category']) || empty($this->request->post['category'])) && (!isset($this->request->post['product_feature']) || empty($this->request->post['product_feature']))) {
+			$this->error['category'] = 'Please select at least one Category or Product in the "Source Options" tab!';
 		}
 
 		if ($this->error) {
@@ -384,6 +415,44 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 				$json[] = array(
 					'category_id' => $result['category_id'],
 					'name'        => strip_tags(html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8'))
+				);
+			}
+		}
+
+		$sort_order = array();
+
+		foreach ($json as $key => $value) {
+			$sort_order[$key] = $value['name'];
+		}
+
+		array_multisort($sort_order, SORT_ASC, $json);
+
+		$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($json));
+	}
+
+	public function autocomplete_product() {
+		$json = array();
+
+		if (isset($this->request->get['filter_name'])) {
+			$this->load->model('catalog/product');
+
+			$filter_name = trim($this->request->get['filter_name']);
+			$filter_data = array(
+				'filter_name' => $filter_name,
+				'sort'        => 'pd.name',
+				'order'       => 'ASC',
+				'start'       => 0,
+				'limit'       => 30
+			);
+
+			$results = $this->model_catalog_product->getProducts($filter_data);
+
+			foreach ($results as $result) {
+				$model_str = !empty($result['model']) ? ' (' . $result['model'] . ')' : '';
+				$json[] = array(
+					'product_id' => $result['product_id'],
+					'name'       => strip_tags(html_entity_decode($result['name'], ENT_QUOTES, 'UTF-8')) . $model_str
 				);
 			}
 		}

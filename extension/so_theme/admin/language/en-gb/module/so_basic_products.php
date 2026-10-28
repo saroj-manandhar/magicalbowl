@@ -143,6 +143,10 @@ $_['entry_cache_time']                  = 'Cache Time';
 $_['entry_cache_time_desc']             = 'The time (in seconds) before the module is recached.';
 // Help
 $_['help_product']     					= '(Autocomplete)';
+$_['entry_display_feature']				= 'Display Product Feature';
+$_['entry_display_feature_desc']		= 'Choose how manually selected products are displayed: Selected Products Only, Pin Selected Products First, or Category Products.';
+$_['entry_product_feature']				= 'Product Feature';
+$_['entry_product_feature_desc']		= 'Search and select specific products by typing name or model.';
 
 // Error
 $_['error_warning']          	= 'Warning: Please check the form carefully for errors!';
