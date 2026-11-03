@@ -65,6 +65,7 @@ $_['entry_address']                       = 'Address';
 $_['entry_geocode']                       = 'Geocode';
 $_['entry_email']                         = 'E-Mail';
 $_['entry_telephone']                     = 'Telephone';
+$_['entry_google_review_url']             = 'Google Review Link';
 $_['entry_image']                         = 'Image';
 $_['entry_open']                          = 'Opening Times';
 $_['entry_comment']                       = 'Comment';
@@ -193,6 +194,7 @@ $_['entry_status']                        = 'Status';
 
 // Help
 $_['help_geocode']                        = 'Please enter your store location geocode manually.';
+$_['help_google_review_url']             = 'Enter your direct Google Business review link (e.g. https://g.page/r/.../review). Used for the Google review box at the bottom of the landing page.';
 $_['help_icon']                           = 'The icon should be a PNG that is 16px x 16px.';
 $_['help_open']                           = 'Fill in your store\'s opening times.';
 $_['help_comment']                        = 'This field is for any special notes you would like to tell the customer i.e. Store does not accept cheques.';

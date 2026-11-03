@@ -29,6 +29,7 @@ class Home extends \Opencart\System\Engine\Controller {
 		$data['content_bottom'] = $this->load->controller('common/content_bottom');
 		$data['footer'] = $this->load->controller('common/footer');
 		$data['header'] = $this->load->controller('common/header');
+		$data['google_review_url'] = $this->config->get('config_google_review_url') ? $this->config->get('config_google_review_url') : '';
 
 		$this->response->setOutput($this->load->view('common/home', $data));
 	}
