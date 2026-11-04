@@ -26,7 +26,11 @@
             </div>
           </div>
           <div class="msb-gr-right">
-            <a href="{{ google_review_url ? google_review_url : '#' }}" {% if google_review_url and google_review_url != '#' %}target="_blank" rel="noopener noreferrer"{% else %}onclick="alert('Please configure your Google Review link in Admin > System > Settings > Store tab.'); return false;"{% endif %} class="btn-msb-google-review">
+            {% set msb_review_link = google_review_url ? google_review_url : config.get('config_google_review_url') %}
+            {% if not msb_review_link or msb_review_link == '#' %}
+              {% set msb_review_link = 'https://www.google.com/search?q=Magical+Singing+Bowls+reviews' %}
+            {% endif %}
+            <a href="{{ msb_review_link }}" target="_blank" rel="noopener noreferrer" class="btn-msb-google-review">
               <span class="btn-star-icon">★</span>
               <span>Write a Review on Google</span>
             </a>
