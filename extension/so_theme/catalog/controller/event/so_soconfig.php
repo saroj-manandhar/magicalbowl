@@ -326,6 +326,7 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 		$this->load->language('extension/so_theme/soconfig/soconfig','',$this->config->get('config_language'));
 		$data['objlang'] = $this->language;	
 		$data['content_home'] = $this->load->controller('extension/so_theme/soconfig/content_home');
+		$data['google_review_url'] = $this->config->get('config_google_review_url') ? $this->config->get('config_google_review_url') : '';
 
 		$search = array(
 			'/\>[^\S ]+/s',     // strip whitespaces after tags, except space

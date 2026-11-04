@@ -19,6 +19,7 @@ class Home extends \Opencart\System\Engine\Controller {
 		$data['column_right'] = $this->load->controller('common/column_right');
 		$data['content_top'] = $this->load->controller('common/content_top');
 		$data['content_home'] = $this->load->controller('extension/so_theme/soconfig/content_mobile');
+		$data['google_review_url'] = $this->config->get('config_google_review_url') ? $this->config->get('config_google_review_url') : '';
 		$search = array(
 			'/\>[^\S ]+/s',     // strip whitespaces after tags, except space
 			'/[^\S ]+\</s',     // strip whitespaces before tags, except space
