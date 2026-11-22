@@ -2536,3 +2536,20 @@ UPDATE `oc_product` SET `viewed` = 2070 WHERE `product_id` = 3994;
 -- Enable Filter Module
 DELETE FROM `oc_setting` WHERE `key` = 'module_filter_status';
 INSERT INTO `oc_setting` (`store_id`, `code`, `key`, `value`, `serialized`) VALUES (0, 'module_filter', 'module_filter_status', '1', 0);
+UPDATE  SET  = 'Name: Complete Musical Set Tibetan/Himalayan Singing Bowl<br>
+Size: Medium Set<br>
+Weight: 4100 gm (app)<br>
+Diameter: 18 cm (app)<br>
+Height: 9.5 cm (app)<br>
+Type: Handmade, Jambati<br>
+Color: Maja<br>
+Design: Plain<br><br>
+UPDATE `oc_product_description` SET `diameter` = 'Name: Complete Musical Set Tibetan/Himalayan Singing Bowl<br>
+Size: Medium Set<br>
+Weight: 4100 gm (app)<br>
+Diameter: 18 cm (app)<br>
+Height: 9.5 cm (app)<br>
+Type: Handmade, Jambati<br>
+Color: Maja<br>
+Design: Plain<br><br>
+<div align=\"justify\"><b>Every instrument is individually tested in our acoustics Sound laboratory and accompanied by a serial-matched Lab Report Certificate that details its exact fundamental frequency (f0), harmonic overtones (f1), musical note and cent deviation, visual acoustic spectrum, precise striking point, and verified Therapeutic recommendations</b></div>' WHERE `product_id` = 4683;
