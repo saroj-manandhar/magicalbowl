@@ -951,6 +951,33 @@
 	$('#featured-category').delegate('.fa-minus-circle', 'click', function() {
 		$(this).parent().remove();
 	});
+
+	// Product Feature: search products by name or model and add them to the list
+	$('input[name=\'product_feature_search\']').autocomplete({
+		source: function(request, response) {
+			$.ajax({
+				url: 'index.php?route=extension/so_theme/module/so_basic_products.autocomplete_product&user_token={{ user_token }}&filter_name=' + encodeURIComponent(request),
+				dataType: 'json',
+				success: function(json) {
+					response($.map(json, function(item) {
+						return {
+							label: item['name'],
+							value: item['product_id']
+						}
+					}));
+				}
+			});
+		},
+		select: function(item) {
+			$('input[name=\'product_feature_search\']').val('');
+			$('#featured-product_feature' + item['value']).remove();
+			$('#featured-product_feature').append('<div id="featured-product_feature' + item['value'] + '" style="padding: 3px 0;"><i class="fa fa-minus-circle text-danger" style="cursor:pointer;"></i> ' + item['label'] + '<input type="hidden" name="product_feature[]" value="' + item['value'] + '" /></div>');
+		}
+	});
+
+	$('#featured-product_feature').delegate('.fa-minus-circle', 'click', function() {
+		$(this).parent().remove();
+	});
 	//--></script>
 	<script type="text/javascript"><!--
 	if($("input[name='child_category']:radio:checked").val() == '0'){

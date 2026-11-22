@@ -184,7 +184,12 @@ class SoBasicProducts extends \Opencart\System\Engine\Controller {
 			);
 		}
 		$data['products'] = array();
-		$products_arr = $this->model_extension_so_theme_module_so_basic_products->getProducts_basic_products($filter_data);
+		// If specific products were picked in "Product Feature", show those (in the picked order)
+		if (!empty($setting['product_feature']) && is_array($setting['product_feature'])) {
+			$products_arr = $this->model_extension_so_theme_module_so_basic_products->getProductsByIds_basic_products($setting['product_feature'], (int)$setting['limitation']);
+		} else {
+			$products_arr = $this->model_extension_so_theme_module_so_basic_products->getProducts_basic_products($filter_data);
+		}
 		
 		foreach($products_arr as $product_info){
 			// get image

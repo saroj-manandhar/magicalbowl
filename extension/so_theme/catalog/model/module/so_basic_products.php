@@ -146,6 +146,29 @@ class SoBasicProducts extends \Opencart\System\Engine\Model {
 		return $product_data;
 	}
 	
+	public function getProductsByIds_basic_products($product_ids, $limit = 0) {
+		$product_data = array();
+		$ids = array();
+		foreach ((array)$product_ids as $id) {
+			if ((int)$id > 0) {
+				$ids[] = (int)$id;
+			}
+		}
+		$ids = array_values(array_unique($ids));
+		if ((int)$limit > 0) {
+			$ids = array_slice($ids, 0, (int)$limit);
+		}
+		$this->load->model('catalog/product');
+		foreach ($ids as $id) {
+			// getProduct only returns enabled products available in the current store
+			$product_info = $this->model_catalog_product->getProduct($id);
+			if ($product_info) {
+				$product_data[$id] = $product_info;
+			}
+		}
+		return $product_data;
+	}
+
 	public function checkCategory($category_id) {
 		$sql = "SELECT * FROM " . DB_PREFIX . "category c LEFT JOIN " . DB_PREFIX . "category_to_store c2s ON (c.category_id = c2s.category_id) WHERE  c.category_id ='".$category_id."' AND c.status = 1 AND c2s.store_id = '" . (int)$this->config->get('config_store_id') . "' ORDER BY sort_order ASC;";
 		$query = $this->db->query($sql);
