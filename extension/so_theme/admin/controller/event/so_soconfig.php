@@ -31,18 +31,32 @@ class SoSoconfig extends \Opencart\System\Engine\Controller {
 				'video'               => $product_video,
 				'tab_title'          => $product_tabtitle,
 				'html_product_tab'    => $product_tabproduct, 
+				'diameter'         => $result['diameter'] ?? '',
 			];
 		}	
 	}
 	
 	public function model_product_feature_after(string &$route, array &$data, mixed &$output): void {
-        $this->db->query("DELETE FROM `" . DB_PREFIX . "product_description` WHERE `product_id` = '" . (int)$data[0] . "'");
-        foreach ($data[1]['product_description'] as $language_id => $value) {		
+		// addProduct(array $data) returns the new product_id; editProduct(int $product_id, array $data)
+		if (str_ends_with($route, 'addProduct')) {
+			$product_id = (int)$output;
+			$product_data = $data[0] ?? [];
+		} else {
+			$product_id = (int)$data[0];
+			$product_data = $data[1] ?? [];
+		}
+
+		if (!$product_id || empty($product_data['product_description'])) {
+			return;
+		}
+
+        $this->db->query("DELETE FROM `" . DB_PREFIX . "product_description` WHERE `product_id` = '" . $product_id . "'");
+        foreach ($product_data['product_description'] as $language_id => $value) {		
 			if ($this->checkProductOptionColumnExist()) {
-				$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET `product_id` = '" . (int)$data[0] . "', `language_id` = '" . (int)$language_id . "', `name` = '" . $this->db->escape($value['name']) . "', `description` = '" . $this->db->escape($value['description']) . "', `tag` = '" . $this->db->escape($value['tag']) . "', `meta_title` = '" . $this->db->escape($value['meta_title']) . "', `meta_description` = '" . $this->db->escape($value['meta_description']) . "', `meta_keyword` = '" . $this->db->escape($value['meta_keyword']) . "', `video` = '" . $this->db->escape($value['video']) . "', `tab_title` = '" . $this->db->escape($value['tab_title']) . "', `html_product_tab` = '" . $this->db->escape($value['html_product_tab']) .  "'");
+				$this->db->query("INSERT INTO " . DB_PREFIX . "product_description SET `product_id` = '" . $product_id . "', `language_id` = '" . (int)$language_id . "', `name` = '" . $this->db->escape($value['name']) . "', `description` = '" . $this->db->escape($value['description']) . "', `diameter` = '" . $this->db->escape((string)($value['diameter'] ?? '')) . "', `tag` = '" . $this->db->escape($value['tag']) . "', `meta_title` = '" . $this->db->escape($value['meta_title']) . "', `meta_description` = '" . $this->db->escape($value['meta_description']) . "', `meta_keyword` = '" . $this->db->escape($value['meta_keyword']) . "', `video` = '" . $this->db->escape((string)($value['video'] ?? '')) . "', `tab_title` = '" . $this->db->escape((string)($value['tab_title'] ?? '')) . "', `html_product_tab` = '" . $this->db->escape((string)($value['html_product_tab'] ?? '')) .  "'");
 			}
 			else {
-				$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET `product_id` = '" . (int)$data[0] . "', `language_id` = '" . (int)$language_id . "', `name` = '" . $this->db->escape($value['name']) . "', `description` = '" . $this->db->escape($value['description']) . "', `tag` = '" . $this->db->escape($value['tag']) . "', `meta_title` = '" . $this->db->escape($value['meta_title']) . "', `meta_description` = '" . $this->db->escape($value['meta_description']) . "', `meta_keyword` = '" . $this->db->escape($value['meta_keyword']) . "'");
+				$this->db->query("INSERT INTO `" . DB_PREFIX . "product_description` SET `product_id` = '" . $product_id . "', `language_id` = '" . (int)$language_id . "', `name` = '" . $this->db->escape($value['name']) . "', `description` = '" . $this->db->escape($value['description']) . "', `diameter` = '" . $this->db->escape((string)($value['diameter'] ?? '')) . "', `tag` = '" . $this->db->escape($value['tag']) . "', `meta_title` = '" . $this->db->escape($value['meta_title']) . "', `meta_description` = '" . $this->db->escape($value['meta_description']) . "', `meta_keyword` = '" . $this->db->escape($value['meta_keyword']) . "'");
 			}	
 		}
 	}	
