@@ -42,6 +42,16 @@ class Login extends \Opencart\System\Engine\Controller {
 			$data['success'] = '';
 		}
 
+		// Never let the browser or Varnish cache the login page, otherwise an old login_token is reused
+		$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
+		$this->response->addHeader('Pragma: no-cache');
+		$this->response->addHeader('X-Accel-Expires: 0');
+		$this->response->addHeader('X-Cache-Lifetime: 0');
+
+		if (class_exists('ClpVarnish')) {
+			\ClpVarnish::setCacheLifetime(0);
+		}
+
 		// Create a login token to prevent brute force attacks
 		$this->session->data['login_token'] = oc_token(32);
 
@@ -83,7 +93,8 @@ class Login extends \Opencart\System\Engine\Controller {
 		}
 
 		if (!isset($this->request->get['login_token']) || !isset($this->session->data['login_token']) || $this->request->get['login_token'] != $this->session->data['login_token']) {
-			$this->session->data['error'] = $this->language->get('error_login');
+			// The page was old (expired session, second tab, cached page or www/non-www switch). Password was NOT checked.
+			$this->session->data['error'] = $this->language->get('error_login_expired');
 
 			$json['redirect'] = $this->url->link('common/login', '', true);
 		}
@@ -110,6 +121,7 @@ class Login extends \Opencart\System\Engine\Controller {
 			$json['redirect'] = $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true);
 		}
 
+		$this->response->addHeader('Cache-Control: private, no-cache, no-store, must-revalidate, max-age=0');
 		$this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}

@@ -17,3 +17,4 @@ $_['button_login']   = 'Login';
 // Error
 $_['error_login']    = 'No match for Username and/or Password.';
 $_['error_token']    = 'Invalid token session. Please login again.';
+$_['error_login_expired'] = 'This login page had expired, so your password was not checked. Please enter your username and password again.';
