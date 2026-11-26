@@ -4709,6 +4709,24 @@ body > .alert {
     max-width: 100% !important;
 }
 
+/* =======================================================
+   Restore Bullet & Numbered List Styling in Rich Content
+   (Overrides yellow.css global `ul { list-style: none; padding: 0 }`
+    and `.tab-content ol { list-style-type: disc }`)
+   ======================================================= */
+#content.item-article :is(ul, ol):not([class]):not(.so-page-builder *, .module *, .decimal-list *, .simple-ul *, .yt-accordion *),
+div.article-info .article-description :is(ul, ol):not([class]) {
+    list-style: revert;
+    margin-block: 1em;
+    padding-inline-start: 40px;
+}
+
+.product-detail .producttab .tab-content ol:not([class]) {
+    list-style: revert;
+    padding-inline-start: 40px;
+}
+
+
 
 
 
