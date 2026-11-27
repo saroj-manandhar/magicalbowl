@@ -4730,3 +4730,26 @@ div.article-info .article-description :is(ul, ol):not([class]) {
 
 
 
+
+/* =======================================================
+   Restore bullets & numbering in admin rich-text content
+   (category descriptions, product description/specifications,
+    information pages). yellow.css resets every `ul` to
+   list-style:none; padding:0. Only lists without a class
+   (i.e. ones typed in the editor) are restored.
+   ======================================================= */
+.category-info :is(ul, ol):not([class]),
+#collapse-description :is(ul, ol):not([class]),
+.product-specifications :is(ul, ol):not([class]),
+body.information-information #content :is(ul, ol):not([class]) {
+    list-style: revert;
+    margin-block: 1em;
+    padding-inline-start: 40px;
+}
+.category-info :is(ul, ol):not([class]) > li,
+#collapse-description :is(ul, ol):not([class]) > li,
+.product-specifications :is(ul, ol):not([class]) > li,
+body.information-information #content :is(ul, ol):not([class]) > li {
+    display: list-item;
+    list-style: inherit;
+}
