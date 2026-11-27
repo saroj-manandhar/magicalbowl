@@ -220,18 +220,6 @@ class Category extends \Opencart\System\Engine\Controller {
 			$data['thumb'] = $data['image'];
 
 			$data['description'] = html_entity_decode($category_info['description'], ENT_QUOTES, 'UTF-8');
-
-			// Info-only subcategories whose description should also show on their parent category page.
-			// 302 = "Accessories Information's" (child of Accessories).
-			foreach ([302] as $info_category_id) {
-				if ($info_category_id == $category_id) {
-					continue;
-				}
-				$info_category = $this->model_catalog_category->getCategory($info_category_id);
-				if ($info_category && (int)$info_category['parent_id'] == $category_id && trim(strip_tags(html_entity_decode($info_category['description'], ENT_QUOTES, 'UTF-8'))) !== '') {
-					$data['description'] .= "\n" . '<div class="category-info-extra">' . html_entity_decode($info_category['description'], ENT_QUOTES, 'UTF-8') . '</div>';
-				}
-			}
 			$data['compare'] = $this->url->link('product/compare', 'language=' . $this->config->get('config_language'));
 
 			$url = '';
