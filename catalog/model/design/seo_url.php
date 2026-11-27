@@ -46,4 +46,14 @@ class SeoUrl extends \Opencart\System\Engine\Model {
 
 		return $query->row;
 	}
+
+	/**
+	 * OpenCart 4.1 admin saves category SEO URLs with the full path as value (e.g. "120_302")
+	 * and the full keyword (e.g. "Parent/child"). Find such a row by the category's own id.
+	 */
+	public function getCategorySeoUrlByPathTail(string $category_id): array {
+		$query = $this->db->query("SELECT DISTINCT * FROM `" . DB_PREFIX . "seo_url` WHERE `key` = 'path' AND `value` LIKE '%\\_" . (int)$category_id . "' AND `store_id` = '" . (int)$this->config->get('config_store_id') . "' AND `language_id` = '" . (int)$this->config->get('config_language_id') . "' ORDER BY LENGTH(`value`) DESC LIMIT 1");
+
+		return $query->row;
+	}
 }

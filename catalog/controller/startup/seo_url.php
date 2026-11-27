@@ -100,7 +100,10 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 
 					if ($seo_url_info) {
 						if ($seo_url_info['key'] == 'path') {
-							if (!isset($this->request->get['path'])) {
+							if (strpos((string)$seo_url_info['value'], '_') !== false) {
+								// Full path stored (OC 4.1 admin), e.g. "120_302"
+								$this->request->get['path'] = $seo_url_info['value'];
+							} elseif (!isset($this->request->get['path'])) {
 								$this->request->get['path'] = $seo_url_info['value'];
 							} else {
 								$this->request->get['path'] .= '_' . $seo_url_info['value'];
@@ -197,6 +200,19 @@ class SeoUrl extends \Opencart\System\Engine\Controller {
 
 					if (!isset($this->data[$language_id][$cat_index])) {
 						$this->data[$language_id][$cat_index] = $this->model_design_seo_url->getSeoUrlByKeyValue('path', (string)$category);
+
+						// Categories saved by the OC 4.1 admin are stored as value "parent_child" with keyword "parent-kw/child-kw".
+						// Use only the child's own keyword segment, since parent segments are added by this loop.
+						if (!$this->data[$language_id][$cat_index]) {
+							$tail = $this->model_design_seo_url->getCategorySeoUrlByPathTail((string)$category);
+
+							if ($tail) {
+								$segments = explode('/', $tail['keyword']);
+								$tail['keyword'] = end($segments);
+								$tail['value'] = (string)$category;
+								$this->data[$language_id][$cat_index] = $tail;
+							}
+						}
 					}
 
 					// Ensure Category 301 (Planetary, Therapeutic, Harmonic Sound - Information) has correct keyword

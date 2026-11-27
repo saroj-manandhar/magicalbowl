@@ -1,0 +1,319 @@
+<?php
+namespace Opencart\Catalog\Controller\Startup;
+/**
+ * Class SeoUrl
+ *
+ * @package Opencart\Catalog\Controller\Startup
+ */
+class SeoUrl extends \Opencart\System\Engine\Controller {
+	/**
+	 * @var array<string, string>
+	 */
+	private array $data = [];
+
+	/**
+	 * Index
+	 *
+	 * @return null
+	 */
+	public function index() {
+		// Add rewrite to URL class
+		if ($this->config->get('config_seo_url')) {
+			$this->url->addRewrite($this);
+
+			$this->load->model('design/seo_url');
+
+			// If _route_ is not set in $_GET (e.g. under Nginx try_files), extract it from REQUEST_URI
+			if (!isset($this->request->get['_route_']) && isset($this->request->server['REQUEST_URI'])) {
+				$url_path = parse_url($this->request->server['REQUEST_URI'], PHP_URL_PATH);
+				$base_path = parse_url(HTTP_SERVER, PHP_URL_PATH);
+				if ($base_path && $base_path != '/') {
+					$url_path = substr($url_path, strlen($base_path));
+				}
+				$url_path = trim($url_path, '/');
+				if ($url_path && $url_path != 'index.php') {
+					$this->request->get['_route_'] = $url_path;
+				}
+			}
+
+			// Decode URL
+			if (isset($this->request->get['_route_'])) {
+				$parts = explode('/', $this->request->get['_route_']);
+
+				// remove any empty arrays from trailing
+				if (oc_strlen(end($parts)) == 0) {
+					array_pop($parts);
+				}
+
+				foreach ($parts as $key => $value) {
+					$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword($value);
+
+					if (!$seo_url_info && strpos($value, '%') !== false) {
+						$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword(rawurldecode($value));
+					}
+
+					if (!$seo_url_info) {
+						$decoded = rawurldecode($value);
+						$hyphenated = strtolower(preg_replace('/[\s_]+/', '-', trim($decoded)));
+						if ($hyphenated !== strtolower($decoded)) {
+							$seo_url_info = $this->model_design_seo_url->getSeoUrlByKeyword($hyphenated);
+						}
+					}
+
+					// Fallback for Category 301 (Planetary, Therapeutic, Harmonic Sound - Information)
+					if (!$seo_url_info && in_array(strtolower($value), [
+						'planetary-therapeutic-harmonic-sound-information',
+						'harmonic-sound-information',
+						'planetary-therapeutic-singingbowls-gongs-healing-course-nepal',
+						'harmonic-sound',
+						'harmonic-sound-info'
+					])) {
+						$seo_url_info = [
+							'key'   => 'path',
+							'value' => '301'
+						];
+					}
+
+					if (!$seo_url_info) {
+						$static_routes_decode = [
+							'register'        => 'account/register',
+							'login'           => 'account/login',
+							'logout'          => 'account/logout',
+							'forgot-password' => 'account/forgotten',
+							'account'         => 'account/account',
+							'wishlist'        => 'account/wishlist',
+							'order-history'   => 'account/order',
+							'cart'            => 'checkout/cart',
+							'checkout'        => 'checkout/checkout',
+							'order-success'   => 'checkout/success',
+							'contact-us'      => 'information/contact',
+							'contact'         => 'information/contact',
+							'sitemap'         => 'information/sitemap'
+						];
+						if (isset($static_routes_decode[$value])) {
+							$seo_url_info = [
+								'key'   => 'route',
+								'value' => $static_routes_decode[$value]
+							];
+						}
+					}
+
+					if ($seo_url_info) {
+						if ($seo_url_info['key'] == 'path') {
+							if (!isset($this->request->get['path'])) {
+								$this->request->get['path'] = $seo_url_info['value'];
+							} else {
+								$this->request->get['path'] .= '_' . $seo_url_info['value'];
+							}
+						} else {
+							$this->request->get[$seo_url_info['key']] = html_entity_decode($seo_url_info['value'], ENT_QUOTES, 'UTF-8');
+						}
+
+						unset($parts[$key]);
+					}
+				}
+
+				if (!isset($this->request->get['route']) || ($this->request->get['route'] == 'product/product' && !isset($this->request->get['product_id']))) {
+					if (isset($this->request->get['information_id'])) {
+						$this->request->get['route'] = 'information/information';
+					} elseif (isset($this->request->get['product_id'])) {
+						$this->request->get['route'] = 'product/product';
+					} elseif (isset($this->request->get['path'])) {
+						$this->request->get['route'] = 'product/category';
+					} elseif (isset($this->request->get['manufacturer_id'])) {
+						$this->request->get['route'] = 'product/manufacturer';
+					}
+				}
+
+				if (!isset($this->request->get['route'])) {
+					$this->request->get['route'] = $this->config->get('action_default');
+				}
+
+				if ($parts) {
+					$this->request->get['route'] = $this->config->get('action_error');
+				}
+			}
+		}
+
+		return null;
+	}
+
+	/**
+	 * Rewrite
+	 *
+	 * @param string $link
+	 *
+	 * @return string
+	 */
+	public function rewrite(string $link): string {
+		$url_info = parse_url(str_replace('&amp;', '&', $link));
+
+		// Build the url
+		$url = '';
+
+		if ($url_info['scheme']) {
+			$url .= $url_info['scheme'];
+		}
+
+		$url .= '://';
+
+		if ($url_info['host']) {
+			$url .= $url_info['host'];
+		}
+
+		if (isset($url_info['port'])) {
+			$url .= ':' . $url_info['port'];
+		}
+
+		parse_str($url_info['query'], $query);
+
+		$language_id = $this->config->get('config_language_id');
+
+		// Start changing the URL query into a path
+		$paths = [];
+
+		// Parse the query into its separate parts
+		$parts = explode('&', $url_info['query']);
+
+		foreach ($parts as $part) {
+			$pair = explode('=', $part);
+
+			if (isset($pair[0])) {
+				$key = (string)$pair[0];
+			}
+
+			if (isset($pair[1])) {
+				$value = (string)$pair[1];
+			} else {
+				$value = '';
+			}
+
+			if ($key == 'path') {
+				$categories = explode('_', $value);
+				$cat_order = 0;
+
+				foreach ($categories as $category) {
+					$cat_index = 'path=' . $category;
+
+					if (!isset($this->data[$language_id][$cat_index])) {
+						$this->data[$language_id][$cat_index] = $this->model_design_seo_url->getSeoUrlByKeyValue('path', (string)$category);
+					}
+
+					// Ensure Category 301 (Planetary, Therapeutic, Harmonic Sound - Information) has correct keyword
+					if ($category == '301') {
+						if (!isset($this->data[$language_id][$cat_index])
+							|| !$this->data[$language_id][$cat_index]
+							|| $this->data[$language_id][$cat_index]['keyword'] == 'Himalayan-Singing-Bowls'
+							|| $this->data[$language_id][$cat_index]['keyword'] == 'planetary-therapeutic-singingbowls-gongs-healing-course-nepal'
+							|| empty($this->data[$language_id][$cat_index]['keyword'])) {
+							$this->data[$language_id][$cat_index] = [
+								'key'        => 'path',
+								'value'      => '301',
+								'keyword'    => 'planetary-therapeutic-harmonic-sound-information',
+								'sort_order' => 0
+							];
+						}
+					}
+
+					if ($this->data[$language_id][$cat_index]) {
+						$cat_data = $this->data[$language_id][$cat_index];
+						$cat_data['sort_order'] = $cat_order++;
+						$paths[] = $cat_data;
+					}
+				}
+
+				unset($query[$key]);
+			} else {
+				// 1. Skip adding default language prefix (e.g. en-gb) to URLs across the entire website
+				if ($key == 'language' && ($value == 'en-gb' || $value == $this->config->get('config_language_catalog') || $value == $this->config->get('config_language'))) {
+					unset($query[$key]);
+					continue;
+				}
+
+				$index = $key . '=' . $value;
+
+				if (!isset($this->data[$language_id][$index])) {
+					$this->data[$language_id][$index] = $this->model_design_seo_url->getSeoUrlByKeyValue((string)$key, (string)$value);
+				}
+
+				// 2. Fallback route mapping for clean SEO URLs if not in database
+				if (!$this->data[$language_id][$index] && $key == 'route') {
+					$static_routes_encode = [
+						'account/register'    => 'register',
+						'account/login'       => 'login',
+						'account/logout'      => 'logout',
+						'account/forgotten'   => 'forgot-password',
+						'account/account'     => 'account',
+						'account/wishlist'    => 'wishlist',
+						'account/order'       => 'order-history',
+						'checkout/cart'       => 'cart',
+						'checkout/checkout'   => 'checkout',
+						'checkout/success'    => 'order-success',
+						'information/contact' => 'contact-us',
+						'information/sitemap' => 'sitemap'
+					];
+					if (isset($static_routes_encode[$value])) {
+						$this->data[$language_id][$index] = [
+							'key'        => 'route',
+							'value'      => $value,
+							'keyword'    => $static_routes_encode[$value],
+							'sort_order' => 0
+						];
+					}
+				}
+
+				if ($this->data[$language_id][$index]) {
+					$paths[] = $this->data[$language_id][$index];
+
+					unset($query[$key]);
+				}
+			}
+		}
+
+		$sort_order = [];
+
+		foreach ($paths as $key => $value) {
+			$sort_order[$key] = $value['sort_order'];
+		}
+
+		array_multisort($sort_order, SORT_ASC, $paths);
+
+		$has_content_path = false;
+
+		foreach ($paths as $result) {
+			if ($result['key'] != 'language') {
+				$has_content_path = true;
+				break;
+			}
+		}
+
+		if (isset($query['route'])) {
+			if ($has_content_path && in_array($query['route'], [
+				'product/product',
+				'product/category',
+				'information/information',
+				'product/manufacturer',
+				'product/manufacturer|info',
+				'product/manufacturer/info'
+			])) {
+				unset($query['route']);
+			} elseif ($query['route'] == 'common/home') {
+				unset($query['route']);
+			}
+		}
+
+		// Build the path
+		$url .= str_replace('/index.php', '', $url_info['path']);
+
+		foreach ($paths as $result) {
+			$url .= '/' . $result['keyword'];
+		}
+
+		// Rebuild the URL query
+		if ($query) {
+			$url .= '?' . str_replace(['%2F'], ['/'], http_build_query($query));
+		}
+
+		return $url;
+	}
+}
