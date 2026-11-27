@@ -107,10 +107,29 @@ class ColumnLeft extends \Opencart\System\Engine\Controller {
 			}
 		}
 
-		if (empty($data['modules']) && $route == 'product/category') {
-			$category_menu = $this->load->controller('extension/opencart/module/category');
-			if ($category_menu) {
-				$data['modules'][] = $category_menu;
+		// Show the category menu when the column would otherwise be empty, and also on
+		// info-only categories (no products, e.g. "Accessories Information's"), where the
+		// layout's filter module renders nothing and only a hidden banner is left.
+		if ($route == 'product/category') {
+			$show_category_menu = empty($data['modules']);
+
+			if (!$show_category_menu && isset($this->request->get['path'])) {
+				$this->load->model('catalog/product');
+
+				$path_parts = explode('_', (string)$this->request->get['path']);
+
+				$show_category_menu = !$this->model_catalog_product->getTotalProducts([
+					'filter_category_id'  => (int)end($path_parts),
+					'filter_sub_category' => true
+				]);
+			}
+
+			if ($show_category_menu) {
+				$category_menu = $this->load->controller('extension/opencart/module/category');
+
+				if ($category_menu) {
+					array_unshift($data['modules'], $category_menu);
+				}
 			}
 		}
 
